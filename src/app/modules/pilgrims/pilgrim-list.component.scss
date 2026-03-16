@@ -1,0 +1,257 @@
+/* Pèlerins — design system (--app-*) */
+.pilgrim-list-page {
+  max-width: 1200px;
+}
+
+.list-card {
+  border-radius: var(--app-radius) !important;
+  box-shadow: var(--app-shadow) !important;
+  border: 1px solid var(--app-border);
+  overflow: hidden;
+}
+
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--app-space-lg);
+  padding: var(--app-space-lg) var(--app-space-xl);
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-bg-soft);
+}
+
+/* Barre de recherche unifiée — design system */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  max-width: 420px;
+  min-width: 280px;
+  flex: 1;
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--app-accent);
+    box-shadow: 0 0 0 3px var(--app-accent-ring);
+  }
+}
+
+.search-bar__icon-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.5rem;
+  color: var(--app-text-soft);
+  z-index: 1;
+}
+
+.search-bar__icon {
+  font-size: 1.25rem !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  color: inherit;
+}
+
+.search-bar__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 0.5rem 0.75rem 0.25rem;
+  border: none;
+  background: transparent;
+  font-family: var(--app-font);
+  font-size: 0.9375rem;
+  color: var(--app-text);
+
+  &::placeholder {
+    color: var(--app-muted);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.search-bar__btn {
+  flex-shrink: 0;
+  margin: 0.35rem 0.35rem 0.35rem 0;
+  padding: 0.5rem 1.1rem;
+  border: none;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-accent);
+  color: #fff;
+  font-family: var(--app-font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+
+  &:hover {
+    background: var(--app-accent-hover);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.list-count {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--app-text-soft);
+  margin-left: auto;
+}
+
+.table-wrap {
+  min-height: 12rem;
+  overflow-x: auto;
+}
+
+.pilgrim-table {
+  font-family: var(--app-font);
+
+  th.mat-mdc-header-cell {
+    font-family: var(--app-display);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--app-text-soft);
+    background: var(--app-bg-soft);
+    padding: 0.9rem 1rem;
+    border-bottom: 2px solid var(--app-border);
+  }
+
+  td.mat-mdc-cell {
+    padding: 0.85rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--app-text);
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  tr.mat-mdc-row:hover td {
+    background: rgba(13, 148, 136, 0.03);
+  }
+}
+
+.cell-name {
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.visa-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--app-radius-pill);
+  white-space: nowrap;
+}
+
+.visa-badge--pending {
+  background: var(--app-warn-bg);
+  color: var(--app-warn-text);
+}
+
+.visa-badge--approved {
+  background: var(--app-success-bg);
+  color: var(--app-success-text);
+}
+
+.visa-badge--rejected {
+  background: var(--app-error-bg);
+  color: var(--app-error-text);
+}
+
+.visa-badge--muted {
+  background: var(--app-bg-soft);
+  color: var(--app-muted);
+  font-weight: 500;
+}
+
+.cell-actions {
+  white-space: nowrap;
+
+  a,
+  button {
+    color: var(--app-text-soft);
+    &:hover {
+      color: var(--app-accent);
+      background: var(--app-accent-soft);
+    }
+  }
+
+  .btn-delete:hover {
+    color: var(--app-error-text) !important;
+    background: var(--app-error-bg) !important;
+  }
+}
+
+.no-data-row td {
+  padding: 0;
+  vertical-align: middle;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.empty-state__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--app-border);
+  border-top-color: var(--app-accent);
+  border-radius: 50%;
+  animation: pilgrimSpinner 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes pilgrimSpinner {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--app-muted);
+}
+
+.empty-state__icon {
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  color: var(--app-border);
+  margin-bottom: 0.75rem;
+}
+
+.empty-state__title {
+  font-family: var(--app-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--app-text) !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.empty-state__desc {
+  font-size: 0.875rem !important;
+  color: var(--app-text-soft) !important;
+}
+
+.list-paginator {
+  border-top: 1px solid var(--app-border);
+  background: var(--app-bg-soft);
+}
+
+.full-width {
+  width: 100%;
+}

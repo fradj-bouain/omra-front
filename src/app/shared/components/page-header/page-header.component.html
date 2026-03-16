@@ -1,0 +1,18 @@
+<header class="page-header">
+  <div class="page-header__main">
+    <h1 class="page-header__title">{{ title }}</h1>
+    @if (subtitle) {
+      <p class="page-header__subtitle">{{ subtitle }}</p>
+    }
+  </div>
+  @if (actionLabel && actionLink) {
+    <a
+      [routerLink]="actionLink"
+      class="page-header__action"
+      [class.page-header__action--back]="actionIcon === 'arrow_back'"
+    >
+      <mat-icon>{{ actionIcon }}</mat-icon>
+      <span>{{ actionLabel }}</span>
+    </a>
+  }
+</header>

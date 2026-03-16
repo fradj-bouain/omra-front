@@ -1,0 +1,301 @@
+/* Angular Material prebuilt theme */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* ========== Design system — interface client Omra (thème pèlerin) ==========
+   Fonts: Outfit (body), Syne (display/headings).
+   Accent: teal pèlerin (#0d9488). Use --app-* in components.
+*/
+:root {
+  /* Typography */
+  --app-font: 'Outfit', system-ui, -apple-system, sans-serif;
+  --app-display: 'Syne', system-ui, sans-serif;
+  --app-text: #0f172a;
+  --app-text-soft: #475569;
+  --app-muted: #64748b;
+
+  /* Surfaces */
+  --app-bg: #f8fafc;
+  --app-bg-soft: #f1f5f9;
+  --app-card: #ffffff;
+  --app-border: #e2e8f0;
+  --app-border-focus: #0f766e;
+
+  /* Brand & actions — thème pèlerin (teal) */
+  --app-accent: #0d9488;
+  --app-accent-hover: #0f766e;
+  --app-accent-soft: #ccfbf1;
+  --app-accent-ring: rgba(13, 148, 136, 0.35);
+
+  /* Semantic */
+  --app-success-bg: #ecfdf5;
+  --app-success-text: #065f46;
+  --app-error-bg: #fef2f2;
+  --app-error-text: #991b1b;
+  --app-warn-bg: #fffbeb;
+  --app-warn-text: #92400e;
+
+  /* Layout & shape */
+  --app-radius: 14px;
+  --app-radius-sm: 10px;
+  --app-radius-lg: 18px;
+  --app-radius-pill: 9999px;
+  --app-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --app-shadow: 0 4px 14px rgba(13, 148, 136, 0.08);
+  --app-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.08);
+
+  /* Spacing */
+  --app-space-xs: 0.25rem;
+  --app-space-sm: 0.5rem;
+  --app-space-md: 1rem;
+  --app-space-lg: 1.5rem;
+  --app-space-xl: 2rem;
+  --app-space-2xl: 2.5rem;
+
+  /* Chart palette (same as accent theme) */
+  --chart-1: #0d9488;
+  --chart-2: #0891b2;
+  --chart-3: #0f766e;
+  --chart-4: #14b8a6;
+  --chart-5: #5eead4;
+  --chart-6: #2dd4bf;
+
+  /* Backward compat for existing components */
+  --font-heading: var(--app-display);
+  --font-body: var(--app-font);
+  --primary-color: var(--app-accent);
+  --primary-dark: var(--app-accent-hover);
+  --primary-light: var(--app-accent-soft);
+  --secondary-color: var(--app-accent);
+  --menu-color: var(--app-accent-hover);
+  --button-color: var(--app-accent);
+  --background-color: var(--app-bg);
+  --text-color: var(--app-text);
+  --text-muted: var(--app-muted);
+  --header-bg: var(--app-card);
+  --card-bg: var(--app-card);
+  --border-color: var(--app-border);
+  --shadow-sm: var(--app-shadow-sm);
+  --shadow-md: var(--app-shadow);
+  --shadow-lg: var(--app-shadow-lg);
+  --radius-sm: var(--app-radius-sm);
+  --radius-md: var(--app-radius);
+  --radius-lg: var(--app-radius-lg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+  font-family: var(--app-font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--app-text);
+  background: var(--app-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.layout-menu-open {
+  overflow: hidden;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title {
+  font-family: var(--app-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+/* Angular Material buttons use theme */
+.mat-mdc-button,
+.mat-mdc-raised-button {
+  --mdc-filled-button-container-color: var(--app-accent);
+}
+
+.snack-success .mdc-snackbar__surface {
+  background: var(--app-accent) !important;
+  color: #fff;
+}
+
+.snack-error .mdc-snackbar__surface {
+  background: var(--app-error-text) !important;
+  color: #fff;
+}
+
+.mat-mdc-card {
+  border-radius: var(--app-radius) !important;
+  box-shadow: var(--app-shadow-sm) !important;
+  border: 1px solid var(--app-border);
+}
+
+/* ========== Global toast (fixed top-right) */
+.app-toast {
+  position: fixed;
+  top: var(--app-space-lg);
+  right: var(--app-space-lg);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-sm);
+  padding: var(--app-space-md) var(--app-space-lg);
+  max-width: min(420px, calc(100vw - 3rem));
+  border-radius: var(--app-radius);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: var(--app-font);
+  box-shadow: var(--app-shadow-lg), 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--app-border);
+  animation: appToastIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.app-toast-icon { flex-shrink: 0; }
+.app-toast-text { flex: 1; min-width: 0; }
+.app-toast--success {
+  background: var(--app-success-bg);
+  color: var(--app-success-text);
+  border-color: rgba(5, 95, 70, 0.2);
+}
+.app-toast--error {
+  background: var(--app-error-bg);
+  color: var(--app-error-text);
+  border-color: rgba(153, 27, 27, 0.2);
+}
+.app-toast--warn {
+  background: var(--app-warn-bg);
+  color: var(--app-warn-text);
+  border-color: rgba(146, 64, 14, 0.2);
+}
+@keyframes appToastIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ========== Global table skeleton */
+.app-row-skeleton td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--app-border);
+  vertical-align: middle;
+}
+.app-skeleton {
+  display: block;
+  height: 1rem;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--app-bg-soft) 25%, var(--app-border) 50%, var(--app-bg-soft) 75%);
+  background-size: 200% 100%;
+  animation: appSkeleton 1.2s ease-in-out infinite;
+}
+.app-skeleton--short { max-width: 5rem; }
+.app-skeleton--medium { max-width: 6rem; }
+.app-skeleton--icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+@keyframes appSkeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========== Global breadcrumb (soft pill, icons + arrows) */
+.app-breadcrumb-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--app-space-sm);
+  padding: var(--app-space-md) var(--app-space-lg) 1.25rem;
+  background: transparent;
+}
+.app-breadcrumb-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, rgba(15, 118, 110, 0.04) 100%);
+  border-radius: var(--app-radius);
+  border: 1px solid rgba(13, 148, 136, 0.12);
+}
+.app-breadcrumb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--app-muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--app-radius-sm);
+  transition: background 0.2s ease, color 0.2s ease;
+  &:hover {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--app-accent-hover);
+    .app-breadcrumb-icon { color: var(--app-accent-hover); }
+  }
+}
+.app-breadcrumb-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-muted);
+  transition: color 0.2s ease;
+  svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+}
+.app-breadcrumb-current .app-breadcrumb-icon { color: var(--app-accent-hover); }
+.app-breadcrumb-sep {
+  display: inline-flex;
+  align-items: center;
+  color: var(--app-accent-hover);
+  opacity: 0.7;
+  padding: 0 0.15rem;
+  svg { width: 0.875rem; height: 0.875rem; }
+}
+.app-breadcrumb-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-accent-hover);
+  padding: 0.4rem 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--app-radius-sm);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  box-shadow: 0 1px 3px rgba(13, 148, 136, 0.08);
+}
+
+/* ========== Responsive */
+@media (max-width: 768px) {
+  .app-breadcrumb-wrap {
+    padding: var(--app-space-sm) var(--app-space-md) 1rem;
+    justify-content: flex-start;
+  }
+  .app-breadcrumb-nav { padding: 0.4rem 0.75rem; }
+  .app-breadcrumb-link,
+  .app-breadcrumb-current {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  .app-toast {
+    left: var(--app-space-md);
+    right: var(--app-space-md);
+    top: var(--app-space-md);
+    max-width: none;
+  }
+}

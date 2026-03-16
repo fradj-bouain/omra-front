@@ -1,0 +1,92 @@
+<app-page-header
+  [title]="pilgrim ? (pilgrim.firstName + ' ' + pilgrim.lastName) : 'Détail pèlerin'"
+  actionLabel="Retour aux pèlerins"
+  actionLink="/pilgrims"
+  actionIcon="arrow_back"
+></app-page-header>
+
+@if (loading) {
+  <section class="pilgrim-detail-page">
+    <mat-card class="detail-card">
+      <mat-card-content>
+        <div class="loading-state">
+          <div class="loading-state__spinner"></div>
+          <p>Chargement…</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+} @else if (pilgrim) {
+  <section class="pilgrim-detail-page">
+    <div class="detail-actions">
+      <a mat-flat-button color="primary" [routerLink]="['/pilgrims', 'edit', pilgrim.id]" class="btn-edit">
+        <mat-icon>edit</mat-icon>
+        Modifier
+      </a>
+      <button mat-stroked-button color="warn" (click)="deletePilgrim()" class="btn-delete">
+        <mat-icon>delete</mat-icon>
+        Supprimer
+      </button>
+    </div>
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Identité</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="detail-dl">
+          <dt>Prénom</dt>
+          <dd>{{ pilgrim.firstName || '—' }}</dd>
+          <dt>Nom</dt>
+          <dd>{{ pilgrim.lastName || '—' }}</dd>
+          <dt>Genre</dt>
+          <dd>{{ getGenderLabel(pilgrim.gender) }}</dd>
+          <dt>Date de naissance</dt>
+          <dd>{{ pilgrim.dateOfBirth || '—' }}</dd>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Document & nationalité</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="detail-dl">
+          <dt>N° Passeport</dt>
+          <dd>{{ pilgrim.passportNumber || '—' }}</dd>
+          <dt>Nationalité</dt>
+          <dd>{{ pilgrim.nationality || '—' }}</dd>
+          <dt>Statut visa</dt>
+          <dd>
+            <span
+              class="visa-badge"
+              [class.visa-badge--pending]="pilgrim.visaStatus === 'PENDING'"
+              [class.visa-badge--approved]="pilgrim.visaStatus === 'APPROVED'"
+              [class.visa-badge--rejected]="pilgrim.visaStatus === 'REJECTED'"
+              [class.visa-badge--muted]="!pilgrim.visaStatus"
+            >
+              {{ getVisaLabel(pilgrim.visaStatus) }}
+            </span>
+          </dd>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Contact</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="detail-dl">
+          <dt>Téléphone</dt>
+          <dd>{{ pilgrim.phone || '—' }}</dd>
+          <dt>Email</dt>
+          <dd>{{ pilgrim.email || '—' }}</dd>
+          <dt>Adresse</dt>
+          <dd>{{ pilgrim.address || '—' }}</dd>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+  </section>
+}

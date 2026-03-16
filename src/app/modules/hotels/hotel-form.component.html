@@ -1,0 +1,76 @@
+<app-page-header title="Nouvel hôtel"></app-page-header>
+
+<section class="hotel-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hotel-form">
+        <div class="form-hero">
+          <mat-icon class="form-hero-icon" aria-hidden="true">hotel</mat-icon>
+          <p class="form-hero-text">Enregistrez un nouvel hôtel (Makkah, Madinah…). Le nom est obligatoire. Vous pourrez ensuite l’assigner à un groupe.</p>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Identité</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom <span class="required">*</span></mat-label>
+              <input matInput formControlName="name" placeholder="Ex. Hôtel Al Safwa" />
+              <mat-error>Le nom est requis</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Ville</mat-label>
+              <input matInput formControlName="city" placeholder="Ex. Makkah, Madinah" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Pays</mat-label>
+              <input matInput formControlName="country" placeholder="Ex. Arabie Saoudite" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Étoiles (1-5)</mat-label>
+              <input matInput type="number" formControlName="stars" min="1" max="5" placeholder="Ex. 4" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Adresse</h2>
+          <div class="form-grid form-grid--1">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Adresse</mat-label>
+              <input matInput formControlName="address" placeholder="Adresse complète" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Contacts</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Contact important</mat-label>
+              <input matInput formControlName="contactImportant" placeholder="Nom du contact principal" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Téléphone (général)</mat-label>
+              <input matInput formControlName="contactPhone" placeholder="Ex. +966 12 123 4567" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Numéro réception</mat-label>
+              <input matInput formControlName="receptionPhone" placeholder="Ex. +966 12 765 4321" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="contact&#64;hotel.com" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/hotels" class="btn-cancel">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+            {{ loading ? 'Création en cours...' : "Créer l'hôtel" }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

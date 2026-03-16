@@ -1,0 +1,11 @@
+# Railway deploy: Node serves the built Angular app (no Docker, no Nginx)
+# Set "Root Directory" to omra-front in Railway dashboard if repo root is parent.
+
+[build]
+builder = "nixpacks"
+buildCommand = "npm install && npm run build"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10

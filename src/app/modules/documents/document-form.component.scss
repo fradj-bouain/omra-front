@@ -1,0 +1,152 @@
+/* Formulaire document — design system (--app-*) */
+.document-form-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.form-card {
+  border-radius: var(--app-radius-lg) !important;
+  box-shadow: var(--app-shadow) !important;
+  border: 1px solid var(--app-border);
+  overflow: hidden;
+}
+
+.form-card mat-card-content {
+  padding: var(--app-space-xl) !important;
+}
+
+.document-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-2xl);
+}
+
+.form-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--app-space-lg);
+  padding: var(--app-space-lg) var(--app-space-md);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, rgba(15, 118, 110, 0.04) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.12);
+  border-radius: var(--app-radius);
+  border-left: 4px solid var(--app-accent);
+}
+
+.form-hero-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+  border-radius: var(--app-radius-sm);
+  font-size: 28px !important;
+  width: 48px !important;
+  height: 48px !important;
+  flex-shrink: 0;
+}
+
+.form-hero-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--app-text-soft);
+  font-weight: 500;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-md);
+}
+
+.form-section-title {
+  margin: 0 0 0.25rem 0;
+  font-family: var(--app-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--app-text);
+  letter-spacing: -0.02em;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--app-border);
+}
+
+.form-grid {
+  display: grid;
+  gap: 0 var(--app-space-lg);
+  row-gap: 0.5rem;
+}
+
+.form-grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-grid--1 {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 600px) {
+  .form-grid--2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+}
+
+.required {
+  color: var(--app-accent);
+  font-weight: 600;
+}
+
+.upload-row {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-md);
+
+  input[type="file"] {
+    display: none;
+  }
+}
+
+.btn-upload {
+  font-weight: 600 !important;
+  color: var(--app-accent) !important;
+  border-color: var(--app-accent) !important;
+  &:hover:not(:disabled) {
+    background: var(--app-accent-soft) !important;
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-md);
+  padding-top: var(--app-space-lg);
+  margin-top: var(--app-space-md);
+  border-top: 1px solid var(--app-border);
+}
+
+.btn-cancel {
+  color: var(--app-text-soft) !important;
+  font-weight: 600 !important;
+  &:hover {
+    background: var(--app-bg-soft) !important;
+    color: var(--app-text) !important;
+  }
+}
+
+.btn-submit {
+  font-weight: 600 !important;
+  padding-left: var(--app-space-xl) !important;
+  padding-right: var(--app-space-xl) !important;
+  border-radius: var(--app-radius-sm) !important;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25) !important;
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35) !important;
+  }
+}

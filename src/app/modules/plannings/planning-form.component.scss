@@ -1,0 +1,50 @@
+.form-page mat-card-content {
+  max-width: 560px;
+}
+.full-width {
+  width: 100%;
+}
+.form-subtitle {
+  margin: 1rem 0 0.5rem;
+  font-size: 1rem;
+}
+.add-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  mat-form-field {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+.planning-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  border: 1px solid var(--app-border, #e0e0e0);
+  border-radius: 8px;
+  overflow: hidden;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--app-border, #eee);
+    &:last-child { border-bottom: none; }
+    .item-order { min-width: 1.5rem; font-weight: 600; color: var(--app-text-soft, #666); }
+    .item-name { flex: 1; }
+    .item-duration { font-size: 0.875rem; color: var(--app-text-soft, #666); }
+    .item-actions { margin-left: auto; }
+  }
+}
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+.muted {
+  color: var(--app-text-soft, #666);
+  font-size: 0.9375rem;
+  margin: 0 0 1rem;
+}

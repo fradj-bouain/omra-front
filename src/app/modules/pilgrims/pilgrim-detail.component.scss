@@ -1,0 +1,127 @@
+/* Détail pèlerin — design system (--app-*) */
+.pilgrim-detail-page {
+  max-width: 800px;
+}
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-md);
+  margin-bottom: var(--app-space-xl);
+}
+
+.btn-edit {
+  mat-icon {
+    margin-right: var(--app-space-sm);
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.btn-delete {
+  mat-icon {
+    margin-right: var(--app-space-sm);
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.detail-card {
+  border-radius: var(--app-radius) !important;
+  box-shadow: var(--app-shadow) !important;
+  border: 1px solid var(--app-border);
+  margin-bottom: var(--app-space-lg);
+
+  mat-card-header {
+    padding: var(--app-space-lg) var(--app-space-xl);
+    border-bottom: 1px solid var(--app-border);
+    background: var(--app-bg-soft);
+  }
+
+  mat-card-title {
+    font-family: var(--app-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--app-text);
+    margin: 0 !important;
+  }
+
+  mat-card-content {
+    padding: var(--app-space-xl) !important;
+  }
+}
+
+.detail-dl {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--app-space-sm) var(--app-space-lg);
+  margin: 0;
+  font-family: var(--app-font);
+  font-size: 0.9375rem;
+
+  dt {
+    margin: 0;
+    font-weight: 600;
+    color: var(--app-text-soft);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--app-text);
+  }
+}
+
+.visa-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--app-radius-pill);
+  white-space: nowrap;
+}
+
+.visa-badge--pending {
+  background: var(--app-warn-bg);
+  color: var(--app-warn-text);
+}
+
+.visa-badge--approved {
+  background: var(--app-success-bg);
+  color: var(--app-success-text);
+}
+
+.visa-badge--rejected {
+  background: var(--app-error-bg);
+  color: var(--app-error-text);
+}
+
+.visa-badge--muted {
+  background: var(--app-bg-soft);
+  color: var(--app-muted);
+  font-weight: 500;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--app-muted);
+}
+
+.loading-state__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--app-border);
+  border-top-color: var(--app-accent);
+  border-radius: 50%;
+  animation: pilgrimDetailSpinner 0.8s linear infinite;
+  margin-bottom: var(--app-space-md);
+}
+
+@keyframes pilgrimDetailSpinner {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,100 @@
+<app-page-header
+  title="Pèlerins"
+  subtitle="Gérez les pèlerins de vos groupes"
+  actionLabel="Ajouter pèlerin"
+  actionLink="/pilgrims/new"
+></app-page-header>
+
+<section class="pilgrim-list-page">
+  <mat-card class="list-card">
+    <div class="list-toolbar">
+      <div class="search-bar">
+        <span class="search-bar__icon-wrap" aria-hidden="true">
+          <mat-icon class="search-bar__icon">search</mat-icon>
+        </span>
+        <input
+          type="search"
+          class="search-bar__input"
+          [(ngModel)]="search"
+          (keyup.enter)="load()"
+          placeholder="Nom, passeport, nationalité…"
+          aria-label="Rechercher un pèlerin"
+        />
+        <button type="button" class="search-bar__btn" (click)="load()">Rechercher</button>
+      </div>
+      <span class="list-count">{{ totalElements }} pèlerin{{ totalElements !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" class="pilgrim-table full-width">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="cell-name">{{ row.firstName }} {{ row.lastName }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="passportNumber">
+          <th mat-header-cell *matHeaderCellDef>Passeport</th>
+          <td mat-cell *matCellDef="let row">{{ row.passportNumber || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nationality">
+          <th mat-header-cell *matHeaderCellDef>Nationalité</th>
+          <td mat-cell *matCellDef="let row">{{ row.nationality || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+          <td mat-cell *matCellDef="let row">{{ row.phone || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="visaStatus">
+          <th mat-header-cell *matHeaderCellDef>Visa</th>
+          <td mat-cell *matCellDef="let row">
+            <span
+              class="visa-badge"
+              [class.visa-badge--pending]="row.visaStatus === 'PENDING'"
+              [class.visa-badge--approved]="row.visaStatus === 'APPROVED'"
+              [class.visa-badge--rejected]="row.visaStatus === 'REJECTED'"
+              [class.visa-badge--muted]="!row.visaStatus"
+            >
+              {{ getVisaLabel(row.visaStatus) }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row" class="cell-actions">
+            <a mat-icon-button [routerLink]="['/pilgrims', row.id]" matTooltip="Détail"><mat-icon>visibility</mat-icon></a>
+            <a mat-icon-button [routerLink]="['/pilgrims', 'edit', row.id]" matTooltip="Modifier"><mat-icon>edit</mat-icon></a>
+            <button mat-icon-button matTooltip="Supprimer" (click)="delete(row.id)" class="btn-delete"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            @if (loading) {
+              <div class="empty-state">
+                <div class="empty-state__spinner"></div>
+                <p>Chargement des pèlerins…</p>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon class="empty-state__icon">group_off</mat-icon>
+                <p class="empty-state__title">Aucun pèlerin</p>
+                <p class="empty-state__desc">Ajoutez un pèlerin pour commencer.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="size"
+      [pageIndex]="page - 1"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+      class="list-paginator"
+    ></mat-paginator>
+  </mat-card>
+</section>

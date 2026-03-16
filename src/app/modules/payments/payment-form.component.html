@@ -1,0 +1,142 @@
+<app-page-header title="Nouveau paiement"></app-page-header>
+
+<section class="payment-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="payment-form">
+        <div class="form-hero">
+          <mat-icon class="form-hero-icon" aria-hidden="true">payments</mat-icon>
+          <p class="form-hero-text">Enregistrez un paiement pour un pèlerin ou un groupe. Indiquez le montant, la devise (MAD par défaut), la méthode et le statut. Le montant est obligatoire.</p>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Pèlerin & groupe <span class="required">*</span></h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Pèlerin <span class="required">*</span></mat-label>
+              <input
+                matInput
+                [formControl]="pilgrimDisplay"
+                [matAutocomplete]="pilgrimAuto"
+                #pilgrimTrigger="matAutocompleteTrigger"
+                (focus)="pilgrimTrigger.openPanel()"
+                (input)="pilgrimTrigger.openPanel()"
+                placeholder="Tapez pour rechercher"
+              />
+              <mat-error>Le pèlerin est obligatoire</mat-error>
+              <mat-autocomplete #pilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
+                @if (filteredPilgrims.length === 0) {
+                  <mat-option disabled>Tapez pour rechercher un pèlerin</mat-option>
+                }
+                @for (p of filteredPilgrims; track p.id) {
+                  <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Groupe <span class="required">*</span></mat-label>
+              <input
+                matInput
+                [formControl]="groupDisplay"
+                [matAutocomplete]="groupAuto"
+                #groupTrigger="matAutocompleteTrigger"
+                (focus)="groupTrigger.openPanel()"
+                (input)="groupTrigger.openPanel()"
+                placeholder="Tapez pour rechercher"
+              />
+              <mat-error>Le groupe est obligatoire</mat-error>
+              <mat-autocomplete #groupAuto="matAutocomplete" (optionSelected)="selectGroup($event.option.value)">
+                @if (filteredGroups.length === 0) {
+                  <mat-option disabled>Tapez pour rechercher un groupe</mat-option>
+                }
+                @for (g of filteredGroups; track g.id) {
+                  <mat-option [value]="g">{{ g.name }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Montant & méthode</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Montant <span class="required">*</span></mat-label>
+              <input matInput type="number" formControlName="amount" min="0" step="0.01" />
+              <mat-error>Le montant est requis</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Devise</mat-label>
+              <input matInput formControlName="currency" placeholder="MAD" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Méthode</mat-label>
+              <mat-select formControlName="paymentMethod">
+                <mat-option value="CASH">Espèces</mat-option>
+                <mat-option value="BANK_TRANSFER">Virement</mat-option>
+                <mat-option value="CARD">Carte</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Statut & référence</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Statut</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="PENDING">En attente (non complet)</mat-option>
+                <mat-option value="PAID">Payé (complet)</mat-option>
+                <mat-option value="PARTIAL">Partiel (échéances)</mat-option>
+                <mat-option value="REFUNDED">Remboursé</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Date de paiement</mat-label>
+              <input matInput type="date" formControlName="paymentDate" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width form-grid-full">
+              <mat-label>Référence</mat-label>
+              <input matInput formControlName="reference" placeholder="Ex. virement, chèque…" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        @if (isPartial) {
+          <div class="form-section form-section--partial">
+            <h2 class="form-section-title">Échéances (paiement partiel)</h2>
+            <p class="form-hint">Choisissez la première date d'échéance, la période entre les échéances et le nombre d'échéances. Les autres dates seront générées automatiquement.</p>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Date de 1<sup>ère</sup> échéance <span class="required">*</span></mat-label>
+                <input matInput type="date" formControlName="firstDueDate" />
+                <mat-error>Requis pour un paiement partiel</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Période entre échéances</mat-label>
+                <mat-select formControlName="duePeriodDays">
+                  <mat-option [value]="30">Mensuel (30 jours)</mat-option>
+                  <mat-option [value]="60">Bimestriel (60 jours)</mat-option>
+                  <mat-option [value]="90">Trimestriel (90 jours)</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nombre d'échéances <span class="required">*</span></mat-label>
+                <input matInput type="number" formControlName="numberOfInstallments" min="2" />
+                <mat-error>Au moins 2</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        }
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/payments" class="btn-cancel">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+            {{ loading ? 'Création...' : 'Créer le paiement' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

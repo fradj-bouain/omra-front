@@ -1,0 +1,23 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-color, #0f766e) 0%, var(--menu-color, #134e4a) 100%);
+  padding: 16px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  mat-card-header { margin-bottom: 24px; }
+  mat-card-title { font-size: 1.5rem; }
+}
+
+.full-width { width: 100%; display: block; margin-bottom: 8px; }
+
+.submit-btn {
+  margin-top: 16px;
+  height: 48px;
+  mat-spinner { margin: 0 auto; }
+}

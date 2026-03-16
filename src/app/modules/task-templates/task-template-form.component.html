@@ -1,0 +1,26 @@
+<app-page-header [title]="isEdit ? 'Modifier le type de tâche' : 'Nouveau type de tâche'"></app-page-header>
+
+<section class="form-page">
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom (ex: Tawaf, Sa'i) <span class="required">*</span></mat-label>
+          <input matInput formControlName="name" placeholder="Tawaf" />
+          <mat-error>Requis</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Durée (minutes) <span class="required">*</span></mat-label>
+          <input matInput type="number" formControlName="durationMinutes" min="0" placeholder="120" />
+          <mat-error>Requis (min. 0)</mat-error>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/task-templates">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            {{ loading ? 'Enregistrement…' : (isEdit ? 'Enregistrer' : 'Créer') }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

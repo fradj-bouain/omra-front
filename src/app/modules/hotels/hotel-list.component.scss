@@ -1,0 +1,124 @@
+/* Hôtels — design system (--app-*) */
+.hotel-list-page {
+  max-width: 1200px;
+}
+
+.list-card {
+  border-radius: var(--app-radius) !important;
+  box-shadow: var(--app-shadow) !important;
+  border: 1px solid var(--app-border);
+  overflow: hidden;
+}
+
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--app-space-md);
+  padding: var(--app-space-lg) var(--app-space-xl);
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-bg-soft);
+}
+
+.list-count {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--app-text-soft);
+  margin-left: auto;
+}
+
+.table-wrap {
+  min-height: 12rem;
+  overflow-x: auto;
+}
+
+.hotel-table {
+  font-family: var(--app-font);
+
+  th.mat-mdc-header-cell {
+    font-family: var(--app-display);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--app-text-soft);
+    background: var(--app-bg-soft);
+    padding: 0.9rem 1rem;
+    border-bottom: 2px solid var(--app-border);
+  }
+
+  td.mat-mdc-cell {
+    padding: 0.85rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--app-text);
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  tr.mat-mdc-row:hover td {
+    background: rgba(13, 148, 136, 0.03);
+  }
+}
+
+.cell-name {
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.no-data-row td {
+  padding: 0;
+  vertical-align: middle;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.empty-state__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--app-border);
+  border-top-color: var(--app-accent);
+  border-radius: 50%;
+  animation: hotelSpinner 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes hotelSpinner {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--app-muted);
+}
+
+.empty-state__icon {
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  color: var(--app-border);
+  margin-bottom: 0.75rem;
+}
+
+.empty-state__title {
+  font-family: var(--app-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--app-text) !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.empty-state__desc {
+  font-size: 0.875rem !important;
+  color: var(--app-text-soft) !important;
+}
+
+.full-width {
+  width: 100%;
+}

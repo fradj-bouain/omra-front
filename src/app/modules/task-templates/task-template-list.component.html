@@ -1,0 +1,43 @@
+<app-page-header
+  title="Types de tâches"
+  subtitle="Tâches prédéfinies (Tawaf, Sa'i, etc.) avec durée — utilisées dans les plannings"
+  actionLabel="Nouveau type"
+  actionLink="/task-templates/new"
+></app-page-header>
+
+<section class="list-page">
+  <mat-card>
+    <mat-card-content>
+      @if (loading) {
+        <p>Chargement…</p>
+      } @else {
+        <table mat-table [dataSource]="dataSource" class="full-width">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="durationMinutes">
+            <th mat-header-cell *matHeaderCellDef>Durée</th>
+            <td mat-cell *matCellDef="let row">{{ formatDuration(row.durationMinutes) }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <a mat-icon-button [routerLink]="['/task-templates', row.id, 'edit']" matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </a>
+              <button mat-icon-button (click)="delete(row.id, row.name)" matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">Aucun type de tâche. <a routerLink="/task-templates/new">En créer un</a>.</td>
+          </tr>
+        </table>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

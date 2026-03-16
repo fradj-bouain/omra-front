@@ -1,0 +1,108 @@
+<app-page-header title="Nouveau document"></app-page-header>
+
+<section class="document-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="document-form">
+        <div class="form-hero">
+          <mat-icon class="form-hero-icon" aria-hidden="true">upload_file</mat-icon>
+          <p class="form-hero-text">Associez un document à un pèlerin (passeport, visa, billet…). Saisissez l’URL du fichier ou uploadez-le ci-dessous. L’URL est obligatoire.</p>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Lien</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Pèlerin</mat-label>
+              <input
+                matInput
+                [formControl]="pilgrimDisplay"
+                [matAutocomplete]="docPilgrimAuto"
+                #docPilgrimTrigger="matAutocompleteTrigger"
+                (focus)="docPilgrimTrigger.openPanel()"
+                (input)="docPilgrimTrigger.openPanel()"
+                placeholder="Tapez pour rechercher (optionnel)"
+              />
+              <mat-autocomplete #docPilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
+                @if (filteredPilgrims.length === 0) {
+                  <mat-option disabled>Tapez pour rechercher un pèlerin</mat-option>
+                }
+                @for (p of filteredPilgrims; track p.id) {
+                  <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Groupe</mat-label>
+              <input
+                matInput
+                [formControl]="groupDisplay"
+                [matAutocomplete]="docGroupAuto"
+                #docGroupTrigger="matAutocompleteTrigger"
+                (focus)="docGroupTrigger.openPanel()"
+                (input)="docGroupTrigger.openPanel()"
+                placeholder="Tapez pour rechercher (optionnel)"
+              />
+              <mat-autocomplete #docGroupAuto="matAutocomplete" (optionSelected)="selectGroup($event.option.value)">
+                @if (filteredGroups.length === 0) {
+                  <mat-option disabled>Tapez pour rechercher un groupe</mat-option>
+                }
+                @for (g of filteredGroups; track g.id) {
+                  <mat-option [value]="g">{{ g.name }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Type & fichier</h2>
+          <div class="form-grid form-grid--1">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Type</mat-label>
+              <mat-select formControlName="type">
+                <mat-option value="PASSPORT">Passeport</mat-option>
+                <mat-option value="VISA">Visa</mat-option>
+                <mat-option value="FLIGHT_TICKET">Billet d'avion</mat-option>
+                <mat-option value="CONTRACT">Contrat</mat-option>
+                <mat-option value="PROGRAM">Programme</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>URL du fichier <span class="required">*</span></mat-label>
+              <input matInput formControlName="fileUrl" placeholder="Saisir l'URL ou uploader un fichier ci-dessous" />
+              <mat-error>L'URL du fichier est requise</mat-error>
+            </mat-form-field>
+            <div class="upload-row">
+              <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,.pdf,.doc,.docx" />
+              <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="uploading" class="btn-upload">
+                {{ uploading ? 'Upload en cours...' : 'Choisir un fichier' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Statut</h2>
+          <div class="form-grid form-grid--1">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Statut</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="UPLOADED">Uploadé</mat-option>
+                <mat-option value="VERIFIED">Vérifié</mat-option>
+                <mat-option value="REJECTED">Refusé</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/documents" class="btn-cancel">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+            {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

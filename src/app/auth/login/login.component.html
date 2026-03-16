@@ -1,0 +1,40 @@
+<div class="login-page">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Connexion</mat-card-title>
+      <mat-card-subtitle>Plateforme de gestion Omra</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="vous&#64;exemple.com" />
+          @if (form.get('email')?.hasError('required')) {
+            <mat-error>Email requis</mat-error>
+          }
+          @if (form.get('email')?.hasError('email')) {
+            <mat-error>Email invalide</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput type="password" formControlName="password" />
+          <mat-error>Mot de passe requis</mat-error>
+        </mat-form-field>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="full-width submit-btn"
+          [disabled]="form.invalid || loading"
+        >
+          @if (loading) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            Se connecter
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,45 @@
+<app-page-header
+  title="Plannings"
+  subtitle="Programmes types (liste ordonnée de tâches) pour les groupes Omra"
+  actionLabel="Nouveau planning"
+  actionLink="/plannings/new"
+></app-page-header>
+
+<section class="list-page">
+  <mat-card>
+    <mat-card-content>
+      @if (loading) {
+        <p>Chargement…</p>
+      } @else {
+        <table mat-table [dataSource]="dataSource" class="full-width">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="itemsPreview">
+            <th mat-header-cell *matHeaderCellDef>Programme</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="items-preview">{{ itemsPreview(row) }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <a mat-icon-button [routerLink]="['/plannings', row.id, 'edit']" matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </a>
+              <button mat-icon-button (click)="delete(row.id, row.name)" matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">Aucun planning. <a routerLink="/plannings/new">En créer un</a>.</td>
+          </tr>
+        </table>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

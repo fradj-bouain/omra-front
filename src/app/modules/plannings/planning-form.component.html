@@ -1,0 +1,67 @@
+<app-page-header [title]="isEdit ? 'Modifier le planning' : 'Nouveau planning'"></app-page-header>
+
+<section class="form-page">
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom du planning <span class="required">*</span></mat-label>
+          <input matInput formControlName="name" placeholder="Ex. Programme 7 jours" />
+          <mat-error>Requis</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="2"></textarea>
+        </mat-form-field>
+
+        <h3 class="form-subtitle">Tâches du programme (ordre)</h3>
+        <div class="add-item-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Ajouter une tâche</mat-label>
+            <mat-select formControlName="selectedTemplateId">
+              <mat-option [value]="null">— Choisir —</mat-option>
+              @for (tt of taskTemplates; track tt.id) {
+                <mat-option [value]="tt.id">{{ tt.name }} ({{ tt.durationMinutes ?? 0 }} min)</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="button" (click)="addItem()" [disabled]="!form.get('selectedTemplateId')?.value">
+            Ajouter
+          </button>
+        </div>
+        <ul class="planning-items-list">
+          @for (item of selectedItems; track $index; let i = $index) {
+            <li>
+              <span class="item-order">{{ i + 1 }}.</span>
+              <span class="item-name">{{ item.taskTemplateName }}</span>
+              @if (item.durationMinutes != null && item.durationMinutes > 0) {
+                <span class="item-duration">{{ item.durationMinutes }} min</span>
+              }
+              <span class="item-actions">
+                <button mat-icon-button type="button" (click)="moveUp(i)" [disabled]="i === 0">
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button mat-icon-button type="button" (click)="moveDown(i)" [disabled]="i === selectedItems.length - 1">
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+                <button mat-icon-button type="button" (click)="removeItem(i)">
+                  <mat-icon>remove_circle_outline</mat-icon>
+                </button>
+              </span>
+            </li>
+          }
+        </ul>
+        @if (selectedItems.length === 0) {
+          <p class="muted">Aucune tâche. Choisissez un type ci-dessus et cliquez sur Ajouter.</p>
+        }
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/plannings">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            {{ loading ? 'Enregistrement…' : (isEdit ? 'Enregistrer' : 'Créer') }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

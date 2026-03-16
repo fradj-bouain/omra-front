@@ -1,0 +1,96 @@
+<app-page-header [title]="isEdit ? 'Modifier le pèlerin' : 'Nouveau pèlerin'"></app-page-header>
+
+<section class="pilgrim-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="pilgrim-form">
+        <div class="form-hero">
+          <mat-icon class="form-hero-icon" aria-hidden="true">person_add</mat-icon>
+          <p class="form-hero-text">Renseignez les informations du pèlerin. Les champs marqués d’un astérisque sont obligatoires.</p>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Identité</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Prénom <span class="required">*</span></mat-label>
+              <input matInput formControlName="firstName" placeholder="Ex. Mohamed" />
+              <mat-error>Le prénom est requis</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom <span class="required">*</span></mat-label>
+              <input matInput formControlName="lastName" placeholder="Ex. Benali" />
+              <mat-error>Le nom est requis</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Genre</mat-label>
+              <mat-select formControlName="gender">
+                <mat-option value="M">Homme</mat-option>
+                <mat-option value="F">Femme</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Date de naissance</mat-label>
+              <input matInput type="date" formControlName="dateOfBirth" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Document & nationalité</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>N° Passeport</mat-label>
+              <input matInput formControlName="passportNumber" placeholder="Ex. AB123456" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nationalité</mat-label>
+              <input matInput formControlName="nationality" placeholder="Ex. Maroc" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Contact</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="phone" placeholder="Ex. +212 6 12 34 56 78" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="exemple@email.com" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width form-field--span-2">
+              <mat-label>Adresse</mat-label>
+              <input matInput formControlName="address" placeholder="Ville, code postal..." />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Voyage</h2>
+          <div class="form-grid form-grid--1">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Statut visa</mat-label>
+              <mat-select formControlName="visaStatus">
+                <mat-option value="PENDING">En attente</mat-option>
+                <mat-option value="APPROVED">Approuvé</mat-option>
+                <mat-option value="REJECTED">Refusé</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/pilgrims" class="btn-cancel">
+            Annuler
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+            {{ loading ? 'Enregistrement...' : (isEdit ? 'Enregistrer' : 'Créer le pèlerin') }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -1,0 +1,45 @@
+<app-page-header title="Nouveau bus"></app-page-header>
+
+<section class="bus-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bus-form">
+        <div class="form-hero">
+          <mat-icon class="form-hero-icon" aria-hidden="true">directions_bus</mat-icon>
+          <p class="form-hero-text">Enregistrez un véhicule avec son immatriculation et sa capacité en nombre de places. Les deux champs sont obligatoires ; la capacité doit être d’au moins 1 place.</p>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Véhicule</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Immatriculation <span class="required">*</span></mat-label>
+              <input matInput formControlName="plate" placeholder="ex: 12345-A-12" />
+              <mat-error>L'immatriculation est requise</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Capacité (places) <span class="required">*</span></mat-label>
+              <input matInput type="number" formControlName="capacity" min="1" />
+              <mat-error>Requis (min. 1 place)</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom du chauffeur</mat-label>
+              <input matInput formControlName="driverName" placeholder="ex: Mohamed Ali" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Contact chauffeur</mat-label>
+              <input matInput formControlName="driverContact" placeholder="ex: 06 12 34 56 78" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/buses" class="btn-cancel">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+            {{ loading ? 'Création...' : 'Créer le bus' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

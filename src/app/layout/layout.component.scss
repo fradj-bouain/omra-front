@@ -1,0 +1,238 @@
+/* Layout â€” vert uniquement dans la sidebar; topbar et contenu clairs */
+.layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Vert islamique + motif : sidebar uniquement */
+$sidebar-green: #0a3d2e;
+$pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cdefs%3E%3Cpattern id='g' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 30h60M30 0v60' stroke='%23fff' stroke-opacity='0.06' stroke-width='0.4' fill='none'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke='%23fff' stroke-opacity='0.045' stroke-width='0.35' fill='none'/%3E%3Cpath d='M0 15l30 30l30-30' stroke='%23fff' stroke-opacity='0.03' stroke-width='0.3' fill='none'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3C/svg%3E");
+
+/* Topbar â€” clair (teinte sage tres claire, harmonieuse avec la sidebar */
+$header-bg: #eef4f2;
+$header-border: rgba(10, 61, 46, 0.12);
+
+.header {
+  background: $header-bg !important;
+  color: var(--app-text);
+  box-shadow: 0 1px 3px rgba(10, 61, 46, 0.06);
+  border-bottom: 1px solid $header-border;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  margin-left: var(--app-space-sm);
+}
+
+.logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-family: var(--app-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--app-accent);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.menu-user-info {
+  padding: var(--app-space-md) var(--app-space-lg);
+  border-bottom: 1px solid var(--app-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-xs);
+  strong {
+    font-size: 0.95rem;
+    font-family: var(--app-display);
+    color: var(--app-text);
+  }
+  small {
+    color: var(--app-text-soft);
+    font-size: 0.8rem;
+    font-family: var(--app-font);
+  }
+}
+
+.sidenav-container {
+  flex: 1;
+  min-height: 0;
+  background: var(--app-bg);
+}
+
+/* Side-by-side: content area takes remaining width so itâ€™s visible next to the sidebar */
+:host ::ng-deep .sidenav-container.mat-drawer-container,
+:host ::ng-deep .sidenav-container {
+  display: flex !important;
+  flex-direction: row;
+}
+:host ::ng-deep .sidenav-container .mat-drawer-content,
+:host ::ng-deep .sidenav-container mat-sidenav-content {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  margin-left: 0 !important;
+  padding: 0 !important;
+  overflow: auto;
+  box-sizing: border-box;
+}
+:host ::ng-deep .mat-drawer-container-content {
+  margin: 0 !important;
+  margin-left: 0 !important;
+}
+/* Remove any gap: drawer has no right margin, content has no left margin */
+:host ::ng-deep .sidenav-container .mat-drawer {
+  margin-right: 0 !important;
+}
+:host ::ng-deep .sidenav-container [class*='drawer-content'],
+:host ::ng-deep .sidenav-container [class*='sidenav-content'] {
+  margin-left: 0 !important;
+}
+
+/* Sidebar â€” same Islamic green + pattern (continuation of topbar frame) */
+.sidenav {
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  position: relative;
+  background: linear-gradient(180deg, #0d4a3a 0%, $sidebar-green 18%, $sidebar-green 100%) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+  overflow-x: hidden !important;
+  overflow-y: auto;
+}
+:host ::ng-deep .sidenav.mat-drawer,
+:host ::ng-deep .sidenav {
+  overflow-x: hidden !important;
+
+  /* Subtle geometric pattern overlay â€” thin interlaced lines, mosque-inspired */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: $pattern-svg;
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Content above pattern — no horizontal scroll */
+  mat-nav-list {
+    position: relative;
+    z-index: 1;
+    overflow-x: hidden;
+    min-width: 0;
+  }
+  .mat-mdc-list-item,
+  a[mat-list-item] {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .mat-mdc-list-item .mdc-list-item__primary-text,
+  .mat-mdc-list-item [matListItemTitle] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mat-mdc-list-item {
+    font-family: var(--app-font);
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.95) !important;
+    margin: var(--app-space-xs) var(--app-space-md);
+    border-radius: var(--app-radius-sm);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  /* Icons and text â€” white / light for clarity */
+  .mat-mdc-list-item .mdc-list-item__primary-text,
+  .mat-mdc-list-item [matListItemTitle],
+  .mat-mdc-list-item .mat-icon,
+  .mat-mdc-list-item .mdc-list-item__start .mat-icon {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .mat-icon[matListItemIcon] {
+    color: rgba(255, 255, 255, 0.95) !important;
+    margin-right: var(--app-space-md);
+  }
+
+  a.active {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff !important;
+    font-weight: 600;
+    .mdc-list-item__primary-text,
+    [matListItemTitle],
+    .mat-icon {
+      color: #fff !important;
+    }
+  }
+
+  a:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+    .mdc-list-item__primary-text,
+    [matListItemTitle],
+    .mat-icon {
+      color: #fff !important;
+    }
+  }
+}
+
+/* No horizontal scroll in sidebar (Material drawer) */
+:host ::ng-deep .sidenav-container .mat-drawer.sidenav,
+:host ::ng-deep .sidenav-container .sidenav {
+  overflow-x: hidden !important;
+}
+
+/* Percer l'encapsulation Material pour le texte de la liste dans la sidebar */
+:host ::ng-deep .sidenav .mat-mdc-list-item .mdc-list-item__primary-text,
+:host ::ng-deep .sidenav .mat-mdc-list-item [matListItemTitle] {
+  color: #fff !important;
+}
+:host ::ng-deep .sidenav .mat-mdc-list-item .mat-icon,
+:host ::ng-deep .sidenav .mat-mdc-list-item .mdc-list-item__start .mat-icon {
+  color: #fff !important;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  padding: var(--app-space-xl);
+  overflow: auto;
+  background: var(--app-bg);
+}
+
+/* Ensure router-outlet host (page content) is visible */
+.main ::ng-deep router-outlet + * {
+  display: block;
+  min-height: 100%;
+}
+
+.footer {
+  padding: var(--app-space-md) var(--app-space-xl);
+  background: var(--app-card);
+  border-top: 1px solid var(--app-border);
+  font-size: 0.8rem;
+  font-family: var(--app-font);
+  color: var(--app-muted);
+}

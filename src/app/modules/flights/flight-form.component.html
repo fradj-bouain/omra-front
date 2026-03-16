@@ -1,0 +1,99 @@
+<app-page-header title="Nouveau vol"></app-page-header>
+
+<section class="flight-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flight-form">
+        <div class="form-hero">
+          <mat-icon class="form-hero-icon" aria-hidden="true">flight_takeoff</mat-icon>
+          <p class="form-hero-text">Enregistrez un nouveau vol (compagnie, numéro, villes, horaires). Vous pouvez lier le vol à un groupe via l’ID groupe.</p>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Vol</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Compagnie <span class="required">*</span></mat-label>
+              <input matInput formControlName="airline" placeholder="Ex. Royal Air Maroc" />
+              <mat-error>La compagnie est requise</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>N° vol <span class="required">*</span></mat-label>
+              <input matInput formControlName="flightNumber" placeholder="Ex. AT 850" />
+              <mat-error>Le numéro de vol est requis</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Villes</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Ville de départ</mat-label>
+              <input matInput formControlName="departureCity" placeholder="Ex. Casablanca" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Ville d'arrivée</mat-label>
+              <input matInput formControlName="arrivalCity" placeholder="Ex. Médine" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Horaires</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Date/heure départ</mat-label>
+              <input matInput type="datetime-local" formControlName="departureTime" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Date/heure arrivée</mat-label>
+              <input matInput type="datetime-local" formControlName="arrivalTime" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Infos complémentaires</h2>
+          <div class="form-grid form-grid--2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Terminal</mat-label>
+              <input matInput formControlName="terminal" placeholder="Ex. 1" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Porte</mat-label>
+              <input matInput formControlName="gate" placeholder="Ex. A12" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width form-field--span-2">
+              <mat-label>Groupe (optionnel)</mat-label>
+              <input
+                matInput
+                [formControl]="groupDisplay"
+                [matAutocomplete]="flightGroupAuto"
+                #flightGroupTrigger="matAutocompleteTrigger"
+                (focus)="flightGroupTrigger.openPanel()"
+                (input)="flightGroupTrigger.openPanel()"
+                placeholder="Tapez pour rechercher un groupe"
+              />
+              <mat-autocomplete #flightGroupAuto="matAutocomplete" (optionSelected)="selectGroup($event.option.value)">
+                @if (filteredGroups.length === 0) {
+                  <mat-option disabled>Tapez pour rechercher un groupe</mat-option>
+                }
+                @for (g of filteredGroups; track g.id) {
+                  <mat-option [value]="g">{{ g.name }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" routerLink="/flights" class="btn-cancel">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+            {{ loading ? 'Création en cours...' : 'Créer le vol' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

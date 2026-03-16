@@ -1,0 +1,63 @@
+<div class="layout">
+  <mat-toolbar class="header">
+    <button mat-icon-button (click)="toggleSidebar()" aria-label="Toggle menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <a routerLink="/dashboard" class="logo">
+      @if (auth.agency()?.logoUrl) {
+        <img [src]="auth.agency()!.logoUrl" alt="Logo" class="logo-img" />
+      } @else {
+        <span class="logo-text">Omra</span>
+      }
+    </a>
+    <span class="spacer"></span>
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <div class="menu-user-info">
+        <strong>{{ auth.user()?.name ?? auth.admin()?.username }}</strong>
+        <small>{{ auth.user()?.email ?? auth.admin()?.email }}</small>
+      </div>
+      <button mat-menu-item routerLink="/settings" (click)="closeIfMobile()">
+        <mat-icon>settings</mat-icon>
+        <span>Paramètres</span>
+      </button>
+      <button mat-menu-item (click)="auth.logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Déconnexion</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav
+      [(opened)]="opened"
+      [mode]="mode"
+      class="sidenav"
+    >
+      <mat-nav-list>
+        @for (item of (auth.isAdmin() ? adminMenuItems : menuItems); track item.path) {
+          <a
+            mat-list-item
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeIfMobile()"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content class="content">
+      <main class="main">
+        <router-outlet></router-outlet>
+      </main>
+      <footer class="footer">
+        <span>© {{ currentYear }} Omra Dashboard</span>
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

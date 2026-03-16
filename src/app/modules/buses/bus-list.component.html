@@ -1,0 +1,64 @@
+<app-page-header
+  title="Bus"
+  subtitle="Immatriculations et capacités des véhicules"
+  actionLabel="Nouveau bus"
+  actionLink="/buses/new"
+></app-page-header>
+
+<section class="bus-list-page">
+  <mat-card class="list-card">
+    <div class="list-toolbar">
+      <span class="list-count">{{ totalElements }} bus</span>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" class="bus-table full-width">
+        <ng-container matColumnDef="plate">
+          <th mat-header-cell *matHeaderCellDef>Immatriculation</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="cell-plate">{{ row.plate }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="capacity">
+          <th mat-header-cell *matHeaderCellDef>Capacité</th>
+          <td mat-cell *matCellDef="let row">{{ row.capacity }} place{{ row.capacity !== 1 ? 's' : '' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="driverName">
+          <th mat-header-cell *matHeaderCellDef>Nom chauffeur</th>
+          <td mat-cell *matCellDef="let row">{{ row.driverName || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="driverContact">
+          <th mat-header-cell *matHeaderCellDef>Contact chauffeur</th>
+          <td mat-cell *matCellDef="let row">{{ row.driverContact || '—' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            @if (loading) {
+              <div class="empty-state">
+                <div class="empty-state__spinner"></div>
+                <p>Chargement des bus…</p>
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon class="empty-state__icon">directions_bus</mat-icon>
+                <p class="empty-state__title">Aucun bus</p>
+                <p class="empty-state__desc">Ajoutez un bus pour commencer.</p>
+              </div>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="size"
+      [pageIndex]="page"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+      class="list-paginator"
+    ></mat-paginator>
+  </mat-card>
+</section>
