@@ -1,5 +1,8 @@
-# Nixpacks config for Railway (Node 20 to satisfy Angular CLI >=20.19 / 22.12+)
-# Node version: .nvmrc + engines.node = "20" (avoids Node 22.11 which Angular rejects)
+# Nixpacks config for Railway (Angular CLI requires Node v20.19+ or v22.12+)
+# Pin nixpkgs so we get Node 22.13.x (default archive had 22.11 / 20.18 which Angular rejects)
+
+[phases.setup]
+nixpkgsArchive = "51ad838b03a05b1de6f9f2a0fffecee64a9788ee"
 
 [phases.install]
 cmds = ["npm install"]
