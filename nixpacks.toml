@@ -1,9 +1,9 @@
-# Nixpacks config for Railway (Node 20, no npm ci)
+# Nixpacks config for Railway (Node 20+, no npm ci)
 # Node version from package.json "engines" (>=20.19.0)
 
 [phases.install]
-# Use npm install instead of npm ci so lock file doesn't need to be in sync
 cmds = ["npm install"]
 
 [phases.build]
-cmds = ["npm run build"]
+# More heap for Angular/Vite build (avoids OOM exit code 3 in CI)
+cmds = ["export NODE_OPTIONS='--max-old-space-size=4096' && npm run build"]
