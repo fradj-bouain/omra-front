@@ -2,7 +2,7 @@
   "name": "omra-front",
   "version": "0.0.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": "20"
   },
   "scripts": {
     "ng": "ng",
