@@ -21,6 +21,19 @@
   gap: var(--app-space-2xl);
 }
 
+.form-section--referral {
+  padding: var(--app-space-md);
+  background: rgba(13, 148, 136, 0.06);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  border-radius: var(--app-radius);
+}
+
+.referral-badge {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--app-text);
+}
+
 .form-hero {
   display: flex;
   align-items: flex-start;

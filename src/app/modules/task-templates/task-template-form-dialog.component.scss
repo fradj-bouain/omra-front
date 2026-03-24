@@ -1,0 +1,14 @@
+.dialog-body {
+  padding-top: 0.5rem;
+  min-width: min(100%, 400px);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.full {
+  width: 100%;
+}

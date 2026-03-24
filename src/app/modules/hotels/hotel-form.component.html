@@ -13,7 +13,7 @@
           <h2 class="form-section-title">Identité</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nom <span class="required">*</span></mat-label>
+              <mat-label>Nom</mat-label>
               <input matInput formControlName="name" placeholder="Ex. Hôtel Al Safwa" />
               <mat-error>Le nom est requis</mat-error>
             </mat-form-field>
@@ -33,12 +33,26 @@
         </div>
 
         <div class="form-section">
-          <h2 class="form-section-title">Adresse</h2>
-          <div class="form-grid form-grid--1">
+          <h2 class="form-section-title">Adresse sur la carte</h2>
+          <p class="form-hint">
+            Recherchez un lieu ou cliquez sur la carte. L’adresse et les coordonnées se remplissent automatiquement.
+          </p>
+          <app-hotel-map-picker (locationSelected)="onMapLocation($event)" />
+          <div class="form-grid form-grid--1 form-grid--after-map">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Adresse</mat-label>
-              <input matInput formControlName="address" placeholder="Adresse complète" />
+              <mat-label>Adresse (ligne)</mat-label>
+              <textarea matInput formControlName="address" rows="2" placeholder="Complétée depuis la carte"></textarea>
             </mat-form-field>
+            <div class="coords-row">
+              <mat-form-field appearance="outline" class="coord-field">
+                <mat-label>Latitude</mat-label>
+                <input matInput type="number" step="any" formControlName="latitude" placeholder="—" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="coord-field">
+                <mat-label>Longitude</mat-label>
+                <input matInput type="number" step="any" formControlName="longitude" placeholder="—" />
+              </mat-form-field>
+            </div>
           </div>
         </div>
 

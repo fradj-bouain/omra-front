@@ -13,12 +13,12 @@
           <h2 class="form-section-title">Identité</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Prénom <span class="required">*</span></mat-label>
+              <mat-label>Prénom</mat-label>
               <input matInput formControlName="firstName" placeholder="Ex. Mohamed" />
               <mat-error>Le prénom est requis</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nom <span class="required">*</span></mat-label>
+              <mat-label>Nom</mat-label>
               <input matInput formControlName="lastName" placeholder="Ex. Benali" />
               <mat-error>Le nom est requis</mat-error>
             </mat-form-field>
@@ -31,7 +31,9 @@
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Date de naissance</mat-label>
-              <input matInput type="date" formControlName="dateOfBirth" />
+              <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" placeholder="jj/mm/aaaa" />
+              <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
+              <mat-datepicker #dobPicker />
             </mat-form-field>
           </div>
         </div>

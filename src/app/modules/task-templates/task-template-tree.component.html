@@ -1,0 +1,53 @@
+<app-page-header
+  title="Types de tâches"
+  subtitle="Catalogue hiérarchique (ex. Tawaf → Préparation) — utilisé dans les plannings"
+></app-page-header>
+
+<section class="tasks-page">
+  <div class="toolbar">
+    <button mat-flat-button color="primary" type="button" (click)="openAddRoot()">
+      <mat-icon>add</mat-icon>
+      Ajouter un type
+    </button>
+    <p class="hint">
+      Glisser-déposer : ordre local uniquement (rechargement = ordre serveur). La hiérarchie
+      (parent / sous-type) est enregistrée à la création.
+    </p>
+  </div>
+
+  @if (ui.loading()) {
+    <div class="loading-wrap">
+      <mat-spinner diameter="40" />
+      <span>Chargement…</span>
+    </div>
+  } @else if (ui.error()) {
+    <mat-card class="error-card">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <span>{{ ui.error() }}</span>
+      <button mat-stroked-button type="button" (click)="ui.load()">Réessayer</button>
+    </mat-card>
+  } @else if (ui.tree().length === 0) {
+    <mat-card class="empty-card">
+      <mat-icon>account_tree</mat-icon>
+      <p>Aucun type de tâche pour le moment.</p>
+      <button mat-flat-button color="primary" type="button" (click)="openAddRoot()">
+        Créer le premier type
+      </button>
+    </mat-card>
+  } @else {
+    <mat-card class="tree-card">
+      <div
+        class="root-drop-list"
+        cdkDropList
+        [id]="rootListId"
+        [cdkDropListData]="ui.tree()"
+        [cdkDropListConnectedTo]="ui.connectedDropListIds()"
+        (cdkDropListDropped)="ui.handleDrop($event)"
+      >
+        @for (task of ui.tree(); track task.id) {
+          <app-task-template-item [task]="task" [depth]="0" />
+        }
+      </div>
+    </mat-card>
+  }
+</section>

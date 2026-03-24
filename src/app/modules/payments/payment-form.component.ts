@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +12,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { toIsoDateString } from '../../shared/utils/date-form';
 
 interface GroupOption {
   id: number;
@@ -37,6 +39,7 @@ interface PilgrimOption {
     MatSelectModule,
     MatIconModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
     PageHeaderComponent,
   ],
   templateUrl: './payment-form.component.html',
@@ -45,8 +48,8 @@ interface PilgrimOption {
 export class PaymentFormComponent implements OnInit {
   loading = false;
   form: FormGroup;
-  pilgrimDisplay = new FormControl('');
-  groupDisplay = new FormControl('');
+  pilgrimDisplay = new FormControl('', { validators: Validators.required });
+  groupDisplay = new FormControl('', { validators: Validators.required });
   groups: GroupOption[] = [];
   pilgrims: PilgrimOption[] = [];
 
@@ -55,7 +58,8 @@ export class PaymentFormComponent implements OnInit {
     private http: HttpClient,
     private api: ApiService,
     private notif: NotificationService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       pilgrimId: [null as number | null, Validators.required],
@@ -64,9 +68,9 @@ export class PaymentFormComponent implements OnInit {
       currency: ['MAD'],
       paymentMethod: ['CASH'],
       status: ['PENDING'],
-      paymentDate: [''],
+      paymentDate: [null as Date | null],
       reference: [''],
-      firstDueDate: [''],
+      firstDueDate: [null as Date | null],
       duePeriodDays: [30],
       numberOfInstallments: [2],
     });
@@ -78,7 +82,18 @@ export class PaymentFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get<{ content: GroupOption[] }>(`${this.api.groups.list}?page=1&size=500`).subscribe({
-      next: (res) => (this.groups = res.content || []),
+      next: (res) => {
+        this.groups = res.content || [];
+        const gid = this.route.snapshot.queryParamMap.get('groupId');
+        if (gid) {
+          const id = Number(gid);
+          const g = this.groups.find((x) => x.id === id);
+          if (g) {
+            this.form.patchValue({ groupId: id });
+            this.groupDisplay.setValue(g.name, { emitEvent: false });
+          }
+        }
+      },
       error: () => {},
     });
     this.http.get<{ content: PilgrimOption[] }>(`${this.api.pilgrims.list}?page=1&size=500`).subscribe({
@@ -141,11 +156,11 @@ export class PaymentFormComponent implements OnInit {
       currency: v.currency || 'MAD',
       paymentMethod: v.paymentMethod || 'CASH',
       status: v.status || 'PENDING',
-      paymentDate: v.paymentDate || undefined,
+      paymentDate: toIsoDateString(v.paymentDate as Date | null),
       reference: v.reference || undefined,
     };
     if (v.status === 'PARTIAL') {
-      body['firstDueDate'] = v['firstDueDate'] || undefined;
+      body['firstDueDate'] = toIsoDateString(v['firstDueDate'] as Date | null);
       body['duePeriodDays'] = v['duePeriodDays'] != null ? Number(v['duePeriodDays']) : undefined;
       body['numberOfInstallments'] = v['numberOfInstallments'] != null ? Number(v['numberOfInstallments']) : undefined;
     }

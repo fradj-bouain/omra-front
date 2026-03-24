@@ -1,0 +1,125 @@
+.group-header {
+  border-radius: 12px;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--app-card) 0%, var(--app-bg-soft) 100%);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-sm);
+  margin-bottom: 24px;
+}
+
+.group-header__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.group-header__name {
+  margin: 0;
+  font-family: var(--app-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+  line-height: 1.25;
+}
+
+.group-header__desc {
+  margin: 8px 0 0;
+  font-size: 0.9375rem;
+  color: var(--app-text-soft);
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.group-header__badge {
+  flex-shrink: 0;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 9999px;
+  border: 1px solid var(--app-border);
+  background: var(--app-bg-soft);
+  color: var(--app-text-soft);
+
+  &.is-active {
+    background: var(--app-accent-soft);
+    color: var(--app-accent-hover);
+    border-color: transparent;
+  }
+
+  &.is-draft {
+    background: var(--app-warn-bg);
+    color: var(--app-warn-text);
+    border-color: transparent;
+  }
+
+  &.is-done {
+    background: var(--app-success-bg);
+    color: var(--app-success-text);
+    border-color: transparent;
+  }
+}
+
+.group-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  font-size: 0.875rem;
+  color: var(--app-text-soft);
+}
+
+.group-header__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+    color: var(--app-accent);
+  }
+
+  &--pill {
+    margin-left: auto;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    background: var(--app-card);
+    border: 1px solid var(--app-border);
+    font-weight: 600;
+    color: var(--app-text);
+
+    mat-icon {
+      color: var(--chart-2);
+    }
+  }
+}
+
+.group-header__meta-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-muted);
+}
+
+.group-header__meta-value {
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.group-header__sep {
+  color: var(--app-muted);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .group-header__meta-item--pill {
+    margin-left: 0;
+  }
+}

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,10 +13,20 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { toIsoDateString } from '../../shared/utils/date-form';
+import { TaskTemplateNode } from '../task-templates/models/task-template-node.model';
+import { PlanningTaskRoot } from './models/group-planning.model';
+import { GroupHeaderComponent } from './components/group-header/group-header.component';
+import { GroupStatsComponent } from './components/group-stats/group-stats.component';
+import { GroupTabsComponent } from './components/group-tabs/group-tabs.component';
+import { PlanningTabComponent } from './components/planning-tab/planning-tab.component';
 
 interface Group {
   id: number;
@@ -32,13 +44,23 @@ interface Group {
 interface PlanningSummary {
   id: number;
   name: string;
-  items?: { taskTemplateName: string; durationMinutes?: number; sortOrder: number }[];
+  description?: string;
+  items?: {
+    id?: number;
+    taskTemplateId?: number;
+    taskTemplateName: string;
+    durationMinutes?: number;
+    sortOrder: number;
+  }[];
 }
 
 interface Pilgrim {
   id: number;
   firstName: string;
   lastName: string;
+  passportNumber?: string;
+  phone?: string;
+  visaStatus?: string;
 }
 
 interface Flight {
@@ -81,12 +103,35 @@ interface CompanionOption {
   email?: string;
 }
 
+interface Payment {
+  id: number;
+  groupId?: number;
+  amount: number;
+  currency: string;
+  status: string;
+}
+
+interface GroupDocument {
+  id: number;
+  groupId?: number;
+  pilgrimId?: number;
+  type?: string;
+  status?: string;
+}
+
+interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+}
+
 @Component({
   selector: 'app-group-detail',
   standalone: true,
   imports: [
     RouterLink,
+    DatePipe,
     DecimalPipe,
+    NgClass,
     FormsModule,
     MatCardModule,
     MatIconModule,
@@ -97,7 +142,14 @@ interface CompanionOption {
     MatOptionModule,
     MatAutocompleteModule,
     MatTooltipModule,
+    MatDatepickerModule,
+    MatTableModule,
+    MatPaginatorModule,
     PageHeaderComponent,
+    GroupHeaderComponent,
+    GroupStatsComponent,
+    GroupTabsComponent,
+    PlanningTabComponent,
   ],
   templateUrl: './group-detail.component.html',
   styleUrl: './group-detail.component.scss',
@@ -106,13 +158,22 @@ export class GroupDetailComponent implements OnInit {
   groupId: number | null = null;
   group: Group | null = null;
   planning: PlanningSummary | null = null;
+  planningRoots: PlanningTaskRoot[] = [];
+  planningTreesLoading = false;
+  selectedPlanningTask: TaskTemplateNode | null = null;
+
   pilgrims: Pilgrim[] = [];
   flights: Flight[] = [];
   groupBuses: Bus[] = [];
   groupHotels: GroupHotel[] = [];
   tripCosts: TripCostItem[] = [];
+  groupPayments: Payment[] = [];
+  groupDocuments: GroupDocument[] = [];
+
   loading = true;
   error: string | null = null;
+
+  selectedTabIndex = 0;
 
   // Add pilgrim
   allPilgrims: Pilgrim[] = [];
@@ -122,10 +183,22 @@ export class GroupDetailComponent implements OnInit {
   pilgrimSearchInput = '';
   addingPilgrim = false;
 
+  // Pilgrims table
+  pilgrimSearch = '';
+  pilgrimPageIndex = 0;
+  pilgrimPageSize = 10;
+  pilgrimColumns: string[] = ['name', 'passport', 'phone', 'visa'];
+
   // Assign hotel
   allHotels: Hotel[] = [];
   showAssignHotel = false;
-  assignHotelForm = { hotelId: null as number | null, checkIn: '', checkOut: '', city: 'MAKKAH' as string, roomType: '' };
+  assignHotelForm = {
+    hotelId: null as number | null,
+    checkIn: null as Date | null,
+    checkOut: null as Date | null,
+    city: 'MAKKAH' as string,
+    roomType: '',
+  };
   assigningHotel = false;
 
   // Add trip cost
@@ -146,7 +219,6 @@ export class GroupDetailComponent implements OnInit {
   selectedBusId: number | null = null;
   linkingBus = false;
 
-  // Companions (PILGRIM_COMPANION users)
   companionOptions: CompanionOption[] = [];
   selectedCompanionIds: number[] = [];
   savingCompanions = false;
@@ -166,6 +238,20 @@ export class GroupDetailComponent implements OnInit {
       return;
     }
     this.groupId = +id;
+
+    this.route.queryParamMap.subscribe((q) => {
+      const tab = q.get('tab');
+      if (tab === 'pilgrims') this.selectedTabIndex = 1;
+      else if (tab === 'flights') this.selectedTabIndex = 2;
+      else if (tab === 'hotels') this.selectedTabIndex = 3;
+      else if (tab === 'payments') this.selectedTabIndex = 4;
+      else if (tab === 'documents') this.selectedTabIndex = 5;
+      if (q.get('addPilgrim') === '1') {
+        this.selectedTabIndex = 1;
+        this.showAddPilgrim = true;
+      }
+    });
+
     this.loadAll();
   }
 
@@ -178,10 +264,18 @@ export class GroupDetailComponent implements OnInit {
         this.group = g;
         this.selectedCompanionIds = Array.isArray(g.companionIds) ? [...g.companionIds] : [];
         this.planning = null;
+        this.planningRoots = [];
+        this.selectedPlanningTask = null;
         if (g.planningId) {
           this.http.get<PlanningSummary>(this.api.plannings.byId(g.planningId)).subscribe({
-            next: (p) => (this.planning = p),
-            error: () => {},
+            next: (p) => {
+              this.planning = p;
+              this.loadPlanningTrees();
+            },
+            error: () => {
+              this.planning = null;
+              this.planningRoots = [];
+            },
           });
         }
         this.loadRelated();
@@ -193,24 +287,141 @@ export class GroupDetailComponent implements OnInit {
     });
   }
 
+  private normalizeTaskTree(n: TaskTemplateNode): TaskTemplateNode {
+    return {
+      ...n,
+      children: (n.children || []).map((c) => this.normalizeTaskTree(c)),
+    };
+  }
+
+  loadPlanningTrees(): void {
+    const items = this.planning?.items;
+    if (!items?.length) {
+      this.planningRoots = [];
+      return;
+    }
+    const sorted = [...items].sort((a, b) => a.sortOrder - b.sortOrder);
+    const valid = sorted.filter((it) => it.taskTemplateId != null);
+    if (!valid.length) {
+      this.planningRoots = [];
+      return;
+    }
+    this.planningTreesLoading = true;
+    const reqs = valid.map((it) =>
+      this.http
+        .get<TaskTemplateNode>(this.api.taskTemplates.byIdTree(it.taskTemplateId!))
+        .pipe(
+          catchError(() =>
+            of({
+              id: it.taskTemplateId!,
+              name: it.taskTemplateName || '?',
+              children: [],
+            } as TaskTemplateNode)
+          )
+        )
+    );
+    forkJoin(reqs).subscribe({
+      next: (trees) => {
+        this.planningRoots = valid.map((it, i) => ({
+          sortOrder: it.sortOrder,
+          planItemId: it.id,
+          task: this.normalizeTaskTree(trees[i]),
+        }));
+        this.planningTreesLoading = false;
+        this.selectedPlanningTask = this.planningRoots[0]?.task ?? null;
+      },
+      error: () => {
+        this.planningTreesLoading = false;
+        this.planningRoots = [];
+      },
+    });
+  }
+
+  onPlanningTaskSelect(t: TaskTemplateNode): void {
+    this.selectedPlanningTask = t;
+  }
+
   private loadRelated(): void {
     if (this.groupId == null) return;
     const id = this.groupId;
-    let done = 0;
-    const check = () => {
-      done++;
-      if (done === 6) this.loading = false;
-    };
-    this.http.get<Pilgrim[]>(this.api.groups.pilgrims(id)).subscribe({ next: (p) => (this.pilgrims = p || []), error: () => {}, complete: check });
-    this.http.get<{ content: CompanionOption[] }>(`${this.api.users.list}?page=1&size=500&role=PILGRIM_COMPANION`).subscribe({
-      next: (r) => (this.companionOptions = r.content ?? []),
-      error: () => (this.companionOptions = []),
-      complete: check,
+    forkJoin({
+      pilgrims: this.http.get<Pilgrim[]>(this.api.groups.pilgrims(id)).pipe(catchError(() => of([]))),
+      companions: this.http
+        .get<{ content: CompanionOption[] }>(`${this.api.users.list}?page=1&size=500&role=PILGRIM_COMPANION`)
+        .pipe(catchError(() => of({ content: [] }))),
+      flights: this.http.get<Flight[]>(this.api.groups.flights(id)).pipe(catchError(() => of([]))),
+      buses: this.http.get<Bus[]>(this.api.groups.buses(id)).pipe(catchError(() => of([]))),
+      hotels: this.http.get<GroupHotel[]>(this.api.hotels.byGroup(id)).pipe(catchError(() => of([]))),
+      tripCosts: this.http.get<TripCostItem[]>(this.api.tripCosts.list(id)).pipe(catchError(() => of([]))),
+      payments: this.http
+        .get<PageResponse<Payment>>(`${this.api.payments.list}?page=1&size=500`)
+        .pipe(catchError(() => of({ content: [], totalElements: 0 }))),
+      documents: this.http
+        .get<PageResponse<GroupDocument>>(`${this.api.documents.list}?page=1&size=500`)
+        .pipe(catchError(() => of({ content: [], totalElements: 0 }))),
+    }).subscribe({
+      next: (r) => {
+        this.pilgrims = r.pilgrims || [];
+        this.companionOptions = r.companions.content ?? [];
+        this.flights = r.flights || [];
+        this.groupBuses = r.buses || [];
+        this.groupHotels = r.hotels || [];
+        this.tripCosts = r.tripCosts || [];
+        this.groupPayments = (r.payments.content || []).filter((p) => p.groupId === id);
+        this.groupDocuments = (r.documents.content || []).filter(
+          (d) => d.groupId != null && d.groupId === id
+        );
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.notif.error('Erreur lors du chargement des données du groupe');
+      },
     });
-    this.http.get<Flight[]>(this.api.groups.flights(id)).subscribe({ next: (f) => (this.flights = f || []), error: () => {}, complete: check });
-    this.http.get<Bus[]>(this.api.groups.buses(id)).subscribe({ next: (b) => (this.groupBuses = b || []), error: () => {}, complete: check });
-    this.http.get<GroupHotel[]>(this.api.hotels.byGroup(id)).subscribe({ next: (h) => (this.groupHotels = h || []), error: () => {}, complete: check });
-    this.http.get<TripCostItem[]>(this.api.tripCosts.list(id)).subscribe({ next: (t) => (this.tripCosts = t || []), error: () => {}, complete: check });
+  }
+
+  get paymentsReceivedTotal(): number {
+    return this.groupPayments
+      .filter((p) => p.status === 'PAID')
+      .reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  }
+
+  get paymentsCurrency(): string {
+    return this.groupPayments.find((p) => p.currency)?.currency || 'MAD';
+  }
+
+  get pendingVisasCount(): number {
+    return this.pilgrims.filter((p) => (p.visaStatus || '') !== 'APPROVED').length;
+  }
+
+  get filteredPilgrimsTable(): Pilgrim[] {
+    const q = this.pilgrimSearch.trim().toLowerCase();
+    if (!q) return this.pilgrims;
+    return this.pilgrims.filter((p) => {
+      const name = `${p.firstName} ${p.lastName}`.toLowerCase();
+      const pass = (p.passportNumber || '').toLowerCase();
+      const phone = (p.phone || '').toLowerCase();
+      return name.includes(q) || pass.includes(q) || phone.includes(q);
+    });
+  }
+
+  get pilgrimTableRows(): Pilgrim[] {
+    const rows = this.filteredPilgrimsTable;
+    const start = this.pilgrimPageIndex * this.pilgrimPageSize;
+    return rows.slice(start, start + this.pilgrimPageSize);
+  }
+
+  get pilgrimTableTotal(): number {
+    return this.filteredPilgrimsTable.length;
+  }
+
+  onPilgrimSearchChange(): void {
+    this.pilgrimPageIndex = 0;
+  }
+
+  onPilgrimPage(e: PageEvent): void {
+    this.pilgrimPageIndex = e.pageIndex;
+    this.pilgrimPageSize = e.pageSize;
   }
 
   toggleAddPilgrim(): void {
@@ -249,20 +460,22 @@ export class GroupDetailComponent implements OnInit {
   addPilgrim(): void {
     if (this.groupId == null || this.selectedPilgrimId == null) return;
     this.addingPilgrim = true;
-    this.http.post(this.api.groups.addPilgrim(this.groupId), { pilgrimId: this.selectedPilgrimId }, { responseType: 'text' }).subscribe({
-      next: () => {
-        this.notif.success('Pèlerin ajouté au groupe');
-        this.showAddPilgrim = false;
-        this.selectedPilgrimId = null;
-        this.pilgrimSearchInput = '';
-        this.addingPilgrim = false;
-        this.loadRelated();
-      },
-      error: (err) => {
-        this.addingPilgrim = false;
-        this.notif.error(err.error?.message || 'Erreur');
-      },
-    });
+    this.http
+      .post(this.api.groups.addPilgrim(this.groupId), { pilgrimId: this.selectedPilgrimId }, { responseType: 'text' })
+      .subscribe({
+        next: () => {
+          this.notif.success('Pèlerin ajouté au groupe');
+          this.showAddPilgrim = false;
+          this.selectedPilgrimId = null;
+          this.pilgrimSearchInput = '';
+          this.addingPilgrim = false;
+          this.loadRelated();
+        },
+        error: (err) => {
+          this.addingPilgrim = false;
+          this.notif.error(err.error?.message || 'Erreur');
+        },
+      });
   }
 
   removePilgrim(pilgrimId: number): void {
@@ -296,8 +509,8 @@ export class GroupDetailComponent implements OnInit {
     const body = {
       groupId: this.groupId,
       hotelId: this.assignHotelForm.hotelId,
-      checkIn: this.assignHotelForm.checkIn || undefined,
-      checkOut: this.assignHotelForm.checkOut || undefined,
+      checkIn: toIsoDateString(this.assignHotelForm.checkIn),
+      checkOut: toIsoDateString(this.assignHotelForm.checkOut),
       city: this.assignHotelForm.city || undefined,
       roomType: this.assignHotelForm.roomType || undefined,
     };
@@ -305,7 +518,13 @@ export class GroupDetailComponent implements OnInit {
       next: () => {
         this.notif.success('Hôtel assigné');
         this.showAssignHotel = false;
-        this.assignHotelForm = { hotelId: null, checkIn: '', checkOut: '', city: 'MAKKAH', roomType: '' };
+        this.assignHotelForm = {
+          hotelId: null,
+          checkIn: null,
+          checkOut: null,
+          city: 'MAKKAH',
+          roomType: '',
+        };
         this.assigningHotel = false;
         this.loadRelated();
       },
@@ -390,19 +609,21 @@ export class GroupDetailComponent implements OnInit {
   linkBus(): void {
     if (this.groupId == null || this.selectedBusId == null) return;
     this.linkingBus = true;
-    this.http.post(this.api.buses.assignGroup, { groupId: this.groupId, busId: this.selectedBusId }, { responseType: 'text' }).subscribe({
-      next: () => {
-        this.notif.success('Bus lié au groupe');
-        this.showLinkBus = false;
-        this.selectedBusId = null;
-        this.linkingBus = false;
-        this.loadRelated();
-      },
-      error: (err) => {
-        this.linkingBus = false;
-        this.notif.error(err.error?.message || 'Erreur');
-      },
-    });
+    this.http
+      .post(this.api.buses.assignGroup, { groupId: this.groupId, busId: this.selectedBusId }, { responseType: 'text' })
+      .subscribe({
+        next: () => {
+          this.notif.success('Bus lié au groupe');
+          this.showLinkBus = false;
+          this.selectedBusId = null;
+          this.linkingBus = false;
+          this.loadRelated();
+        },
+        error: (err) => {
+          this.linkingBus = false;
+          this.notif.error(err.error?.message || 'Erreur');
+        },
+      });
   }
 
   saveCompanions(): void {
@@ -433,39 +654,6 @@ export class GroupDetailComponent implements OnInit {
     });
   }
 
-  /** Chart palette — same as design system --chart-1 … --chart-6 */
-  private readonly chartColors = ['#0d9488', '#0891b2', '#7c3aed', '#db2777', '#ea580c', '#65a30d'];
-  getChartColor(index: number): string {
-    return this.chartColors[index % this.chartColors.length];
-  }
-
-  /** Cost breakdown by type for bar chart */
-  get costChartData(): { type: string; amount: number; currency: string }[] {
-    const byType = new Map<string, { amount: number; currency: string }>();
-    for (const c of this.tripCosts) {
-      const key = c.type;
-      const cur = byType.get(key);
-      if (cur) {
-        cur.amount += c.amount;
-      } else {
-        byType.set(key, { amount: c.amount, currency: c.currency || 'MAD' });
-      }
-    }
-    return Array.from(byType.entries()).map(([type, v]) => ({ type, amount: v.amount, currency: v.currency }));
-  }
-
-  getCostBarPct(amount: number): number {
-    if (!this.costChartData.length) return 0;
-    const max = Math.max(...this.costChartData.map((x) => x.amount), 1);
-    return Math.min(100, (amount / max) * 100);
-  }
-
-  /** Capacity fill percentage */
-  get capacityPct(): number {
-    if (!this.group?.maxCapacity || this.group.maxCapacity <= 0) return 0;
-    return Math.min(100, (this.pilgrims.length / this.group.maxCapacity) * 100);
-  }
-
   getCostTypeLabel(type: string): string {
     const labels: Record<string, string> = {
       FLIGHT: 'Vol',
@@ -476,5 +664,38 @@ export class GroupDetailComponent implements OnInit {
       OTHER: 'Autre',
     };
     return labels[type] ?? type;
+  }
+
+  visaLabel(status?: string): string {
+    if (!status) return '—';
+    const labels: Record<string, string> = {
+      PENDING: 'En attente',
+      SUBMITTED: 'Soumis',
+      APPROVED: 'Approuvé',
+      REJECTED: 'Refusé',
+    };
+    return labels[status] ?? status;
+  }
+
+  visaClass(status?: string): string {
+    const s = status || '';
+    if (s === 'APPROVED') return 'visa-pill--ok';
+    if (s === 'REJECTED') return 'visa-pill--bad';
+    if (s === 'SUBMITTED') return 'visa-pill--warn';
+    return 'visa-pill--muted';
+  }
+
+  paymentStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      PENDING: 'En attente',
+      PAID: 'Payé',
+      PARTIAL: 'Partiel',
+      REFUNDED: 'Remboursé',
+    };
+    return labels[status] ?? status;
+  }
+
+  documentTypeLabel(t?: string): string {
+    return t || '—';
   }
 }

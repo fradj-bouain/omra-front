@@ -42,7 +42,7 @@
           <dt>Genre</dt>
           <dd>{{ getGenderLabel(pilgrim.gender) }}</dd>
           <dt>Date de naissance</dt>
-          <dd>{{ pilgrim.dateOfBirth || '—' }}</dd>
+          <dd>{{ pilgrim.dateOfBirth ? (pilgrim.dateOfBirth | date:'dd/MM/yyyy') : '—' }}</dd>
         </dl>
       </mat-card-content>
     </mat-card>

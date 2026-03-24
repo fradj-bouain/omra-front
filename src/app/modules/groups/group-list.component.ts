@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -29,7 +30,7 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-group-list',
   standalone: true,
-  imports: [RouterLink, MatCardModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, PageHeaderComponent],
+  imports: [DatePipe, RouterLink, MatCardModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, PageHeaderComponent],
   templateUrl: './group-list.component.html',
   styleUrl: './group-list.component.scss',
 })

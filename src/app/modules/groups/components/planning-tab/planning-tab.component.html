@@ -1,0 +1,36 @@
+<div class="planning-tab">
+  @if (planningName) {
+    <div class="planning-tab__banner">
+      <mat-icon>calendar_month</mat-icon>
+      <span>Planning : <strong>{{ planningName }}</strong></span>
+    </div>
+  }
+
+  <div class="planning-tab__split">
+    <div class="planning-tab__left">
+      <h3 class="planning-tab__heading">Arborescence des tâches</h3>
+      @if (loading) {
+        <div class="planning-tab__loading">
+          <mat-progress-spinner diameter="36" mode="indeterminate" />
+          <span>Chargement du programme…</span>
+        </div>
+      } @else if (!roots.length) {
+        <div class="planning-tab__empty">
+          <mat-icon>event_busy</mat-icon>
+          <p>Aucun planning lié ou aucune tâche dans ce planning.</p>
+        </div>
+      } @else {
+        <app-task-tree
+          [roots]="roots"
+          [selectedId]="selected?.id ?? null"
+          (taskSelect)="onPick($event)"
+        />
+      }
+    </div>
+
+    <div class="planning-tab__right">
+      <h3 class="planning-tab__heading">Détail</h3>
+      <app-task-details [task]="selected" />
+    </div>
+  </div>
+</div>

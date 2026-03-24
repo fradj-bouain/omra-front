@@ -1,0 +1,45 @@
+<div class="task-tree">
+  @for (root of roots; track trackRoot($index, root); let ri = $index) {
+    <section class="task-tree__block">
+      <div class="task-tree__step">Étape {{ ri + 1 }}</div>
+      <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: root.task, depth: 0 }"></ng-container>
+    </section>
+  }
+</div>
+
+<ng-template #nodeTpl let-node let-depth="depth">
+  <div
+    class="task-tree__row"
+    [class.task-tree__row--selected]="selectedId === node.id"
+    [style.--depth]="depth"
+    (click)="pick(node)"
+    (keydown.enter)="pick(node)"
+    tabindex="0"
+    role="treeitem"
+    [attr.aria-expanded]="node.children?.length ? isExpanded(node.id) : null"
+  >
+    @if (node.children?.length) {
+      <button
+        type="button"
+        class="task-tree__expand"
+        (click)="toggle(node, $event)"
+        [attr.aria-label]="isExpanded(node.id) ? 'Replier' : 'Déplier'"
+      >
+        <mat-icon>{{ isExpanded(node.id) ? 'expand_more' : 'chevron_right' }}</mat-icon>
+      </button>
+    } @else {
+      <span class="task-tree__expand task-tree__expand--spacer" aria-hidden="true"></span>
+    }
+    <span class="task-tree__name">{{ node.name }}</span>
+    @if (node.durationMinutes != null && node.durationMinutes > 0) {
+      <span class="task-tree__dur">{{ node.durationMinutes }} min</span>
+    }
+  </div>
+  @if (node.children?.length && isExpanded(node.id)) {
+    <div class="task-tree__children">
+      @for (ch of node.children; track trackNode($index, ch)) {
+        <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: ch, depth: depth + 1 }"></ng-container>
+      }
+    </div>
+  }
+</ng-template>

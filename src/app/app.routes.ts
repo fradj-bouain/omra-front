@@ -6,6 +6,11 @@ export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'login', loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
   {
+    path: 'register',
+    loadComponent: () => import('./auth/register-redirect/register-redirect.component').then(m => m.RegisterRedirectComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/layout.component').then(m => m.LayoutComponent),
     canActivate: [authGuard],
@@ -23,6 +28,7 @@ export const routes: Routes = [
       { path: 'buses', loadChildren: () => import('./modules/buses/buses.routes').then(m => m.BUSES_ROUTES) },
       { path: 'notifications', loadChildren: () => import('./modules/notifications/notifications.routes').then(m => m.NOTIFICATIONS_ROUTES) },
       { path: 'users', loadChildren: () => import('./modules/users/users.routes').then(m => m.USERS_ROUTES) },
+      { path: 'referral', loadChildren: () => import('./modules/referral/referral.routes').then(m => m.REFERRAL_ROUTES) },
       { path: 'settings', loadChildren: () => import('./modules/settings/settings.routes').then(m => m.SETTINGS_ROUTES) },
     ],
   },

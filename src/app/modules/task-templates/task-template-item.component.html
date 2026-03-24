@@ -1,0 +1,75 @@
+<div class="task-item" [style.--depth]="depth">
+  <div class="task-row" cdkDrag [cdkDragData]="task">
+    <button
+      mat-icon-button
+      type="button"
+      class="drag-handle"
+      cdkDragHandle
+      matTooltip="Glisser pour déplacer"
+      aria-label="Glisser pour déplacer"
+    >
+      <mat-icon>drag_indicator</mat-icon>
+    </button>
+
+    @if (hasChildren()) {
+      <button
+        mat-icon-button
+        type="button"
+        class="expand-btn"
+        (click)="toggleExpand(); $event.stopPropagation()"
+        [attr.aria-expanded]="expanded()"
+        matTooltip="{{ expanded() ? 'Replier' : 'Déplier' }}"
+      >
+        <mat-icon>{{ expanded() ? 'expand_more' : 'chevron_right' }}</mat-icon>
+      </button>
+    } @else {
+      <span class="expand-placeholder" aria-hidden="true"></span>
+    }
+
+    <div class="task-main">
+      <span class="task-name">{{ task.name }}</span>
+      <span class="task-meta">
+        <span class="duration-pill">{{ ui.formatDuration(task.durationMinutes ?? 0) }}</span>
+        <span class="total-pill" matTooltip="Durée totale (ce type + sous-types)">
+          Σ {{ ui.formatDuration(totalSubtree()) }}
+        </span>
+      </span>
+    </div>
+
+    <div class="task-actions">
+      <button
+        mat-icon-button
+        type="button"
+        color="primary"
+        matTooltip="Ajouter un sous-type"
+        (click)="openAddSubtask(); $event.stopPropagation()"
+      >
+        <mat-icon>add_task</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        type="button"
+        matTooltip="Supprimer"
+        class="btn-danger-soft"
+        (click)="deleteSelf(); $event.stopPropagation()"
+      >
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (expanded()) {
+    <div
+      class="task-children"
+      cdkDropList
+      [id]="childrenListId()"
+      [cdkDropListData]="task.children"
+      [cdkDropListConnectedTo]="ui.connectedDropListIds()"
+      (cdkDropListDropped)="ui.handleDrop($event)"
+    >
+      @for (child of task.children; track child.id) {
+        <app-task-template-item [task]="child" [depth]="depth + 1" />
+      }
+    </div>
+  }
+</div>

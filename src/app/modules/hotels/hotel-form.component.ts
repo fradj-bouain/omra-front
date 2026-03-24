@@ -10,6 +10,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import {
+  HotelMapLocation,
+  HotelMapPickerComponent,
+} from '../../shared/components/hotel-map-picker/hotel-map-picker.component';
 
 @Component({
   selector: 'app-hotel-form',
@@ -23,6 +27,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
     MatButtonModule,
     MatIconModule,
     PageHeaderComponent,
+    HotelMapPickerComponent,
   ],
   templateUrl: './hotel-form.component.html',
   styleUrl: './hotel-form.component.scss',
@@ -48,7 +53,22 @@ export class HotelFormComponent {
       contactPhone: [''],
       receptionPhone: [''],
       email: [''],
+      latitude: [null as number | null],
+      longitude: [null as number | null],
     });
+  }
+
+  onMapLocation(loc: HotelMapLocation): void {
+    this.form.patchValue(
+      {
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        address: loc.address ?? this.form.get('address')?.value,
+        city: loc.city ?? this.form.get('city')?.value,
+        country: loc.country ?? this.form.get('country')?.value,
+      },
+      { emitEvent: false }
+    );
   }
 
   onSubmit(): void {
@@ -65,6 +85,8 @@ export class HotelFormComponent {
       contactPhone: v.contactPhone || undefined,
       receptionPhone: v.receptionPhone || undefined,
       email: v.email || undefined,
+      latitude: v.latitude != null ? Number(v.latitude) : undefined,
+      longitude: v.longitude != null ? Number(v.longitude) : undefined,
     };
     this.http.post(this.api.hotels.list, body).subscribe({
       next: () => {

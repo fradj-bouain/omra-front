@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,7 +29,7 @@ interface PilgrimDetail {
 @Component({
   selector: 'app-pilgrim-detail',
   standalone: true,
-  imports: [RouterLink, MatCardModule, MatIconModule, MatButtonModule, PageHeaderComponent],
+  imports: [DatePipe, RouterLink, MatCardModule, MatIconModule, MatButtonModule, PageHeaderComponent],
   templateUrl: './pilgrim-detail.component.html',
   styleUrl: './pilgrim-detail.component.scss',
 })

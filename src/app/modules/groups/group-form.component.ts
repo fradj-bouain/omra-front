@@ -12,6 +12,8 @@ import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { toIsoDateString } from '../../shared/utils/date-form';
 
 interface AgencyOption {
   id: number;
@@ -41,6 +43,7 @@ interface CompanionOption {
     MatButtonModule,
     MatSelectModule,
     MatIconModule,
+    MatDatepickerModule,
     PageHeaderComponent,
   ],
   templateUrl: './group-form.component.html',
@@ -72,8 +75,8 @@ export class GroupFormComponent implements OnInit {
       agencyId: [null as number | null, needAgency ? Validators.required : []],
       name: ['', Validators.required],
       description: [''],
-      departureDate: [''],
-      returnDate: [''],
+      departureDate: [null as Date | null],
+      returnDate: [null as Date | null],
       maxCapacity: [null as number | null],
       price: [null as number | null],
       planningId: [null as number | null],
@@ -119,8 +122,8 @@ export class GroupFormComponent implements OnInit {
     } = {
       name: v.name,
       description: v.description || undefined,
-      departureDate: v.departureDate || undefined,
-      returnDate: v.returnDate || undefined,
+      departureDate: toIsoDateString(v.departureDate as Date | null),
+      returnDate: toIsoDateString(v.returnDate as Date | null),
       maxCapacity: v.maxCapacity != null ? Number(v.maxCapacity) : undefined,
       price: v.price != null ? Number(v.price) : undefined,
       planningId: v.planningId != null ? Number(v.planningId) : undefined,

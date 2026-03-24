@@ -1,0 +1,41 @@
+<div class="group-stats">
+  <article class="stat-card">
+    <div class="stat-card__icon" aria-hidden="true">
+      <mat-icon>groups</mat-icon>
+    </div>
+    <div class="stat-card__body">
+      <span class="stat-card__value">{{ totalPilgrims }}</span>
+      <span class="stat-card__label">Pèlerins</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-card__icon stat-card__icon--pay" aria-hidden="true">
+      <mat-icon>payments</mat-icon>
+    </div>
+    <div class="stat-card__body">
+      <span class="stat-card__value">{{ paymentsReceived | number: '1.0-0' }} {{ paymentsCurrency }}</span>
+      <span class="stat-card__label">Paiements reçus</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-card__icon stat-card__icon--visa" aria-hidden="true">
+      <mat-icon>badge</mat-icon>
+    </div>
+    <div class="stat-card__body">
+      <span class="stat-card__value">{{ pendingVisas }}</span>
+      <span class="stat-card__label">Visas en attente</span>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <div class="stat-card__icon stat-card__icon--doc" aria-hidden="true">
+      <mat-icon>folder_open</mat-icon>
+    </div>
+    <div class="stat-card__body">
+      <span class="stat-card__value">{{ documentsCount }}</span>
+      <span class="stat-card__label">Documents</span>
+    </div>
+  </article>
+</div>

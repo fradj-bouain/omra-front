@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { parseIsoDateString, toIsoDateString } from '../../shared/utils/date-form';
 
 @Component({
   selector: 'app-pilgrim-form',
@@ -24,6 +26,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
     MatButtonModule,
     MatSelectModule,
     MatIconModule,
+    MatDatepickerModule,
     PageHeaderComponent,
   ],
   templateUrl: './pilgrim-form.component.html',
@@ -47,7 +50,7 @@ export class PilgrimFormComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       gender: [''],
-      dateOfBirth: [''],
+      dateOfBirth: [null as Date | null],
       passportNumber: [''],
       nationality: [''],
       phone: [''],
@@ -75,7 +78,7 @@ export class PilgrimFormComponent implements OnInit {
           firstName: res['firstName'] ?? '',
           lastName: res['lastName'] ?? '',
           gender: res['gender'] ?? '',
-          dateOfBirth: res['dateOfBirth'] ?? '',
+          dateOfBirth: parseIsoDateString(String(res['dateOfBirth'] ?? '')),
           passportNumber: res['passportNumber'] ?? '',
           nationality: res['nationality'] ?? '',
           phone: res['phone'] ?? '',
@@ -101,7 +104,7 @@ export class PilgrimFormComponent implements OnInit {
       firstName: v.firstName,
       lastName: v.lastName,
       gender: v.gender || undefined,
-      dateOfBirth: v.dateOfBirth ? (v.dateOfBirth as string) : undefined,
+      dateOfBirth: toIsoDateString(v.dateOfBirth as Date | null),
       passportNumber: v.passportNumber || undefined,
       nationality: v.nationality || undefined,
       phone: v.phone || undefined,

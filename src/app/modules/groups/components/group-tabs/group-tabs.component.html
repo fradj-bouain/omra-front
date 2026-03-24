@@ -1,0 +1,61 @@
+<mat-tab-group
+  class="group-tabs"
+  animationDuration="220ms"
+  mat-stretch-tabs="false"
+  [selectedIndex]="selectedIndex"
+  (selectedIndexChange)="selectedIndexChange.emit($event)"
+>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="tab-label"><mat-icon>calendar_view_week</mat-icon> Planning</span>
+    </ng-template>
+    <div class="tab-panel">
+      <ng-content select="[tab-planning]"></ng-content>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="tab-label"><mat-icon>groups</mat-icon> Pèlerins</span>
+    </ng-template>
+    <div class="tab-panel">
+      <ng-content select="[tab-pilgrims]"></ng-content>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="tab-label"><mat-icon>flight</mat-icon> Vols</span>
+    </ng-template>
+    <div class="tab-panel">
+      <ng-content select="[tab-flights]"></ng-content>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="tab-label"><mat-icon>hotel</mat-icon> Hôtels</span>
+    </ng-template>
+    <div class="tab-panel">
+      <ng-content select="[tab-hotels]"></ng-content>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="tab-label"><mat-icon>credit_card</mat-icon> Paiements</span>
+    </ng-template>
+    <div class="tab-panel">
+      <ng-content select="[tab-payments]"></ng-content>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="tab-label"><mat-icon>description</mat-icon> Documents</span>
+    </ng-template>
+    <div class="tab-panel">
+      <ng-content select="[tab-documents]"></ng-content>
+    </div>
+  </mat-tab>
+</mat-tab-group>

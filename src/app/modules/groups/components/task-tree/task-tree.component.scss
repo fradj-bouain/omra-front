@@ -1,0 +1,97 @@
+.task-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-tree__block {
+  border-radius: 12px;
+  border: 1px solid var(--app-border);
+  background: var(--app-bg-soft);
+  padding: 12px 8px 8px;
+}
+
+.task-tree__step {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--app-muted);
+  padding: 0 8px 8px;
+}
+
+.task-tree__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  padding-left: calc(10px + var(--depth, 0) * 16px);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(13, 148, 136, 0.06);
+  }
+
+  &--selected {
+    background: var(--app-accent-soft);
+    outline: 1px solid rgba(13, 148, 136, 0.35);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--app-accent);
+    outline-offset: 1px;
+  }
+}
+
+.task-tree__expand {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--app-text-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  &:hover {
+    background: var(--app-card);
+    color: var(--app-accent);
+  }
+
+  &--spacer {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.task-tree__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.task-tree__dur {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--app-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.task-tree__children {
+  margin-top: 2px;
+}

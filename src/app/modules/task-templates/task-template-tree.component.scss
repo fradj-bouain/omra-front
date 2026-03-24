@@ -1,0 +1,77 @@
+.tasks-page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-bottom: var(--app-space-2xl, 2.5rem);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-md, 1rem);
+  margin-bottom: var(--app-space-lg, 1.5rem);
+}
+
+.toolbar button mat-icon {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.hint {
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+  font-size: 0.8125rem;
+  color: var(--app-muted, #64748b);
+  line-height: 1.45;
+}
+
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--app-space-xl, 2rem);
+  color: var(--app-text-soft, #475569);
+}
+
+.error-card,
+.empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: var(--app-space-xl, 2rem) !important;
+  text-align: center;
+  border-radius: var(--app-radius-lg, 18px) !important;
+  border: 1px solid var(--app-border, #e2e8f0);
+  box-shadow: var(--app-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.06)) !important;
+}
+
+.error-card mat-icon,
+.empty-card mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--app-muted, #64748b);
+}
+
+.error-card {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tree-card {
+  border-radius: var(--app-radius-lg, 18px) !important;
+  border: 1px solid var(--app-border, #e2e8f0);
+  box-shadow: var(--app-shadow, 0 4px 14px rgba(13, 148, 136, 0.08)) !important;
+  overflow: hidden;
+}
+
+.tree-card ::ng-deep .mat-mdc-card-content {
+  padding: var(--app-space-lg, 1.5rem) !important;
+}
+
+.root-drop-list {
+  min-height: 48px;
+}

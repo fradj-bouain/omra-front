@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="name" autocomplete="off" />
+      <mat-error>Nom requis (max. 128 caractères)</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Durée (minutes)</mat-label>
+      <input matInput type="number" formControlName="durationMinutes" min="0" placeholder="Ex. 90" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Annuler</button>
+  <button mat-flat-button color="primary" type="button" (click)="submit()">Enregistrer</button>
+</mat-dialog-actions>

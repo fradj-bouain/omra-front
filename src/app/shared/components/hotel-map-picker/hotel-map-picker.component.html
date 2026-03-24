@@ -1,0 +1,31 @@
+<div class="hotel-map-picker">
+  @if (error) {
+    <p class="map-error" role="alert">{{ error }}</p>
+  } @else if (loading) {
+    <p class="map-loading">Chargement de la carte…</p>
+  }
+
+  @if (!error) {
+    <div class="map-search-wrap">
+      <mat-icon class="map-search-icon" aria-hidden="true">search</mat-icon>
+      <input
+        #searchInput
+        type="text"
+        class="map-search-input"
+        placeholder="Rechercher une adresse ou un lieu (Google)"
+        autocomplete="off"
+        [disabled]="loading"
+      />
+    </div>
+    <div #mapContainer class="map-container" [class.map-container--dim]="loading"></div>
+    @if (hintCoords && !loading) {
+      <p class="map-coords">
+        <mat-icon aria-hidden="true">place</mat-icon>
+        <span>Coordonnées : {{ hintCoords }}</span>
+      </p>
+    }
+    <p class="map-help">
+      Recherchez un lieu ou cliquez sur la carte pour placer l’hôtel. Vous pouvez déplacer le marqueur.
+    </p>
+  }
+</div>

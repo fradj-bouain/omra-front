@@ -10,10 +10,10 @@
         </div>
 
         <div class="form-section">
-          <h2 class="form-section-title">Pèlerin & groupe <span class="required">*</span></h2>
+          <h2 class="form-section-title">Pèlerin & groupe</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Pèlerin <span class="required">*</span></mat-label>
+              <mat-label>Pèlerin</mat-label>
               <input
                 matInput
                 [formControl]="pilgrimDisplay"
@@ -34,7 +34,7 @@
               </mat-autocomplete>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Groupe <span class="required">*</span></mat-label>
+              <mat-label>Groupe</mat-label>
               <input
                 matInput
                 [formControl]="groupDisplay"
@@ -61,7 +61,7 @@
           <h2 class="form-section-title">Montant & méthode</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Montant <span class="required">*</span></mat-label>
+              <mat-label>Montant</mat-label>
               <input matInput type="number" formControlName="amount" min="0" step="0.01" />
               <mat-error>Le montant est requis</mat-error>
             </mat-form-field>
@@ -94,7 +94,9 @@
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Date de paiement</mat-label>
-              <input matInput type="date" formControlName="paymentDate" />
+              <input matInput [matDatepicker]="payPicker" formControlName="paymentDate" placeholder="jj/mm/aaaa" />
+              <mat-datepicker-toggle matIconSuffix [for]="payPicker" />
+              <mat-datepicker #payPicker />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width form-grid-full">
               <mat-label>Référence</mat-label>
@@ -109,8 +111,10 @@
             <p class="form-hint">Choisissez la première date d'échéance, la période entre les échéances et le nombre d'échéances. Les autres dates seront générées automatiquement.</p>
             <div class="form-grid form-grid--2">
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Date de 1<sup>ère</sup> échéance <span class="required">*</span></mat-label>
-                <input matInput type="date" formControlName="firstDueDate" />
+                <mat-label>Date de 1<sup>ère</sup> échéance</mat-label>
+                <input matInput [matDatepicker]="duePicker" formControlName="firstDueDate" placeholder="jj/mm/aaaa" />
+                <mat-datepicker-toggle matIconSuffix [for]="duePicker" />
+                <mat-datepicker #duePicker />
                 <mat-error>Requis pour un paiement partiel</mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline" class="full-width">
@@ -122,7 +126,7 @@
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Nombre d'échéances <span class="required">*</span></mat-label>
+                <mat-label>Nombre d'échéances</mat-label>
                 <input matInput type="number" formControlName="numberOfInstallments" min="2" />
                 <mat-error>Au moins 2</mat-error>
               </mat-form-field>
@@ -132,7 +136,7 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/payments" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading || pilgrimDisplay.invalid || groupDisplay.invalid" class="btn-submit">
             {{ loading ? 'Création...' : 'Créer le paiement' }}
           </button>
         </div>

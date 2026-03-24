@@ -13,12 +13,12 @@
           <h2 class="form-section-title">Vol</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Compagnie <span class="required">*</span></mat-label>
+              <mat-label>Compagnie</mat-label>
               <input matInput formControlName="airline" placeholder="Ex. Royal Air Maroc" />
               <mat-error>La compagnie est requise</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>N° vol <span class="required">*</span></mat-label>
+              <mat-label>N° vol</mat-label>
               <input matInput formControlName="flightNumber" placeholder="Ex. AT 850" />
               <mat-error>Le numéro de vol est requis</mat-error>
             </mat-form-field>
@@ -41,14 +41,27 @@
 
         <div class="form-section">
           <h2 class="form-section-title">Horaires</h2>
+          <p class="form-hint">Calendrier + heure pour chaque vol (fuseau local).</p>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Date/heure départ</mat-label>
-              <input matInput type="datetime-local" formControlName="departureTime" />
+              <mat-label>Date de départ</mat-label>
+              <input matInput [matDatepicker]="depDp" formControlName="departureDate" placeholder="jj/mm/aaaa" />
+              <mat-datepicker-toggle matIconSuffix [for]="depDp" />
+              <mat-datepicker #depDp />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Date/heure arrivée</mat-label>
-              <input matInput type="datetime-local" formControlName="arrivalTime" />
+              <mat-label>Heure de départ</mat-label>
+              <input matInput type="time" formControlName="departureTime" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Date d'arrivée</mat-label>
+              <input matInput [matDatepicker]="arrDp" formControlName="arrivalDate" placeholder="jj/mm/aaaa" />
+              <mat-datepicker-toggle matIconSuffix [for]="arrDp" />
+              <mat-datepicker #arrDp />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Heure d'arrivée</mat-label>
+              <input matInput type="time" formControlName="arrivalTime" />
             </mat-form-field>
           </div>
         </div>

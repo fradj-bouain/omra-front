@@ -68,10 +68,13 @@ export class ApiService {
   };
   taskTemplates = {
     list: `${this.base}/api/task-templates`,
+    tree: `${this.base}/api/task-templates/tree`,
     byId: (id: number) => `${this.base}/api/task-templates/${id}`,
+    byIdTree: (id: number) => `${this.base}/api/task-templates/${id}/tree`,
     create: `${this.base}/api/task-templates`,
     update: (id: number) => `${this.base}/api/task-templates/${id}`,
     delete: (id: number) => `${this.base}/api/task-templates/${id}`,
+    totalDuration: (id: number) => `${this.base}/api/task-templates/${id}/total-duration`,
   };
   plannings = {
     list: `${this.base}/api/plannings`,
@@ -103,6 +106,13 @@ export class ApiService {
   users = {
     list: `${this.base}/api/users`,
     byId: (id: number) => `${this.base}/api/users/${id}`,
+  };
+  referral = {
+    code: `${this.base}/api/referral-code`,
+    stats: `${this.base}/api/referral-stats`,
+    list: `${this.base}/api/referrals`,
+    validate: `${this.base}/api/referrals/validate`,
+    grantReward: (id: number) => `${this.base}/api/referrals/${id}/grant-reward`,
   };
   files = { upload: `${this.base}/api/files/upload` };
 }

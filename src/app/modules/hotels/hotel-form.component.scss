@@ -1,7 +1,33 @@
 /* Formulaire hôtel — design system (--app-*) */
 .hotel-form-page {
-  max-width: 720px;
+  max-width: 900px;
   margin: 0 auto;
+}
+
+.form-hint {
+  margin: 0 0 var(--app-space-md);
+  font-size: 0.875rem;
+  color: var(--app-text-soft);
+  line-height: 1.45;
+}
+
+.form-grid--after-map {
+  margin-top: var(--app-space-md);
+}
+
+.coords-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-md);
+  width: 100%;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coord-field {
+  width: 100%;
 }
 
 .form-card {

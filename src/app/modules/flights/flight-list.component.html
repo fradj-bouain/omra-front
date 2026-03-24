@@ -33,11 +33,11 @@
         </ng-container>
         <ng-container matColumnDef="departureTime">
           <th mat-header-cell *matHeaderCellDef>Date/heure départ</th>
-          <td mat-cell *matCellDef="let row">{{ row.departureTime || '—' }}</td>
+          <td mat-cell *matCellDef="let row">{{ row.departureTime ? (row.departureTime | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="arrivalTime">
           <th mat-header-cell *matHeaderCellDef>Date/heure arrivée</th>
-          <td mat-cell *matCellDef="let row">{{ row.arrivalTime || '—' }}</td>
+          <td mat-cell *matCellDef="let row">{{ row.arrivalTime ? (row.arrivalTime | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>

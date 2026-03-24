@@ -41,11 +41,12 @@ export class LayoutComponent {
     { path: '/hotels', icon: 'hotel', label: 'Hôtels' },
     { path: '/documents', icon: 'description', label: 'Documents' },
     { path: '/payments', icon: 'payment', label: 'Paiements' },
-    { path: '/task-templates', icon: 'list_alt', label: 'Types de tâches' },
+    { path: '/task-templates', icon: 'account_tree', label: 'Types de tâches' },
     { path: '/plannings', icon: 'calendar_view_week', label: 'Plannings' },
     { path: '/buses', icon: 'directions_bus', label: 'Bus' },
     { path: '/notifications', icon: 'notifications', label: 'Notifications' },
     { path: '/users', icon: 'people', label: 'Utilisateurs' },
+    { path: '/referral', icon: 'card_giftcard', label: 'Parrainage' },
   ];
 
   /** Menu for platform admin (super admin): agencies only. */

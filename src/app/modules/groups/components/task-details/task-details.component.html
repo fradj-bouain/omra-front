@@ -1,0 +1,50 @@
+<div class="task-details">
+  @if (!task) {
+    <div class="task-details__empty">
+      <mat-icon>touch_app</mat-icon>
+      <p>Sélectionnez une tâche dans l’arborescence pour afficher le détail.</p>
+    </div>
+  } @else {
+    <div class="task-details__header">
+      <h2 class="task-details__title">{{ task.name }}</h2>
+      @if (task.durationMinutes != null && task.durationMinutes > 0) {
+        <span class="task-details__pill">
+          <mat-icon>schedule</mat-icon>
+          {{ formatDuration(task.durationMinutes) }}
+        </span>
+      }
+    </div>
+
+    @if (task.description) {
+      <section class="task-details__section">
+        <h3 class="task-details__label">Description</h3>
+        <p class="task-details__text">{{ task.description }}</p>
+      </section>
+    } @else {
+      <section class="task-details__section task-details__section--muted">
+        <p class="task-details__text">Pas de description pour ce type de tâche.</p>
+      </section>
+    }
+
+    <dl class="task-details__grid">
+      <div class="task-details__cell">
+        <dt>Sous-tâches</dt>
+        <dd>{{ subtasksLabel(task) }}</dd>
+      </div>
+      <div class="task-details__cell">
+        <dt>Durée (cette tâche)</dt>
+        <dd>{{ formatDuration(task.durationMinutes ?? 0) }}</dd>
+      </div>
+      <div class="task-details__cell">
+        <dt>Durée totale (avec sous-types)</dt>
+        <dd>
+          @if (loadingTotal) {
+            <span class="task-details__loading">…</span>
+          } @else {
+            {{ formatDuration(totalMinutes ?? undefined) }}
+          }
+        </dd>
+      </div>
+    </dl>
+  }
+</div>

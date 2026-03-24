@@ -14,7 +14,7 @@
             <h2 class="form-section-title">Agence</h2>
             <div class="form-grid form-grid--1">
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Agence <span class="required">*</span></mat-label>
+                <mat-label>Agence</mat-label>
                 <mat-select formControlName="agencyId" placeholder="Choisir une agence">
                   @for (a of agencies; track a.id) {
                     <mat-option [value]="a.id">{{ a.name }}</mat-option>
@@ -30,7 +30,7 @@
           <h2 class="form-section-title">Informations du groupe</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nom du groupe <span class="required">*</span></mat-label>
+              <mat-label>Nom du groupe</mat-label>
               <input matInput formControlName="name" placeholder="Ex. Départ Mars 2025" />
               <mat-error>Requis</mat-error>
             </mat-form-field>
@@ -46,11 +46,15 @@
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Date de départ</mat-label>
-              <input matInput type="date" formControlName="departureDate" />
+              <input matInput [matDatepicker]="depPicker" formControlName="departureDate" placeholder="jj/mm/aaaa" />
+              <mat-datepicker-toggle matIconSuffix [for]="depPicker" />
+              <mat-datepicker #depPicker />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Date de retour</mat-label>
-              <input matInput type="date" formControlName="returnDate" />
+              <input matInput [matDatepicker]="retPicker" formControlName="returnDate" placeholder="jj/mm/aaaa" />
+              <mat-datepicker-toggle matIconSuffix [for]="retPicker" />
+              <mat-datepicker #retPicker />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Capacité max</mat-label>

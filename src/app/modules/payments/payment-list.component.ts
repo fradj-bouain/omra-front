@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -29,7 +30,7 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-payment-list',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatPaginatorModule, MatIconModule, PageHeaderComponent],
+  imports: [DatePipe, MatCardModule, MatTableModule, MatPaginatorModule, MatIconModule, PageHeaderComponent],
   templateUrl: './payment-list.component.html',
   styleUrl: './payment-list.component.scss',
 })

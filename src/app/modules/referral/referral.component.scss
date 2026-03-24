@@ -1,0 +1,133 @@
+.referral-page {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-xl, 1.5rem);
+}
+
+.error-card mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--app-error-text, #b91c1c);
+}
+
+.error-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.loading-text {
+  margin: 0;
+  color: var(--app-text-soft, #64748b);
+}
+
+.stats-card,
+.numbers-card,
+.list-card {
+  border-radius: var(--app-radius-lg, 8px);
+  box-shadow: var(--app-shadow, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+.code-row,
+.link-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.code-value {
+  font-family: var(--app-font-mono, monospace);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.75rem;
+  background: var(--app-bg-soft, #f1f5f9);
+  border-radius: 6px;
+}
+
+.link-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--app-border, #e2e8f0);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--app-text-soft, #64748b);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--app-bg-soft, #f8fafc);
+  border-radius: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--app-accent, #0d9488);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--app-text-soft, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.referral-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.referral-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--app-border, #e2e8f0);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.ref-id {
+  font-family: monospace;
+  color: var(--app-text-soft, #64748b);
+}
+
+.ref-status {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.reward-badge {
+  color: var(--app-success, #0d9488);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.empty {
+  margin: 0;
+  color: var(--app-text-soft, #64748b);
+  font-size: 0.9375rem;
+}

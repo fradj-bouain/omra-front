@@ -27,7 +27,7 @@
             <mat-icon matListItemIcon class="notification-icon">{{ n.read ? 'mark_email_read' : 'mail' }}</mat-icon>
             <span matListItemTitle class="notification-title">{{ n.title }}</span>
             <span matListItemLine class="notification-message">{{ n.message }}</span>
-            <span matListItemMeta class="notification-date">{{ n.createdAt | date:'short' }}</span>
+            <span matListItemMeta class="notification-date">{{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
             @if (!n.read) {
               <button mat-icon-button (click)="markRead(n.id)" class="btn-mark-read" aria-label="Marquer comme lu">
                 <mat-icon>done</mat-icon>

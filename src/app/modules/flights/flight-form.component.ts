@@ -11,6 +11,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { combineDateAndTime } from '../../shared/utils/date-form';
 
 interface GroupOption {
   id: number;
@@ -29,6 +31,7 @@ interface GroupOption {
     MatButtonModule,
     MatIconModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
     PageHeaderComponent,
   ],
   templateUrl: './flight-form.component.html',
@@ -53,7 +56,9 @@ export class FlightFormComponent implements OnInit {
       flightNumber: ['', Validators.required],
       departureCity: [''],
       arrivalCity: [''],
+      departureDate: [null as Date | null],
       departureTime: [''],
+      arrivalDate: [null as Date | null],
       arrivalTime: [''],
       terminal: [''],
       gate: [''],
@@ -107,8 +112,10 @@ export class FlightFormComponent implements OnInit {
       gate: v.gate || undefined,
       groupId: v.groupId != null && v.groupId !== '' ? Number(v.groupId) : undefined,
     };
-    if (v['departureTime']) body['departureTime'] = v['departureTime'];
-    if (v['arrivalTime']) body['arrivalTime'] = v['arrivalTime'];
+    const dep = combineDateAndTime(v['departureDate'] as Date | null, v['departureTime'] as string);
+    const arr = combineDateAndTime(v['arrivalDate'] as Date | null, v['arrivalTime'] as string);
+    if (dep) body['departureTime'] = dep;
+    if (arr) body['arrivalTime'] = arr;
     this.http.post(this.api.flights.list, body).subscribe({
       next: () => {
         this.notif.success('Vol créé');

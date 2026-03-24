@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -29,7 +29,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
 })
-export class UserFormComponent {
+export class UserFormComponent implements OnInit {
   loading = false;
   form: FormGroup;
 
@@ -38,7 +38,8 @@ export class UserFormComponent {
     private http: HttpClient,
     private api: ApiService,
     private notif: NotificationService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -47,6 +48,16 @@ export class UserFormComponent {
       phone: [''],
       role: ['AGENCY_AGENT'],
       status: ['ACTIVE'],
+      referralCodeAtSignup: [''],
+    });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const ref = params['ref'];
+      if (ref && typeof ref === 'string' && ref.trim()) {
+        this.form.patchValue({ referralCodeAtSignup: ref.trim().toUpperCase() });
+      }
     });
   }
 
@@ -54,7 +65,7 @@ export class UserFormComponent {
     if (this.form.invalid || this.loading) return;
     this.loading = true;
     const v = this.form.getRawValue();
-    const body = {
+    const body: Record<string, unknown> = {
       name: v.name,
       email: v.email,
       password: v.password,
@@ -62,6 +73,9 @@ export class UserFormComponent {
       role: v.role || 'AGENCY_AGENT',
       status: v.status || 'ACTIVE',
     };
+    if (v.referralCodeAtSignup && String(v.referralCodeAtSignup).trim()) {
+      body['referralCodeAtSignup'] = String(v.referralCodeAtSignup).trim().toUpperCase();
+    }
     this.http.post(this.api.users.list, body).subscribe({
       next: () => {
         this.notif.success('Utilisateur créé');

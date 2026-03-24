@@ -1,0 +1,103 @@
+<app-page-header
+  title="Parrainage"
+  subtitle="Partagez votre code et suivez vos filleuls"
+></app-page-header>
+
+<section class="referral-page">
+  @if (error) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <p>{{ error }}</p>
+      </mat-card-content>
+    </mat-card>
+  } @else if (loading) {
+    <mat-card>
+      <mat-card-content>
+        <p class="loading-text">Chargement…</p>
+      </mat-card-content>
+    </mat-card>
+  } @else if (stats) {
+    <mat-card class="stats-card">
+      <mat-card-header>
+        <mat-card-title>Votre code et lien</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="code-row">
+          <span class="code-value">{{ stats.referralCode }}</span>
+          <button mat-stroked-button (click)="copyCode()" matTooltip="Copier le code">
+            <mat-icon>content_copy</mat-icon>
+            Copier le code
+          </button>
+        </div>
+        <div class="link-row">
+          <input class="link-input" [value]="stats.referralLink" readonly />
+          <button mat-flat-button color="primary" (click)="copyLink()" matTooltip="Copier le lien">
+            <mat-icon>link</mat-icon>
+            Copier le lien
+          </button>
+        </div>
+        <p class="hint">Envoyez ce lien pour inviter des utilisateurs. S’ils s’inscrivent avec ce lien, ils seront comptés comme vos filleuls.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="numbers-card">
+      <mat-card-header>
+        <mat-card-title>Statistiques</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <span class="stat-value">{{ stats.totalReferrals }}</span>
+            <span class="stat-label">Filleuls</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ stats.pendingReferrals }}</span>
+            <span class="stat-label">En attente</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ stats.completedReferrals }}</span>
+            <span class="stat-label">Complétés</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ stats.rewardsGranted }}</span>
+            <span class="stat-label">Récompenses attribuées</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="list-card">
+      <mat-card-header>
+        <mat-card-title>Liste de vos parrainages</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (referrals.length === 0) {
+          <p class="empty">Aucun filleul pour le moment. Partagez votre lien pour inviter des utilisateurs.</p>
+        } @else {
+          <ul class="referral-list">
+            @for (r of referrals; track r.id) {
+              <li class="referral-item">
+                <span class="ref-id">#{{ r.referredId }}</span>
+                <span class="ref-status">{{ getStatusLabel(r.status) }}</span>
+                @if (r.rewardGiven) {
+                  <mat-icon class="reward-badge" matTooltip="Récompense attribuée">redeem</mat-icon>
+                } @else {
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="grantReward(r)"
+                    [disabled]="grantingId === r.id"
+                    matTooltip="Attribuer la récompense"
+                  >
+                    <mat-icon>{{ grantingId === r.id ? 'hourglass_empty' : 'card_giftcard' }}</mat-icon>
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</section>
