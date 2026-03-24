@@ -53,14 +53,51 @@
     />
 
     <app-group-tabs [(selectedIndex)]="selectedTabIndex">
-      <div tab-planning>
-        <app-planning-tab
-          [planningName]="planning?.name ?? null"
-          [roots]="planningRoots"
-          [loading]="planningTreesLoading"
-          [selected]="selectedPlanningTask"
-          (taskSelect)="onPlanningTaskSelect($event)"
-        />
+      <div tab-planning class="tab-section">
+        <mat-card class="section-card">
+          <mat-card-header>
+            <mat-card-title><mat-icon>calendar_month</mat-icon> Planning</mat-card-title>
+            <div class="card-actions">
+              <a mat-icon-button [routerLink]="['/plannings/new']" matTooltip="Créer un planning">
+                <mat-icon>add</mat-icon>
+              </a>
+              <button mat-icon-button type="button" (click)="toggleLinkPlanning()" matTooltip="Associer un planning au groupe">
+                <mat-icon>link</mat-icon>
+              </button>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            @if (showLinkPlanning) {
+              <div class="inline-form">
+                <mat-form-field appearance="outline">
+                  <mat-label>Planning</mat-label>
+                  <mat-select [(ngModel)]="selectedPlanningIdToLink">
+                    <mat-option [value]="null">— Choisir —</mat-option>
+                    @for (p of allPlannings; track p.id) {
+                      <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="button"
+                  (click)="linkPlanning()"
+                  [disabled]="!selectedPlanningIdToLink || linkingPlanning"
+                >
+                  {{ linkingPlanning ? 'Association…' : 'Associer au groupe' }}
+                </button>
+              </div>
+            }
+            <app-planning-tab
+              [planningName]="planning?.name ?? null"
+              [roots]="planningRoots"
+              [loading]="planningTreesLoading"
+              [selected]="selectedPlanningTask"
+              (taskSelect)="onPlanningTaskSelect($event)"
+            />
+          </mat-card-content>
+        </mat-card>
       </div>
 
       <div tab-pilgrims class="tab-section">

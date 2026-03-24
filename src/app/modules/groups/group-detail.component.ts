@@ -223,6 +223,12 @@ export class GroupDetailComponent implements OnInit {
   selectedCompanionIds: number[] = [];
   savingCompanions = false;
 
+  // Link planning (programme)
+  allPlannings: PlanningSummary[] = [];
+  showLinkPlanning = false;
+  selectedPlanningIdToLink: number | null = null;
+  linkingPlanning = false;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -339,6 +345,72 @@ export class GroupDetailComponent implements OnInit {
 
   onPlanningTaskSelect(t: TaskTemplateNode): void {
     this.selectedPlanningTask = t;
+  }
+
+  toggleLinkPlanning(): void {
+    this.showLinkPlanning = !this.showLinkPlanning;
+    if (this.showLinkPlanning && this.allPlannings.length === 0) {
+      this.http.get<PlanningSummary[]>(this.api.plannings.list).subscribe({
+        next: (list) => (this.allPlannings = Array.isArray(list) ? list : []),
+        error: () => {
+          this.allPlannings = [];
+          this.notif.error('Impossible de charger les plannings');
+        },
+      });
+    }
+    if (!this.showLinkPlanning) {
+      this.selectedPlanningIdToLink = null;
+    } else if (this.group?.planningId != null) {
+      this.selectedPlanningIdToLink = this.group.planningId;
+    }
+  }
+
+  linkPlanning(): void {
+    if (this.groupId == null || this.group == null || this.selectedPlanningIdToLink == null) {
+      this.notif.error('Sélectionnez un planning');
+      return;
+    }
+    this.linkingPlanning = true;
+    const body = {
+      name: this.group.name,
+      description: this.group.description,
+      departureDate: this.group.departureDate,
+      returnDate: this.group.returnDate,
+      maxCapacity: this.group.maxCapacity,
+      price: this.group.price,
+      planningId: this.selectedPlanningIdToLink,
+      status: this.group.status,
+      companionIds: this.selectedCompanionIds,
+    };
+    this.http.put<Group>(this.api.groups.byId(this.groupId), body).subscribe({
+      next: (g) => {
+        this.group = g;
+        this.selectedCompanionIds = Array.isArray(g.companionIds) ? [...g.companionIds] : [];
+        this.notif.success('Planning associé au groupe');
+        this.showLinkPlanning = false;
+        this.selectedPlanningIdToLink = null;
+        this.linkingPlanning = false;
+        this.planning = null;
+        this.planningRoots = [];
+        this.selectedPlanningTask = null;
+        if (g.planningId) {
+          this.http.get<PlanningSummary>(this.api.plannings.byId(g.planningId)).subscribe({
+            next: (p) => {
+              this.planning = p;
+              this.loadPlanningTrees();
+            },
+            error: () => {
+              this.planning = null;
+              this.planningRoots = [];
+            },
+          });
+        }
+      },
+      error: (err) => {
+        this.linkingPlanning = false;
+        this.notif.error(err.error?.message || 'Erreur lors de l’association du planning');
+      },
+    });
   }
 
   private loadRelated(): void {
