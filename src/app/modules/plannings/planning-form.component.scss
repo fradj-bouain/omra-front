@@ -48,3 +48,16 @@
   font-size: 0.9375rem;
   margin: 0 0 1rem;
 }
+.hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.planning-items-list li.item-child {
+  padding-left: calc(0.75rem + (var(--depth, 0) * 0.65rem));
+  .item-tree {
+    color: var(--app-text-soft, #888);
+    font-size: 0.9em;
+    margin-right: 0.15rem;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,12 +12,8 @@ import { MatListModule } from '@angular/material/list';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-
-interface TaskTemplate {
-  id: number;
-  name: string;
-  durationMinutes?: number | null;
-}
+import { TaskTemplateNode } from '../task-templates/models/task-template-node.model';
+import { TaskTemplatesUiService } from '../task-templates/task-templates-ui.service';
 
 interface PlanningItemDto {
   id?: number;
@@ -25,6 +21,8 @@ interface PlanningItemDto {
   taskTemplateName?: string;
   durationMinutes?: number | null;
   sortOrder: number;
+  /** Profondeur dans l’arbre (affichage seulement ; pas envoyé au serveur) */
+  depth?: number;
 }
 
 @Component({
@@ -46,11 +44,12 @@ interface PlanningItemDto {
   styleUrl: './planning-form.component.scss',
 })
 export class PlanningFormComponent implements OnInit {
+  readonly taskTemplatesUi = inject(TaskTemplatesUiService);
+
   form: FormGroup;
   loading = false;
   isEdit = false;
   id: number | null = null;
-  taskTemplates: TaskTemplate[] = [];
   selectedItems: PlanningItemDto[] = [];
 
   constructor(
@@ -69,10 +68,7 @@ export class PlanningFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get<TaskTemplate[]>(this.api.taskTemplates.list).subscribe({
-      next: (list) => (this.taskTemplates = Array.isArray(list) ? list : []),
-      error: () => (this.taskTemplates = []),
-    });
+    this.taskTemplatesUi.load();
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam && idParam !== 'new') {
       this.id = +idParam;
@@ -95,15 +91,39 @@ export class PlanningFormComponent implements OnInit {
   addItem(): void {
     const id = this.form.get('selectedTemplateId')?.value as number | null;
     if (id == null) return;
-    const tt = this.taskTemplates.find((t) => t.id === id);
-    if (!tt) return;
-    this.selectedItems.push({
-      taskTemplateId: tt.id,
-      taskTemplateName: tt.name,
-      durationMinutes: tt.durationMinutes ?? null,
-      sortOrder: this.selectedItems.length,
+    const roots = this.taskTemplatesUi.tree();
+    const root = roots.find((t) => t.id === id);
+    if (!root) return;
+    const flat = this.flattenTaskTreeForPlanning(root);
+    const start = this.selectedItems.length;
+    flat.forEach((it, i) => {
+      this.selectedItems.push({
+        ...it,
+        sortOrder: start + i,
+      });
     });
     this.form.patchValue({ selectedTemplateId: null });
+  }
+
+  /** Parent puis sous-tâches (profondeur d’abord), pour coller à l’arbre des types de tâches. */
+  private flattenTaskTreeForPlanning(node: TaskTemplateNode, depth = 0): PlanningItemDto[] {
+    const row: PlanningItemDto = {
+      taskTemplateId: node.id,
+      taskTemplateName: node.name,
+      durationMinutes: node.durationMinutes ?? null,
+      sortOrder: 0,
+      depth,
+    };
+    const out: PlanningItemDto[] = [row];
+    for (const child of node.children ?? []) {
+      out.push(...this.flattenTaskTreeForPlanning(child, depth + 1));
+    }
+    return out;
+  }
+
+  /** Durée totale (tâche + sous-tâches) pour le libellé du select. */
+  subtreeMinutes(node: TaskTemplateNode): number {
+    return this.taskTemplatesUi.subtreeTotalMinutes(node);
   }
 
   removeItem(index: number): void {

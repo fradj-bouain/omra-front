@@ -15,13 +15,16 @@
         </mat-form-field>
 
         <h3 class="form-subtitle">Tâches du programme (ordre)</h3>
+        <p class="hint muted">Choisissez une <strong>tâche principale</strong> : les sous-tâches seront insérées automatiquement dans l’ordre.</p>
         <div class="add-item-row">
           <mat-form-field appearance="outline">
             <mat-label>Ajouter une tâche</mat-label>
             <mat-select formControlName="selectedTemplateId">
               <mat-option [value]="null">— Choisir —</mat-option>
-              @for (tt of taskTemplates; track tt.id) {
-                <mat-option [value]="tt.id">{{ tt.name }} ({{ tt.durationMinutes ?? 0 }} min)</mat-option>
+              @for (tt of taskTemplatesUi.tree(); track tt.id) {
+                <mat-option [value]="tt.id">
+                  {{ tt.name }} ({{ taskTemplatesUi.formatDuration(subtreeMinutes(tt)) }})
+                </mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -31,8 +34,11 @@
         </div>
         <ul class="planning-items-list">
           @for (item of selectedItems; track $index; let i = $index) {
-            <li>
+            <li [class.item-child]="(item.depth ?? 0) > 0" [style.--depth]="item.depth ?? 0">
               <span class="item-order">{{ i + 1 }}.</span>
+              @if ((item.depth ?? 0) > 0) {
+                <span class="item-tree" aria-hidden="true">↳</span>
+              }
               <span class="item-name">{{ item.taskTemplateName }}</span>
               @if (item.durationMinutes != null && item.durationMinutes > 0) {
                 <span class="item-duration">{{ item.durationMinutes }} min</span>
