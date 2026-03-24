@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,7 +13,6 @@ import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { TaskTemplateNode } from '../task-templates/models/task-template-node.model';
-import { TaskTemplatesUiService } from '../task-templates/task-templates-ui.service';
 
 interface PlanningItemDto {
   id?: number;
@@ -21,8 +20,8 @@ interface PlanningItemDto {
   taskTemplateName?: string;
   durationMinutes?: number | null;
   sortOrder: number;
-  /** Profondeur dans l’arbre (affichage seulement ; pas envoyé au serveur) */
-  depth?: number;
+  /** Profondeur dans le bloc tâche + sous-tâches (0 = tâche racine choisie); absent pour les items chargés depuis l’API. */
+  treeDepth?: number;
 }
 
 @Component({
@@ -44,12 +43,12 @@ interface PlanningItemDto {
   styleUrl: './planning-form.component.scss',
 })
 export class PlanningFormComponent implements OnInit {
-  readonly taskTemplatesUi = inject(TaskTemplatesUiService);
-
   form: FormGroup;
   loading = false;
   isEdit = false;
   id: number | null = null;
+  /** Racines seules — le sélecteur n’affiche pas les sous-tâches. */
+  taskTemplateTree: TaskTemplateNode[] = [];
   selectedItems: PlanningItemDto[] = [];
 
   constructor(
@@ -68,7 +67,10 @@ export class PlanningFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.taskTemplatesUi.load();
+    this.http.get<TaskTemplateNode[]>(this.api.taskTemplates.tree).subscribe({
+      next: (list) => (this.taskTemplateTree = Array.isArray(list) ? list.map((n) => this.normalizeTreeNode(n)) : []),
+      error: () => (this.taskTemplateTree = []),
+    });
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam && idParam !== 'new') {
       this.id = +idParam;
@@ -88,42 +90,52 @@ export class PlanningFormComponent implements OnInit {
     }
   }
 
+  /** Nombre de sous-tâches (descendants), pour l’intitulé du sélecteur. */
+  descendantTaskCount(node: TaskTemplateNode): number {
+    const children = node.children ?? [];
+    let n = 0;
+    for (const c of children) {
+      n += 1 + this.descendantTaskCount(c);
+    }
+    return n;
+  }
+
   addItem(): void {
     const id = this.form.get('selectedTemplateId')?.value as number | null;
     if (id == null) return;
-    const roots = this.taskTemplatesUi.tree();
-    const root = roots.find((t) => t.id === id);
+    const root = this.taskTemplateTree.find((t) => t.id === id);
     if (!root) return;
-    const flat = this.flattenTaskTreeForPlanning(root);
-    const start = this.selectedItems.length;
-    flat.forEach((it, i) => {
-      this.selectedItems.push({
-        ...it,
-        sortOrder: start + i,
-      });
+    const rows = this.flattenTaskSubtree(root);
+    const base = this.selectedItems.length;
+    rows.forEach((row, i) => {
+      row.sortOrder = base + i;
+      this.selectedItems.push(row);
     });
     this.form.patchValue({ selectedTemplateId: null });
   }
 
-  /** Parent puis sous-tâches (profondeur d’abord), pour coller à l’arbre des types de tâches. */
-  private flattenTaskTreeForPlanning(node: TaskTemplateNode, depth = 0): PlanningItemDto[] {
-    const row: PlanningItemDto = {
-      taskTemplateId: node.id,
-      taskTemplateName: node.name,
-      durationMinutes: node.durationMinutes ?? null,
-      sortOrder: 0,
-      depth,
-    };
-    const out: PlanningItemDto[] = [row];
-    for (const child of node.children ?? []) {
-      out.push(...this.flattenTaskTreeForPlanning(child, depth + 1));
-    }
-    return out;
+  private normalizeTreeNode(raw: TaskTemplateNode): TaskTemplateNode {
+    const children = (raw.children ?? []).map((c) => this.normalizeTreeNode(c));
+    return { ...raw, children };
   }
 
-  /** Durée totale (tâche + sous-tâches) pour le libellé du select. */
-  subtreeMinutes(node: TaskTemplateNode): number {
-    return this.taskTemplatesUi.subtreeTotalMinutes(node);
+  /** Préordre : tâche puis sous-tâches (ordre des enfants = API / tri nom). */
+  private flattenTaskSubtree(root: TaskTemplateNode): PlanningItemDto[] {
+    const out: PlanningItemDto[] = [];
+    const walk = (node: TaskTemplateNode, depth: number) => {
+      out.push({
+        taskTemplateId: node.id,
+        taskTemplateName: node.name,
+        durationMinutes: node.durationMinutes ?? null,
+        sortOrder: 0,
+        treeDepth: depth,
+      });
+      for (const c of node.children ?? []) {
+        walk(c, depth + 1);
+      }
+    };
+    walk(root, 0);
+    return out;
   }
 
   removeItem(index: number): void {

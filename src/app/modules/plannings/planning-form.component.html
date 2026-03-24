@@ -15,18 +15,21 @@
         </mat-form-field>
 
         <h3 class="form-subtitle">Tâches du programme (ordre)</h3>
-        <p class="hint muted">Choisissez une <strong>tâche principale</strong> : les sous-tâches seront insérées automatiquement dans l’ordre.</p>
         <div class="add-item-row">
           <mat-form-field appearance="outline">
-            <mat-label>Ajouter une tâche</mat-label>
+            <mat-label>Tâche principale</mat-label>
             <mat-select formControlName="selectedTemplateId">
               <mat-option [value]="null">— Choisir —</mat-option>
-              @for (tt of taskTemplatesUi.tree(); track tt.id) {
+              @for (tt of taskTemplateTree; track tt.id) {
                 <mat-option [value]="tt.id">
-                  {{ tt.name }} ({{ taskTemplatesUi.formatDuration(subtreeMinutes(tt)) }})
+                  {{ tt.name }} ({{ tt.durationMinutes ?? 0 }} min)
+                  @if (descendantTaskCount(tt) > 0) {
+                    <span class="select-hint"> · {{ descendantTaskCount(tt) }} sous-tâche(s) ajoutées auto.</span>
+                  }
                 </mat-option>
               }
             </mat-select>
+            <mat-hint>Seules les tâches racines apparaissent ; les sous-tâches sont insérées automatiquement.</mat-hint>
           </mat-form-field>
           <button mat-flat-button color="primary" type="button" (click)="addItem()" [disabled]="!form.get('selectedTemplateId')?.value">
             Ajouter
@@ -34,10 +37,10 @@
         </div>
         <ul class="planning-items-list">
           @for (item of selectedItems; track $index; let i = $index) {
-            <li [class.item-child]="(item.depth ?? 0) > 0" [style.--depth]="item.depth ?? 0">
+            <li [style.paddingLeft.px]="12 + (item.treeDepth ?? 0) * 18">
               <span class="item-order">{{ i + 1 }}.</span>
-              @if ((item.depth ?? 0) > 0) {
-                <span class="item-tree" aria-hidden="true">↳</span>
+              @if ((item.treeDepth ?? 0) > 0) {
+                <mat-icon class="item-sub-icon">subdirectory_arrow_right</mat-icon>
               }
               <span class="item-name">{{ item.taskTemplateName }}</span>
               @if (item.durationMinutes != null && item.durationMinutes > 0) {
@@ -58,7 +61,7 @@
           }
         </ul>
         @if (selectedItems.length === 0) {
-          <p class="muted">Aucune tâche. Choisissez un type ci-dessus et cliquez sur Ajouter.</p>
+          <p class="muted">Aucune tâche. Choisissez une tâche principale ci-dessus et cliquez sur Ajouter.</p>
         }
 
         <div class="form-actions">

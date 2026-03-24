@@ -18,6 +18,17 @@
     min-width: 200px;
   }
 }
+.select-hint {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--app-text-soft, #666);
+}
+.item-sub-icon {
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--app-text-soft, #888);
+}
 .planning-items-list {
   list-style: none;
   padding: 0;
@@ -47,17 +58,4 @@
   color: var(--app-text-soft, #666);
   font-size: 0.9375rem;
   margin: 0 0 1rem;
-}
-.hint {
-  margin: 0 0 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.4;
-}
-.planning-items-list li.item-child {
-  padding-left: calc(0.75rem + (var(--depth, 0) * 0.65rem));
-  .item-tree {
-    color: var(--app-text-soft, #888);
-    font-size: 0.9em;
-    margin-right: 0.15rem;
-  }
 }
