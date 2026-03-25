@@ -5,6 +5,12 @@ import { environment } from '../../../environments/environment';
 export class ApiService {
   private base = environment.apiUrl;
 
+  /** Traductions UI (public, sans JWT). */
+  i18n = {
+    translations: (locale: string) =>
+      `${this.base}/api/public/translations?locale=${encodeURIComponent(locale)}`,
+  };
+
   auth = {
     login: `${this.base}/api/auth/login`,
     refresh: `${this.base}/api/auth/refresh`,
@@ -18,6 +24,7 @@ export class ApiService {
   agencies = {
     list: `${this.base}/api/agencies`,
     theme: `${this.base}/api/agencies/theme`,
+    themeByAgencyId: (id: number) => `${this.base}/api/agencies/${id}/theme`,
     branding: `${this.base}/api/agencies/branding`,
     byId: (id: number) => `${this.base}/api/agencies/${id}`,
   };

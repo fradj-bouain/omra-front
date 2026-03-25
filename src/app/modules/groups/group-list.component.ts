@@ -10,6 +10,8 @@ import { DatePipe } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 interface Group {
   id: number;
@@ -30,7 +32,17 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-group-list',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatCardModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, PageHeaderComponent],
+  imports: [
+    DatePipe,
+    RouterLink,
+    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    PageHeaderComponent,
+    TranslatePipe,
+  ],
   templateUrl: './group-list.component.html',
   styleUrl: './group-list.component.scss',
 })
@@ -42,7 +54,12 @@ export class GroupListComponent implements OnInit {
   size = 20;
   loading = false;
 
-  constructor(private http: HttpClient, private api: ApiService, private notif: NotificationService) {}
+  constructor(
+    private http: HttpClient,
+    private api: ApiService,
+    private notif: NotificationService,
+    private i18n: I18nService
+  ) {}
 
   ngOnInit(): void {
     this.load();
@@ -52,7 +69,10 @@ export class GroupListComponent implements OnInit {
     this.loading = true;
     this.http.get<PageResponse<Group>>(this.api.groups.list, { params: { page: String(this.page), size: String(this.size) } }).subscribe({
       next: (res) => { this.dataSource = res.content; this.totalElements = res.totalElements; this.loading = false; },
-      error: () => { this.notif.error('Erreur chargement groupes'); this.loading = false; },
+      error: () => {
+        this.notif.error(this.i18n.instant('err.groupsLoad'));
+        this.loading = false;
+      },
     });
   }
 
@@ -62,14 +82,8 @@ export class GroupListComponent implements OnInit {
     this.load();
   }
 
-  getStatusLabel(status: string | undefined): string {
-    if (!status) return '—';
-    const labels: Record<string, string> = {
-      OPEN: 'Ouvert',
-      CONFIRMED: 'Confirmé',
-      CLOSED: 'Fermé',
-      COMPLETED: 'Terminé',
-    };
-    return labels[status] || status;
+  getStatusKey(status: string | undefined): string {
+    if (!status) return 'common.emDash';
+    return `group.status.${status}`;
   }
 }

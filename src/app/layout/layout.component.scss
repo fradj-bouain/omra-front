@@ -1,24 +1,53 @@
-/* Layout â€” vert uniquement dans la sidebar; topbar et contenu clairs */
+/* Layout — topbar et sidebar pilotés par les variables d’agence */
 .layout {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Vert islamique + motif : sidebar uniquement */
-$sidebar-green: #0a3d2e;
 $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cdefs%3E%3Cpattern id='g' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 30h60M30 0v60' stroke='%23fff' stroke-opacity='0.06' stroke-width='0.4' fill='none'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke='%23fff' stroke-opacity='0.045' stroke-width='0.35' fill='none'/%3E%3Cpath d='M0 15l30 30l30-30' stroke='%23fff' stroke-opacity='0.03' stroke-width='0.3' fill='none'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3C/svg%3E");
 
-/* Topbar â€” clair (teinte sage tres claire, harmonieuse avec la sidebar */
-$header-bg: #eef4f2;
-$header-border: rgba(10, 61, 46, 0.12);
-
 .header {
-  background: $header-bg !important;
+  background: var(--header-bg) !important;
   color: var(--app-text);
-  box-shadow: 0 1px 3px rgba(10, 61, 46, 0.06);
-  border-bottom: 1px solid $header-border;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--sidebar-color) 10%, transparent),
+    0 4px 20px color-mix(in srgb, var(--sidebar-color) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--sidebar-color) 14%, var(--background-color) 86%);
   z-index: 10;
+  min-height: 56px;
+  height: auto;
+  padding: 0 var(--app-space-md) 0 var(--app-space-sm);
+  align-items: center;
+  gap: var(--app-space-sm);
+}
+
+.header__start {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.header__menu-btn,
+.header__user-btn {
+  flex-shrink: 0;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent) !important;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.header__user-btn {
+  border: 1px solid color-mix(in srgb, var(--sidebar-color) 18%, var(--app-border) 82%);
 }
 
 .logo {
@@ -26,7 +55,19 @@ $header-border: rgba(10, 61, 46, 0.12);
   align-items: center;
   text-decoration: none;
   color: inherit;
-  margin-left: var(--app-space-sm);
+  margin-left: 2px;
+  padding: 6px 12px;
+  border-radius: var(--app-radius-sm);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
 }
 
 .logo-img {
@@ -39,7 +80,7 @@ $header-border: rgba(10, 61, 46, 0.12);
   font-family: var(--app-display);
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--app-accent);
+  color: var(--primary-color);
 }
 
 .spacer {
@@ -99,17 +140,33 @@ $header-border: rgba(10, 61, 46, 0.12);
   margin-left: 0 !important;
 }
 
-/* Sidebar â€” same Islamic green + pattern (continuation of topbar frame) */
+/* Sidebar — plus sombre que le fond (contraste SaaS) */
 .sidenav {
-  width: 260px;
-  min-width: 260px;
-  max-width: 260px;
+  --sidenav-width: 260px;
+  --sidenav-rail-width: 76px;
+  width: var(--sidenav-width);
+  min-width: var(--sidenav-width);
+  max-width: var(--sidenav-width);
   position: relative;
-  background: linear-gradient(180deg, #0d4a3a 0%, $sidebar-green 18%, $sidebar-green 100%) !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.2);
+  transition:
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--sidebar-color) 78%, #ffffff 22%) 0%,
+    var(--sidebar-color) 22%,
+    var(--sidebar-color) 100%
+  ) !important;
+  border-right: 1px solid color-mix(in srgb, var(--sidebar-color) 65%, #000000 35%);
   overflow-x: hidden !important;
   overflow-y: auto;
 }
+
+.sidenav--rail {
+  --sidenav-width: var(--sidenav-rail-width);
+}
+
 :host ::ng-deep .sidenav.mat-drawer,
 :host ::ng-deep .sidenav {
   overflow-x: hidden !important;
@@ -186,6 +243,44 @@ $header-border: rgba(10, 61, 46, 0.12);
       color: #fff !important;
     }
   }
+}
+
+/* Rail (desktop): fixed narrow width, icons centered, labels screen-reader only */
+:host ::ng-deep .sidenav--rail {
+  .sidenav__list {
+    padding-top: var(--app-space-sm);
+  }
+
+  .mat-mdc-list-item {
+    justify-content: center;
+    margin-inline: var(--app-space-sm);
+    padding-inline: 0 !important;
+  }
+
+  .mat-mdc-list-item .mdc-list-item__content {
+    justify-content: center;
+  }
+
+  .mat-icon[matListItemIcon] {
+    margin-right: 0 !important;
+    margin-inline: 0 !important;
+  }
+
+  a.active {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  }
+}
+
+.sidenav__label-sr {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 /* No horizontal scroll in sidebar (Material drawer) */

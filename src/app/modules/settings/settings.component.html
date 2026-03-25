@@ -1,0 +1,237 @@
+<div class="settings-page">
+  <header class="settings-hero">
+    <div class="settings-hero__icon" aria-hidden="true">
+      <mat-icon>tune</mat-icon>
+    </div>
+    <div class="settings-hero__text">
+      <h1 class="settings-hero__title">{{ 'settings.title' | translate }}</h1>
+      <p class="settings-hero__subtitle">{{ 'settings.pageIntro' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="settings-grid">
+    <section class="settings-col settings-col--side">
+      <mat-card class="settings-card" appearance="outlined">
+        <mat-card-header class="settings-card__head">
+          <div mat-card-avatar class="settings-card__head-icon" aria-hidden="true">
+            <mat-icon>language</mat-icon>
+          </div>
+          <mat-card-title>{{ 'settings.language' | translate }}</mat-card-title>
+          <mat-card-subtitle>{{ 'settings.languageHint' | translate }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="settings-field">
+            <mat-label>{{ 'settings.language' | translate }}</mat-label>
+            <mat-select [value]="i18n.currentLang()" (selectionChange)="onLangChange($event)">
+              <mat-option value="fr">{{ 'login.langFr' | translate }}</mat-option>
+              <mat-option value="ar">{{ 'login.langAr' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="settings-card" appearance="outlined">
+        <mat-card-header class="settings-card__head">
+          <div mat-card-avatar class="settings-card__head-icon" aria-hidden="true">
+            <mat-icon>business</mat-icon>
+          </div>
+          <mat-card-title>{{ 'settings.agencyProfile' | translate }}</mat-card-title>
+          <mat-card-subtitle class="settings-card__head-subtitle--muted">{{ 'settings.agencyProfileHint' | translate }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          @if (auth.agency(); as agency) {
+            <div class="agency-chip">
+              <span class="agency-chip__avatar">{{ (agency.name.charAt(0) || '?') | uppercase }}</span>
+              <div class="agency-chip__body">
+                <strong class="agency-chip__name">{{ agency.name }}</strong>
+                <span class="agency-chip__email">{{ agency.email }}</span>
+              </div>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    @if (auth.agency()) {
+      <section class="settings-col settings-col--main">
+        <mat-card class="settings-card settings-card--branding" appearance="outlined">
+          <mat-card-header class="settings-card__head">
+            <div mat-card-avatar class="settings-card__head-icon settings-card__head-icon--accent" aria-hidden="true">
+              <mat-icon>palette</mat-icon>
+            </div>
+            <mat-card-title>{{ 'settings.branding' | translate }}</mat-card-title>
+            <mat-card-subtitle>{{ 'settings.brandingSubtitle' | translate }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="theme-preview-bar" [attr.aria-hidden]="true">
+              <span class="theme-preview-bar__seg" [style.background]="branding.primaryColor"></span>
+              <span class="theme-preview-bar__seg" [style.background]="branding.secondaryColor"></span>
+              <span class="theme-preview-bar__seg" [style.background]="branding.sidebarColor"></span>
+              <span class="theme-preview-bar__seg" [style.background]="branding.backgroundColor"></span>
+              <span class="theme-preview-bar__seg theme-preview-bar__seg--border" [style.background]="branding.cardColor"></span>
+              <span class="theme-preview-bar__seg" [style.background]="branding.textColor"></span>
+            </div>
+
+            <form (ngSubmit)="saveBranding()" class="branding-form">
+              <h3 class="settings-section-label">{{ 'settings.palettePreset' | translate }}</h3>
+              <p class="settings-hint">{{ 'settings.paletteHint' | translate }}</p>
+              <div class="preset-grid" role="group" [attr.aria-label]="'settings.palettePreset' | translate">
+                <button
+                  type="button"
+                  class="preset-card"
+                  [class.preset-card--active]="selectedPreset === ''"
+                  (click)="applyPresetId('')"
+                >
+                  <span class="preset-card__strip preset-card__strip--custom"></span>
+                  <span class="preset-card__name">{{ 'settings.paletteCustom' | translate }}</span>
+                </button>
+                @for (card of presetCards; track card.id) {
+                  <button
+                    type="button"
+                    class="preset-card"
+                    [class.preset-card--active]="selectedPreset === card.id"
+                    (click)="applyPresetId(card.id)"
+                  >
+                    <span class="preset-card__strip">
+                      @for (c of card.strip; track $index) {
+                        <span class="preset-card__swatch" [style.background]="c"></span>
+                      }
+                    </span>
+                    <span class="preset-card__name">{{ card.labelKey | translate }}</span>
+                  </button>
+                }
+              </div>
+
+              <h3 class="settings-section-label">{{ 'settings.themeMode' | translate }}</h3>
+              <mat-button-toggle-group
+                class="mode-toggle"
+                [(ngModel)]="branding.themeMode"
+                (ngModelChange)="onManualColor()"
+                name="themeMode"
+                aria-label="Theme mode"
+              >
+                <mat-button-toggle value="LIGHT">
+                  <mat-icon>light_mode</mat-icon>
+                  {{ 'settings.themeModeLight' | translate }}
+                </mat-button-toggle>
+                <mat-button-toggle value="DARK">
+                  <mat-icon>dark_mode</mat-icon>
+                  {{ 'settings.themeModeDark' | translate }}
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+
+              <mat-divider class="settings-divider"></mat-divider>
+
+              <h3 class="settings-section-label">{{ 'settings.mediaSection' | translate }}</h3>
+              <p class="settings-hint">{{ 'settings.storageHint' | translate }}</p>
+
+              <div class="media-blocks">
+                <div class="media-block">
+                  <span class="media-block__label">{{ 'settings.uploadLogo' | translate }}</span>
+                  <div
+                    class="media-block__drop"
+                    [class.media-block__drop--busy]="uploadingLogo"
+                    (click)="logoFileInput.click()"
+                    (keydown.enter)="logoFileInput.click()"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'settings.uploadLogo' | translate"
+                  >
+                    @if (branding.logoUrl) {
+                      <img [src]="resolveMediaUrl(branding.logoUrl)" alt="" class="media-block__img" />
+                    } @else {
+                      <mat-icon class="media-block__placeholder-icon">image</mat-icon>
+                      <span class="media-block__placeholder-text">{{ 'settings.dropHint' | translate }}</span>
+                    }
+                  </div>
+                  <input
+                    #logoFileInput
+                    type="file"
+                    class="visually-hidden"
+                    accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                    (change)="onBrandingFileSelected($event, 'logo', logoFileInput)"
+                  />
+                  <mat-form-field appearance="outline" class="settings-field">
+                    <mat-label>{{ 'settings.logoUrl' | translate }}</mat-label>
+                    <input matInput [(ngModel)]="branding.logoUrl" name="logoUrl" type="text" autocomplete="off" />
+                  </mat-form-field>
+                </div>
+
+                <div class="media-block">
+                  <span class="media-block__label">{{ 'settings.uploadFavicon' | translate }}</span>
+                  <div
+                    class="media-block__drop media-block__drop--sm"
+                    [class.media-block__drop--busy]="uploadingFavicon"
+                    (click)="faviconFileInput.click()"
+                    (keydown.enter)="faviconFileInput.click()"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'settings.uploadFavicon' | translate"
+                  >
+                    @if (branding.faviconUrl) {
+                      <img [src]="resolveMediaUrl(branding.faviconUrl)" alt="" class="media-block__img media-block__img--ico" />
+                    } @else {
+                      <mat-icon class="media-block__placeholder-icon">stars</mat-icon>
+                      <span class="media-block__placeholder-text">{{ 'settings.dropHintShort' | translate }}</span>
+                    }
+                  </div>
+                  <input
+                    #faviconFileInput
+                    type="file"
+                    class="visually-hidden"
+                    accept="image/png,image/x-icon,.ico,image/jpeg"
+                    (change)="onBrandingFileSelected($event, 'favicon', faviconFileInput)"
+                  />
+                  <mat-form-field appearance="outline" class="settings-field">
+                    <mat-label>{{ 'settings.faviconUrl' | translate }}</mat-label>
+                    <input matInput [(ngModel)]="branding.faviconUrl" name="faviconUrl" type="text" autocomplete="off" />
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <mat-divider class="settings-divider"></mat-divider>
+
+              <h3 class="settings-section-label">{{ 'settings.colorsSection' | translate }}</h3>
+              <p class="settings-hint">{{ 'settings.colorsHint' | translate }}</p>
+
+              <div class="color-grid">
+                @for (row of colorFieldRows; track row.key) {
+                  <div class="color-row">
+                    <label class="color-row__picker-wrap" [attr.title]="row.labelKey | translate">
+                      <input
+                        type="color"
+                        class="color-row__picker"
+                        [value]="hexForPicker(branding[row.key])"
+                        (input)="onColorPicker(row.key, $event)"
+                      />
+                    </label>
+                    <mat-form-field appearance="outline" class="settings-field color-row__field">
+                      <mat-label>{{ row.labelKey | translate }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="branding[row.key]"
+                        (ngModelChange)="onManualColor()"
+                        [name]="row.key"
+                        type="text"
+                        [placeholder]="row.placeholder"
+                        spellcheck="false"
+                      />
+                    </mat-form-field>
+                  </div>
+                }
+              </div>
+
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit" class="btn-save">
+                  <mat-icon>save</mat-icon>
+                  {{ 'settings.saveTheme' | translate }}
+                </button>
+                <p class="preview-hint">{{ 'settings.previewHint' | translate }}</p>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </section>
+    }
+  </div>
+</div>

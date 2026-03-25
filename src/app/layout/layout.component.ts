@@ -6,8 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule, MatDrawerMode } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { AuthService } from '../core/services/auth.service';
+import { ThemeService } from '../core/services/theme.service';
+import { TranslatePipe } from '../shared/pipes/translate.pipe';
+import { resolveMediaUrl } from '../shared/utils/media-url';
 
 @Component({
   selector: 'app-layout',
@@ -22,38 +26,45 @@ import { AuthService } from '../core/services/auth.service';
     MatSidenavModule,
     MatListModule,
     MatMenuModule,
+    MatTooltipModule,
+    TranslatePipe,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
 })
 export class LayoutComponent {
+  readonly resolveMediaUrl = resolveMediaUrl;
+
+  /** Mobile overlay: drawer visible or not. */
   opened = true;
+  /** Desktop side mode: full width vs narrow icon rail. */
+  sidebarExpanded = true;
   mode: MatDrawerMode = 'side';
   isMobile = false;
   currentYear = new Date().getFullYear();
 
   /** Menu for agency users (default). */
   menuItems = [
-    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { path: '/pilgrims', icon: 'groups', label: 'Pèlerins' },
-    { path: '/groups', icon: 'folder_special', label: 'Groupes Omra' },
-    { path: '/flights', icon: 'flight', label: 'Vols' },
-    { path: '/hotels', icon: 'hotel', label: 'Hôtels' },
-    { path: '/documents', icon: 'description', label: 'Documents' },
-    { path: '/payments', icon: 'payment', label: 'Paiements' },
-    { path: '/task-templates', icon: 'account_tree', label: 'Types de tâches' },
-    { path: '/plannings', icon: 'calendar_view_week', label: 'Plannings' },
-    { path: '/buses', icon: 'directions_bus', label: 'Bus' },
-    { path: '/notifications', icon: 'notifications', label: 'Notifications' },
-    { path: '/users', icon: 'people', label: 'Utilisateurs' },
-    { path: '/referral', icon: 'card_giftcard', label: 'Parrainage' },
+    { path: '/dashboard', icon: 'dashboard', labelKey: 'nav.dashboard' },
+    { path: '/pilgrims', icon: 'groups', labelKey: 'nav.pilgrims' },
+    { path: '/groups', icon: 'folder_special', labelKey: 'nav.groups' },
+    { path: '/flights', icon: 'flight', labelKey: 'nav.flights' },
+    { path: '/hotels', icon: 'hotel', labelKey: 'nav.hotels' },
+    { path: '/documents', icon: 'description', labelKey: 'nav.documents' },
+    { path: '/payments', icon: 'payment', labelKey: 'nav.payments' },
+    { path: '/task-templates', icon: 'account_tree', labelKey: 'nav.taskTemplates' },
+    { path: '/plannings', icon: 'calendar_view_week', labelKey: 'nav.plannings' },
+    { path: '/buses', icon: 'directions_bus', labelKey: 'nav.buses' },
+    { path: '/notifications', icon: 'notifications', labelKey: 'nav.notifications' },
+    { path: '/users', icon: 'people', labelKey: 'nav.users' },
+    { path: '/referral', icon: 'card_giftcard', labelKey: 'nav.referral' },
   ];
 
   /** Menu for platform admin (super admin): agencies only. */
   adminMenuItems = [
-    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { path: '/agencies', icon: 'business', label: 'Liste des agences' },
-    { path: '/agencies/new', icon: 'add_business', label: 'Nouvelle agence' },
+    { path: '/dashboard', icon: 'dashboard', labelKey: 'nav.dashboard' },
+    { path: '/agencies', icon: 'business', labelKey: 'nav.agencies' },
+    { path: '/agencies/new', icon: 'add_business', labelKey: 'nav.newAgency' },
   ];
 
   /** Only use overlay (drawer over content) on very small screens; otherwise side-by-side so content is always visible. */
@@ -61,20 +72,58 @@ export class LayoutComponent {
 
   constructor(
     private breakpoint: BreakpointObserver,
-    public auth: AuthService
+    public auth: AuthService,
+    private theme: ThemeService
   ) {
     this.breakpoint.observe([this.overlayBreakpoint]).subscribe((state: BreakpointState) => {
       this.isMobile = state.matches;
       this.mode = this.isMobile ? 'over' : 'side';
-      this.opened = true; // keep sidebar open by default so content shows beside it
+      if (this.isMobile) {
+        this.opened = false;
+      } else {
+        this.opened = true;
+      }
     });
   }
 
+  /** Drawer is always in the document flow on desktop; mobile uses overlay. */
+  get sidenavOpened(): boolean {
+    return this.isMobile ? this.opened : true;
+  }
+
+  onSidenavOpenedChange(next: boolean): void {
+    if (this.isMobile) this.opened = next;
+  }
+
+  showNavLabels(): boolean {
+    if (this.isMobile) return this.opened;
+    return this.sidebarExpanded;
+  }
+
+  navToggleIcon(): string {
+    if (this.isMobile) return this.opened ? 'close' : 'menu';
+    return this.sidebarExpanded ? 'menu_open' : 'menu';
+  }
+
+  navToggleTooltipKey(): string {
+    if (this.isMobile) return this.opened ? 'common.close' : 'layout.toggleMenu';
+    return this.sidebarExpanded ? 'layout.collapseNav' : 'layout.expandNav';
+  }
+
   toggleSidebar(): void {
-    this.opened = !this.opened;
+    if (this.isMobile) {
+      this.opened = !this.opened;
+    } else {
+      this.sidebarExpanded = !this.sidebarExpanded;
+    }
   }
 
   closeIfMobile(): void {
     if (this.isMobile) this.opened = false;
+  }
+
+  logout(): void {
+    this.theme.resetToDefaults();
+    this.auth.logout();
   }
 }

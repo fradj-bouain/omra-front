@@ -7,7 +7,7 @@
 >
   <mat-tab>
     <ng-template mat-tab-label>
-      <span class="tab-label"><mat-icon>calendar_view_week</mat-icon> Planning</span>
+      <span class="tab-label"><mat-icon>calendar_view_week</mat-icon> {{ 'groupTabs.planning' | translate }}</span>
     </ng-template>
     <div class="tab-panel">
       <ng-content select="[tab-planning]"></ng-content>
@@ -16,7 +16,7 @@
 
   <mat-tab>
     <ng-template mat-tab-label>
-      <span class="tab-label"><mat-icon>groups</mat-icon> Pèlerins</span>
+      <span class="tab-label"><mat-icon>groups</mat-icon> {{ 'groupTabs.pilgrims' | translate }}</span>
     </ng-template>
     <div class="tab-panel">
       <ng-content select="[tab-pilgrims]"></ng-content>
@@ -25,7 +25,7 @@
 
   <mat-tab>
     <ng-template mat-tab-label>
-      <span class="tab-label"><mat-icon>flight</mat-icon> Vols</span>
+      <span class="tab-label"><mat-icon>flight</mat-icon> {{ 'groupTabs.flightsBus' | translate }}</span>
     </ng-template>
     <div class="tab-panel">
       <ng-content select="[tab-flights]"></ng-content>
@@ -34,7 +34,7 @@
 
   <mat-tab>
     <ng-template mat-tab-label>
-      <span class="tab-label"><mat-icon>hotel</mat-icon> Hôtels</span>
+      <span class="tab-label"><mat-icon>hotel</mat-icon> {{ 'groupTabs.hotels' | translate }}</span>
     </ng-template>
     <div class="tab-panel">
       <ng-content select="[tab-hotels]"></ng-content>
@@ -43,7 +43,7 @@
 
   <mat-tab>
     <ng-template mat-tab-label>
-      <span class="tab-label"><mat-icon>credit_card</mat-icon> Paiements</span>
+      <span class="tab-label"><mat-icon>credit_card</mat-icon> {{ 'groupTabs.paymentsCosts' | translate }}</span>
     </ng-template>
     <div class="tab-panel">
       <ng-content select="[tab-payments]"></ng-content>
@@ -52,7 +52,7 @@
 
   <mat-tab>
     <ng-template mat-tab-label>
-      <span class="tab-label"><mat-icon>description</mat-icon> Documents</span>
+      <span class="tab-label"><mat-icon>description</mat-icon> {{ 'groupTabs.documents' | translate }}</span>
     </ng-template>
     <div class="tab-panel">
       <ng-content select="[tab-documents]"></ng-content>

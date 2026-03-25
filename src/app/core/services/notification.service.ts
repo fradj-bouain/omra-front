@@ -5,10 +5,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class NotificationService {
   constructor(private snackBar: MatSnackBar) {}
 
+  /** Succès API : snackbar verte (fixe, hors thème agence — voir styles .snack-success). */
   success(message: string): void {
     this.snackBar.open(message, 'Fermer', { duration: 4000, panelClass: ['snack-success'] });
   }
 
+  /** Erreur API : snackbar rouge (fixe, hors thème agence — voir styles .snack-error). */
   error(message: string): void {
     this.snackBar.open(message, 'Fermer', { duration: 6000, panelClass: ['snack-error'] });
   }

@@ -13,6 +13,8 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 interface Pilgrim {
   id: number;
@@ -48,6 +50,7 @@ interface PageResponse<T> {
     MatTooltipModule,
     FormsModule,
     PageHeaderComponent,
+    TranslatePipe,
   ],
   templateUrl: './pilgrim-list.component.html',
   styleUrl: './pilgrim-list.component.scss',
@@ -64,7 +67,8 @@ export class PilgrimListComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private api: ApiService,
-    private notif: NotificationService
+    private notif: NotificationService,
+    private i18n: I18nService
   ) {}
 
   ngOnInit(): void {
@@ -80,7 +84,7 @@ export class PilgrimListComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.notif.error('Erreur chargement pèlerins');
+        this.notif.error(this.i18n.instant('err.pilgrimsLoad'));
         this.loading = false;
       },
     });
@@ -92,24 +96,19 @@ export class PilgrimListComponent implements OnInit {
     this.load();
   }
 
-  getVisaLabel(status: string | undefined): string {
-    if (!status) return '—';
-    const labels: Record<string, string> = {
-      PENDING: 'En attente',
-      APPROVED: 'Approuvé',
-      REJECTED: 'Refusé',
-    };
-    return labels[status] || status;
+  getVisaKey(status: string | undefined): string {
+    if (!status) return 'visa.unknown';
+    return `visa.${status.toLowerCase()}`;
   }
 
   delete(id: number): void {
-    if (!confirm('Supprimer ce pèlerin ?')) return;
+    if (!confirm(this.i18n.instant('pilgrims.deleteConfirm'))) return;
     this.http.delete(this.api.pilgrims.byId(id)).subscribe({
       next: () => {
-        this.notif.success('Pèlerin supprimé');
+        this.notif.success(this.i18n.instant('pilgrims.deleted'));
         this.load();
       },
-      error: () => this.notif.error('Erreur suppression'),
+      error: () => this.notif.error(this.i18n.instant('err.delete')),
     });
   }
 }

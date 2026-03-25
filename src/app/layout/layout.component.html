@@ -1,17 +1,35 @@
 <div class="layout">
   <mat-toolbar class="header">
-    <button mat-icon-button (click)="toggleSidebar()" aria-label="Toggle menu">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <a routerLink="/dashboard" class="logo">
-      @if (auth.agency()?.logoUrl) {
-        <img [src]="auth.agency()!.logoUrl" alt="Logo" class="logo-img" />
-      } @else {
-        <span class="logo-text">Omra</span>
-      }
-    </a>
+    <div class="header__start">
+      <button
+        mat-icon-button
+        type="button"
+        class="header__menu-btn"
+        (click)="toggleSidebar()"
+        [matTooltip]="navToggleTooltipKey() | translate"
+        matTooltipShowDelay="400"
+        [attr.aria-label]="navToggleTooltipKey() | translate"
+      >
+        <mat-icon>{{ navToggleIcon() }}</mat-icon>
+      </button>
+      <a routerLink="/dashboard" class="logo">
+        @if (auth.agency()?.logoUrl) {
+          <img [src]="resolveMediaUrl(auth.agency()!.logoUrl)" [attr.alt]="'layout.logoAlt' | translate" class="logo-img" />
+        } @else {
+          <span class="logo-text">Omra</span>
+        }
+      </a>
+    </div>
     <span class="spacer"></span>
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+    <button
+      mat-icon-button
+      type="button"
+      class="header__user-btn"
+      [matMenuTriggerFor]="userMenu"
+      [matTooltip]="'layout.userMenu' | translate"
+      matTooltipShowDelay="500"
+      [attr.aria-label]="'layout.userMenu' | translate"
+    >
       <mat-icon>account_circle</mat-icon>
     </button>
     <mat-menu #userMenu="matMenu">
@@ -21,22 +39,24 @@
       </div>
       <button mat-menu-item routerLink="/settings" (click)="closeIfMobile()">
         <mat-icon>settings</mat-icon>
-        <span>Paramètres</span>
+        <span>{{ 'layout.settings' | translate }}</span>
       </button>
-      <button mat-menu-item (click)="auth.logout()">
+      <button mat-menu-item (click)="logout()">
         <mat-icon>logout</mat-icon>
-        <span>Déconnexion</span>
+        <span>{{ 'layout.logout' | translate }}</span>
       </button>
     </mat-menu>
   </mat-toolbar>
 
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav
-      [(opened)]="opened"
+      [opened]="sidenavOpened"
+      (openedChange)="onSidenavOpenedChange($event)"
       [mode]="mode"
       class="sidenav"
+      [class.sidenav--rail]="!isMobile && !sidebarExpanded"
     >
-      <mat-nav-list>
+      <mat-nav-list class="sidenav__list">
         @for (item of (auth.isAdmin() ? adminMenuItems : menuItems); track item.path) {
           <a
             mat-list-item
@@ -44,9 +64,18 @@
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }"
             (click)="closeIfMobile()"
+            [matTooltip]="item.labelKey | translate"
+            [matTooltipDisabled]="showNavLabels()"
+            matTooltipPosition="after"
+            matTooltipShowDelay="300"
           >
             <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-            <span matListItemTitle>{{ item.label }}</span>
+            <span
+              matListItemTitle
+              [class.sidenav__label-sr]="!showNavLabels()"
+            >
+              {{ item.labelKey | translate }}
+            </span>
           </a>
         }
       </mat-nav-list>
@@ -56,7 +85,7 @@
         <router-outlet></router-outlet>
       </main>
       <footer class="footer">
-        <span>© {{ currentYear }} Omra Dashboard</span>
+        <span>{{ 'layout.footer' | translate: { year: currentYear } }}</span>
       </footer>
     </mat-sidenav-content>
   </mat-sidenav-container>

@@ -30,10 +30,14 @@ export interface Agency {
   email: string;
   logoUrl?: string;
   primaryColor?: string;
+  secondaryColor?: string;
+  sidebarColor?: string;
   menuColor?: string;
   buttonColor?: string;
   backgroundColor?: string;
+  cardColor?: string;
   textColor?: string;
+  themeMode?: 'LIGHT' | 'DARK';
 }
 
 export interface AuthResponse {

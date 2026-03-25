@@ -1,6 +1,6 @@
 <app-page-header
-  [title]="group?.name ?? 'Détail groupe'"
-  actionLabel="Retour aux groupes"
+  [title]="(group?.name || ('groups.detail.titleFallback' | translate))"
+  [actionLabel]="'groups.detail.back' | translate"
   actionLink="/groups"
   actionIcon="arrow_back"
 ></app-page-header>
@@ -16,7 +16,7 @@
   <section class="loading-section">
     <div class="loading-state">
       <div class="loading-spinner"></div>
-      <p>Chargement du groupe…</p>
+      <p>{{ 'groups.detail.loading' | translate }}</p>
     </div>
   </section>
 } @else if (group) {
@@ -26,11 +26,11 @@
     <div class="quick-actions">
       <a mat-stroked-button [routerLink]="['/task-templates']" class="quick-actions__btn">
         <mat-icon>add_task</mat-icon>
-        Ajouter une tâche
+        {{ 'groups.detail.addTask' | translate }}
       </a>
       <a mat-stroked-button [routerLink]="['/pilgrims/new']" class="quick-actions__btn">
         <mat-icon>person_add</mat-icon>
-        Ajouter un pèlerin
+        {{ 'groups.detail.addPilgrim' | translate }}
       </a>
       <a
         mat-flat-button
@@ -40,7 +40,7 @@
         class="quick-actions__btn quick-actions__btn--primary"
       >
         <mat-icon>payments</mat-icon>
-        Ajouter un paiement
+        {{ 'groups.detail.addPayment' | translate }}
       </a>
     </div>
 
@@ -56,12 +56,19 @@
       <div tab-planning class="tab-section">
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>calendar_month</mat-icon> Planning</mat-card-title>
+            <mat-card-title
+              ><mat-icon>calendar_month</mat-icon> {{ 'groups.planning.cardTitle' | translate }}</mat-card-title
+            >
             <div class="card-actions">
-              <a mat-icon-button [routerLink]="['/plannings/new']" matTooltip="Créer un planning">
+              <a mat-icon-button [routerLink]="['/plannings/new']" [matTooltip]="'groups.planning.create' | translate">
                 <mat-icon>add</mat-icon>
               </a>
-              <button mat-icon-button type="button" (click)="toggleLinkPlanning()" matTooltip="Associer un planning au groupe">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="toggleLinkPlanning()"
+                [matTooltip]="'groups.planning.link' | translate"
+              >
                 <mat-icon>link</mat-icon>
               </button>
             </div>
@@ -70,9 +77,9 @@
             @if (showLinkPlanning) {
               <div class="inline-form">
                 <mat-form-field appearance="outline">
-                  <mat-label>Planning</mat-label>
+                  <mat-label>{{ 'groups.planning.select' | translate }}</mat-label>
                   <mat-select [(ngModel)]="selectedPlanningIdToLink">
-                    <mat-option [value]="null">— Choisir —</mat-option>
+                    <mat-option [value]="null">{{ 'groups.planning.choose' | translate }}</mat-option>
                     @for (p of allPlannings; track p.id) {
                       <mat-option [value]="p.id">{{ p.name }}</mat-option>
                     }
@@ -85,7 +92,7 @@
                   (click)="linkPlanning()"
                   [disabled]="!selectedPlanningIdToLink || linkingPlanning"
                 >
-                  {{ linkingPlanning ? 'Association…' : 'Associer au groupe' }}
+                  {{ linkingPlanning ? ('groups.planning.linking' | translate) : ('groups.planning.linkBtn' | translate) }}
                 </button>
               </div>
             }
@@ -103,18 +110,18 @@
       <div tab-pilgrims class="tab-section">
         <div class="tab-toolbar">
           <mat-form-field appearance="outline" class="tab-toolbar__search">
-            <mat-label>Rechercher</mat-label>
+            <mat-label>{{ 'groups.pilgrims.search' | translate }}</mat-label>
             <input
               matInput
               [(ngModel)]="pilgrimSearch"
               (ngModelChange)="onPilgrimSearchChange()"
-              placeholder="Nom, passeport, téléphone…"
+              [placeholder]="'groups.pilgrims.searchPh' | translate"
             />
             <mat-icon matPrefix>search</mat-icon>
           </mat-form-field>
           <button mat-flat-button color="primary" (click)="toggleAddPilgrim()">
             <mat-icon>person_add</mat-icon>
-            Ajouter
+            {{ 'groups.pilgrims.add' | translate }}
           </button>
         </div>
 
@@ -123,7 +130,7 @@
             <mat-card-content>
               <div class="inline-form">
                 <mat-form-field appearance="outline" class="pilgrim-autocomplete">
-                  <mat-label>Pèlerin</mat-label>
+                  <mat-label>{{ 'groups.pilgrims.pilgrim' | translate }}</mat-label>
                   <input
                     matInput
                     [(ngModel)]="pilgrimSearchInput"
@@ -131,13 +138,13 @@
                     #pilgrimTrigger="matAutocompleteTrigger"
                     (focus)="pilgrimTrigger.openPanel()"
                     (input)="pilgrimTrigger.openPanel()"
-                    placeholder="Tapez pour rechercher…"
+                    [placeholder]="'groups.pilgrims.typeSearch' | translate"
                   />
                   <mat-autocomplete #pilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
                     @if (loadingPilgrims) {
-                      <mat-option disabled>Chargement…</mat-option>
+                      <mat-option disabled>{{ 'groups.pilgrims.loadingP' | translate }}</mat-option>
                     } @else if (filteredPilgrims.length === 0) {
-                      <mat-option disabled>Aucun pèlerin trouvé</mat-option>
+                      <mat-option disabled>{{ 'groups.pilgrims.noneFound' | translate }}</mat-option>
                     } @else {
                       @for (p of filteredPilgrims; track p.id) {
                         <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>
@@ -151,7 +158,7 @@
                   (click)="addPilgrim()"
                   [disabled]="!selectedPilgrimId || addingPilgrim"
                 >
-                  Ajouter au groupe
+                  {{ 'groups.pilgrims.addToGroup' | translate }}
                 </button>
               </div>
             </mat-card-content>
@@ -161,30 +168,30 @@
         <div class="table-card">
           <table mat-table [dataSource]="pilgrimTableRows" class="pilgrim-table">
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Nom</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.name' | translate }}</th>
               <td mat-cell *matCellDef="let p">
                 <a [routerLink]="['/pilgrims', p.id]" class="cell-link">{{ p.firstName }} {{ p.lastName }}</a>
               </td>
             </ng-container>
             <ng-container matColumnDef="passport">
-              <th mat-header-cell *matHeaderCellDef>Passeport</th>
-              <td mat-cell *matCellDef="let p">{{ p.passportNumber || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.passport' | translate }}</th>
+              <td mat-cell *matCellDef="let p">{{ p.passportNumber || ('common.emDash' | translate) }}</td>
             </ng-container>
             <ng-container matColumnDef="phone">
-              <th mat-header-cell *matHeaderCellDef>Téléphone</th>
-              <td mat-cell *matCellDef="let p">{{ p.phone || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.phone' | translate }}</th>
+              <td mat-cell *matCellDef="let p">{{ p.phone || ('common.emDash' | translate) }}</td>
             </ng-container>
             <ng-container matColumnDef="visa">
-              <th mat-header-cell *matHeaderCellDef>Visa</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.visa' | translate }}</th>
               <td mat-cell *matCellDef="let p">
-                <span class="visa-pill" [ngClass]="visaClass(p.visaStatus)">{{ visaLabel(p.visaStatus) }}</span>
+                <span class="visa-pill" [ngClass]="visaClass(p.visaStatus)">{{ visaKey(p.visaStatus) | translate }}</span>
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="pilgrimColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: pilgrimColumns"></tr>
           </table>
           @if (!pilgrimTableRows.length) {
-            <p class="table-empty">Aucun pèlerin ne correspond à la recherche.</p>
+            <p class="table-empty">{{ 'groups.pilgrims.tableEmpty' | translate }}</p>
           }
           <mat-paginator
             [length]="pilgrimTableTotal"
@@ -198,20 +205,20 @@
 
         <mat-card class="section-card section-card--nested">
           <mat-card-header>
-            <mat-card-title><mat-icon>support_agent</mat-icon> Accompagnateurs</mat-card-title>
+            <mat-card-title><mat-icon>support_agent</mat-icon> {{ 'groups.companions.title' | translate }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <p class="form-hint">Utilisateurs avec le rôle « Accompagnateur pèlerinage » affectés à ce groupe.</p>
+            <p class="form-hint">{{ 'groups.companions.hint' | translate }}</p>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Accompagnateur(s)</mat-label>
-              <mat-select [(ngModel)]="selectedCompanionIds" placeholder="Choisir un ou plusieurs" multiple>
+              <mat-label>{{ 'groups.companions.select' | translate }}</mat-label>
+              <mat-select [(ngModel)]="selectedCompanionIds" [placeholder]="'groups.companions.placeholder' | translate" multiple>
                 @for (c of companionOptions; track c.id) {
                   <mat-option [value]="c.id">{{ c.name }}{{ c.email ? ' (' + c.email + ')' : '' }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
             <button mat-flat-button color="primary" (click)="saveCompanions()" [disabled]="savingCompanions">
-              {{ savingCompanions ? 'Enregistrement…' : 'Enregistrer les accompagnateurs' }}
+              {{ savingCompanions ? ('groups.companions.saving' | translate) : ('groups.companions.save' | translate) }}
             </button>
           </mat-card-content>
         </mat-card>
@@ -220,12 +227,19 @@
       <div tab-flights class="tab-section">
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>flight</mat-icon> Vols ({{ flights.length }})</mat-card-title>
+            <mat-card-title
+              ><mat-icon>flight</mat-icon> {{ 'groups.flights.title' | translate }} ({{ flights.length }})</mat-card-title
+            >
             <div class="card-actions">
-              <a mat-icon-button [routerLink]="['/flights/new']" [queryParams]="{ groupId: groupId }" matTooltip="Créer un vol">
+              <a
+                mat-icon-button
+                [routerLink]="['/flights/new']"
+                [queryParams]="{ groupId: groupId }"
+                [matTooltip]="'groups.flights.create' | translate"
+              >
                 <mat-icon>add</mat-icon>
               </a>
-              <button mat-icon-button (click)="toggleLinkFlight()" matTooltip="Lier un vol">
+              <button mat-icon-button (click)="toggleLinkFlight()" [matTooltip]="'groups.flights.link' | translate">
                 <mat-icon>link</mat-icon>
               </button>
             </div>
@@ -234,9 +248,9 @@
             @if (showLinkFlight) {
               <div class="inline-form">
                 <mat-form-field appearance="outline">
-                  <mat-label>Vol</mat-label>
+                  <mat-label>{{ 'groups.flights.select' | translate }}</mat-label>
                   <mat-select [(ngModel)]="selectedFlightId">
-                    <mat-option [value]="null">— Choisir —</mat-option>
+                    <mat-option [value]="null">{{ 'groups.planning.choose' | translate }}</mat-option>
                     @for (f of allFlights; track f.id) {
                       <mat-option [value]="f.id"
                         >{{ f.airline }} {{ f.flightNumber }} — {{ f.departureCity }} → {{ f.arrivalCity }}</mat-option
@@ -245,7 +259,7 @@
                   </mat-select>
                 </mat-form-field>
                 <button mat-flat-button color="primary" (click)="linkFlight()" [disabled]="!selectedFlightId || linkingFlight">
-                  Lier
+                  {{ 'groups.flights.linkBtn' | translate }}
                 </button>
               </div>
             }
@@ -253,21 +267,24 @@
               <ul class="compact-list">
                 @for (f of flights; track f.id) {
                   <li>
-                    {{ f.airline || 'Vol' }} {{ f.flightNumber || '' }} — {{ f.departureCity || '?' }} → {{ f.arrivalCity || '?' }}
+                    {{ f.airline || ('cost.FLIGHT' | translate) }} {{ f.flightNumber || '' }} —
+                    {{ f.departureCity || ('common.unknown' | translate) }} → {{ f.arrivalCity || ('common.unknown' | translate) }}
                   </li>
                 }
               </ul>
-              <a mat-button [routerLink]="['/flights']" class="link-more">Voir tous les vols</a>
+              <a mat-button [routerLink]="['/flights']" class="link-more">{{ 'groups.flights.seeAll' | translate }}</a>
             } @else if (!showLinkFlight) {
-              <p class="muted">Aucun vol lié. Créez ou liez un vol.</p>
+              <p class="muted">{{ 'groups.flights.none' | translate }}</p>
             }
           </mat-card-content>
         </mat-card>
 
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>directions_bus</mat-icon> Bus ({{ groupBuses.length }})</mat-card-title>
-            <button mat-icon-button (click)="toggleLinkBus()" matTooltip="Lier un bus">
+            <mat-card-title
+              ><mat-icon>directions_bus</mat-icon> {{ 'groups.bus.title' | translate }} ({{ groupBuses.length }})</mat-card-title
+            >
+            <button mat-icon-button (click)="toggleLinkBus()" [matTooltip]="'groups.bus.link' | translate">
               <mat-icon>link</mat-icon>
             </button>
           </mat-card-header>
@@ -275,26 +292,28 @@
             @if (showLinkBus) {
               <div class="inline-form">
                 <mat-form-field appearance="outline">
-                  <mat-label>Bus</mat-label>
+                  <mat-label>{{ 'groups.bus.select' | translate }}</mat-label>
                   <mat-select [(ngModel)]="selectedBusId">
-                    <mat-option [value]="null">— Choisir —</mat-option>
+                    <mat-option [value]="null">{{ 'groups.planning.choose' | translate }}</mat-option>
                     @for (b of allBuses; track b.id) {
-                      <mat-option [value]="b.id">{{ b.plate || 'Bus #' + b.id }} ({{ b.capacity ?? '?' }} places)</mat-option>
+                      <mat-option [value]="b.id">{{ busIdPart(b) }} ({{ busSeatPart(b) }})</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
-                <button mat-flat-button color="primary" (click)="linkBus()" [disabled]="!selectedBusId || linkingBus">Lier</button>
+                <button mat-flat-button color="primary" (click)="linkBus()" [disabled]="!selectedBusId || linkingBus">
+                  {{ 'groups.flights.linkBtn' | translate }}
+                </button>
               </div>
             }
             @if (groupBuses.length) {
               <ul class="compact-list">
                 @for (b of groupBuses; track b.id) {
-                  <li>{{ b.plate || 'Bus #' + b.id }} — {{ b.capacity ?? '?' }} places</li>
+                  <li>{{ busIdPart(b) }} — {{ busSeatPart(b) }}</li>
                 }
               </ul>
-              <a mat-button [routerLink]="['/buses']" class="link-more">Voir les bus</a>
+              <a mat-button [routerLink]="['/buses']" class="link-more">{{ 'groups.bus.seeAll' | translate }}</a>
             } @else if (!showLinkBus) {
-              <p class="muted">Aucun bus lié.</p>
+              <p class="muted">{{ 'groups.bus.none' | translate }}</p>
             }
           </mat-card-content>
         </mat-card>
@@ -303,8 +322,10 @@
       <div tab-hotels class="tab-section">
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>hotel</mat-icon> Hôtels ({{ groupHotels.length }})</mat-card-title>
-            <button mat-icon-button (click)="toggleAssignHotel()" matTooltip="Assigner un hôtel">
+            <mat-card-title
+              ><mat-icon>hotel</mat-icon> {{ 'groups.hotels.title' | translate }} ({{ groupHotels.length }})</mat-card-title
+            >
+            <button mat-icon-button (click)="toggleAssignHotel()" [matTooltip]="'groups.hotels.assign' | translate">
               <mat-icon>add</mat-icon>
             </button>
           </mat-card-header>
@@ -312,54 +333,61 @@
             @if (showAssignHotel) {
               <div class="inline-form block">
                 <mat-form-field appearance="outline">
-                  <mat-label>Hôtel</mat-label>
+                  <mat-label>{{ 'groups.hotels.hotel' | translate }}</mat-label>
                   <mat-select [(ngModel)]="assignHotelForm.hotelId">
-                    <mat-option [value]="null">— Choisir —</mat-option>
+                    <mat-option [value]="null">{{ 'groups.planning.choose' | translate }}</mat-option>
                     @for (h of allHotels; track h.id) {
                       <mat-option [value]="h.id">{{ h.name }} ({{ h.city || '' }})</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Check-in</mat-label>
-                  <input matInput [matDatepicker]="inPicker" [(ngModel)]="assignHotelForm.checkIn" placeholder="jj/mm/aaaa" />
+                  <mat-label>{{ 'groups.hotels.checkIn' | translate }}</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="inPicker"
+                    [(ngModel)]="assignHotelForm.checkIn"
+                    [placeholder]="'common.datePlaceholder' | translate"
+                  />
                   <mat-datepicker-toggle matIconSuffix [for]="inPicker" />
                   <mat-datepicker #inPicker />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Check-out</mat-label>
-                  <input matInput [matDatepicker]="outPicker" [(ngModel)]="assignHotelForm.checkOut" placeholder="jj/mm/aaaa" />
+                  <mat-label>{{ 'groups.hotels.checkOut' | translate }}</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="outPicker"
+                    [(ngModel)]="assignHotelForm.checkOut"
+                    [placeholder]="'common.datePlaceholder' | translate"
+                  />
                   <mat-datepicker-toggle matIconSuffix [for]="outPicker" />
                   <mat-datepicker #outPicker />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Ville</mat-label>
+                  <mat-label>{{ 'groups.hotels.city' | translate }}</mat-label>
                   <mat-select [(ngModel)]="assignHotelForm.city">
-                    <mat-option value="MAKKAH">Makkah</mat-option>
-                    <mat-option value="MADINAH">Madinah</mat-option>
+                    <mat-option value="MAKKAH">{{ 'groups.hotels.makkah' | translate }}</mat-option>
+                    <mat-option value="MADINAH">{{ 'groups.hotels.madinah' | translate }}</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Type de chambre</mat-label>
+                  <mat-label>{{ 'groups.hotels.roomType' | translate }}</mat-label>
                   <input matInput [(ngModel)]="assignHotelForm.roomType" />
                 </mat-form-field>
                 <button mat-flat-button color="primary" (click)="assignHotel()" [disabled]="!assignHotelForm.hotelId || assigningHotel">
-                  Assigner
+                  {{ 'groups.hotels.assignBtn' | translate }}
                 </button>
               </div>
             }
             @if (groupHotels.length) {
               <ul class="compact-list">
                 @for (h of groupHotels; track h.id) {
-                  <li>
-                    Hôtel #{{ h.hotelId }} — {{ h.checkIn ? (h.checkIn | date: 'dd/MM/yyyy') : '?' }} /
-                    {{ h.checkOut ? (h.checkOut | date: 'dd/MM/yyyy') : '?' }}
-                  </li>
+                  <li>{{ hotelAssignLine(h) }}</li>
                 }
               </ul>
-              <a mat-button [routerLink]="['/hotels']" class="link-more">Voir les hôtels</a>
+              <a mat-button [routerLink]="['/hotels']" class="link-more">{{ 'groups.hotels.seeAll' | translate }}</a>
             } @else if (!showAssignHotel) {
-              <p class="muted">Aucun hôtel assigné.</p>
+              <p class="muted">{{ 'groups.hotels.none' | translate }}</p>
             }
           </mat-card-content>
         </mat-card>
@@ -368,8 +396,15 @@
       <div tab-payments class="tab-section">
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>credit_card</mat-icon> Paiements ({{ groupPayments.length }})</mat-card-title>
-            <a mat-icon-button [routerLink]="['/payments/new']" [queryParams]="{ groupId: groupId }" matTooltip="Nouveau paiement">
+            <mat-card-title
+              ><mat-icon>credit_card</mat-icon> {{ 'groups.payments.title' | translate }} ({{ groupPayments.length }})</mat-card-title
+            >
+            <a
+              mat-icon-button
+              [routerLink]="['/payments/new']"
+              [queryParams]="{ groupId: groupId }"
+              [matTooltip]="'groups.payments.new' | translate"
+            >
               <mat-icon>add</mat-icon>
             </a>
           </mat-card-header>
@@ -379,20 +414,22 @@
                 @for (p of groupPayments; track p.id) {
                   <li>
                     <span class="pay-amount">{{ p.amount | number: '1.0-0' }} {{ p.currency }}</span>
-                    <span class="pay-status">{{ paymentStatusLabel(p.status) }}</span>
+                    <span class="pay-status">{{ paymentStatusKey(p.status) | translate }}</span>
                   </li>
                 }
               </ul>
             } @else {
-              <p class="muted">Aucun paiement enregistré pour ce groupe.</p>
+              <p class="muted">{{ 'groups.payments.none' | translate }}</p>
             }
           </mat-card-content>
         </mat-card>
 
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>receipt</mat-icon> Coûts voyage ({{ tripCosts.length }})</mat-card-title>
-            <button mat-icon-button (click)="toggleAddCost()" matTooltip="Ajouter un coût">
+            <mat-card-title
+              ><mat-icon>receipt</mat-icon> {{ 'groups.costs.title' | translate }} ({{ tripCosts.length }})</mat-card-title
+            >
+            <button mat-icon-button (click)="toggleAddCost()" [matTooltip]="'groups.costs.add' | translate">
               <mat-icon>add</mat-icon>
             </button>
           </mat-card-header>
@@ -400,36 +437,38 @@
             @if (showAddCost) {
               <div class="inline-form block">
                 <mat-form-field appearance="outline">
-                  <mat-label>Type</mat-label>
+                  <mat-label>{{ 'groups.costs.type' | translate }}</mat-label>
                   <mat-select [(ngModel)]="costForm.type">
                     @for (t of tripCostTypes; track t) {
-                      <mat-option [value]="t">{{ getCostTypeLabel(t) }}</mat-option>
+                      <mat-option [value]="t">{{ ('cost.' + t) | translate }}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Montant</mat-label>
+                  <mat-label>{{ 'groups.costs.amount' | translate }}</mat-label>
                   <input matInput type="number" step="0.01" [(ngModel)]="costForm.amount" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Devise</mat-label>
+                  <mat-label>{{ 'groups.costs.currency' | translate }}</mat-label>
                   <input matInput [(ngModel)]="costForm.currency" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Description</mat-label>
+                  <mat-label>{{ 'groups.costs.description' | translate }}</mat-label>
                   <input matInput [(ngModel)]="costForm.description" />
                 </mat-form-field>
-                <button mat-flat-button color="primary" (click)="addCost()" [disabled]="addingCost">Ajouter</button>
+                <button mat-flat-button color="primary" (click)="addCost()" [disabled]="addingCost">
+                  {{ 'groups.costs.addBtn' | translate }}
+                </button>
               </div>
             }
             @if (tripCosts.length) {
               <ul class="compact-list">
                 @for (c of tripCosts; track c.id) {
-                  <li>{{ getCostTypeLabel(c.type) }} — {{ c.amount | number: '1.0-0' }} {{ c.currency }}</li>
+                  <li>{{ ('cost.' + c.type) | translate }} — {{ c.amount | number: '1.0-0' }} {{ c.currency }}</li>
                 }
               </ul>
             } @else if (!showAddCost) {
-              <p class="muted">Aucun coût. Cliquez sur + pour en ajouter.</p>
+              <p class="muted">{{ 'groups.costs.none' | translate }}</p>
             }
           </mat-card-content>
         </mat-card>
@@ -438,8 +477,10 @@
       <div tab-documents class="tab-section">
         <mat-card class="section-card">
           <mat-card-header>
-            <mat-card-title><mat-icon>description</mat-icon> Documents ({{ groupDocuments.length }})</mat-card-title>
-            <a mat-icon-button [routerLink]="['/documents']" matTooltip="Gestion des documents">
+            <mat-card-title
+              ><mat-icon>description</mat-icon> {{ 'groups.docs.title' | translate }} ({{ groupDocuments.length }})</mat-card-title
+            >
+            <a mat-icon-button [routerLink]="['/documents']" [matTooltip]="'groups.docs.manage' | translate">
               <mat-icon>open_in_new</mat-icon>
             </a>
           </mat-card-header>
@@ -454,7 +495,7 @@
                 }
               </ul>
             } @else {
-              <p class="muted">Aucun document lié à ce groupe (filtré sur les documents avec ce groupe).</p>
+              <p class="muted">{{ 'groups.docs.none' | translate }}</p>
             }
           </mat-card-content>
         </mat-card>

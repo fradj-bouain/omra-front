@@ -5,6 +5,7 @@ import { ApiService } from '../core/services/api.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { TranslatePipe } from '../shared/pipes/translate.pipe';
 
 export interface DashboardStats {
   totalPilgrims: number;
@@ -32,7 +33,7 @@ export interface DashboardChartDto {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, MatCardModule, MatIconModule, MatTableModule],
+  imports: [DecimalPipe, MatCardModule, MatIconModule, MatTableModule, TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

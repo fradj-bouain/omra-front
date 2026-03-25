@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe, NgClass, formatDate } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
@@ -27,6 +27,8 @@ import { GroupHeaderComponent } from './components/group-header/group-header.com
 import { GroupStatsComponent } from './components/group-stats/group-stats.component';
 import { GroupTabsComponent } from './components/group-tabs/group-tabs.component';
 import { PlanningTabComponent } from './components/planning-tab/planning-tab.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 interface Group {
   id: number;
@@ -129,7 +131,6 @@ interface PageResponse<T> {
   standalone: true,
   imports: [
     RouterLink,
-    DatePipe,
     DecimalPipe,
     NgClass,
     FormsModule,
@@ -150,6 +151,7 @@ interface PageResponse<T> {
     GroupStatsComponent,
     GroupTabsComponent,
     PlanningTabComponent,
+    TranslatePipe,
   ],
   templateUrl: './group-detail.component.html',
   styleUrl: './group-detail.component.scss',
@@ -233,14 +235,15 @@ export class GroupDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private api: ApiService,
-    private notif: NotificationService
+    private notif: NotificationService,
+    private i18n: I18nService
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.loading = false;
-      this.error = 'ID groupe manquant';
+      this.error = this.i18n.instant('err.missingGroupId');
       return;
     }
     this.groupId = +id;
@@ -288,7 +291,7 @@ export class GroupDetailComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Groupe introuvable';
+        this.error = err.error?.message || this.i18n.instant('err.groupNotFound');
       },
     });
   }
@@ -354,7 +357,7 @@ export class GroupDetailComponent implements OnInit {
         next: (list) => (this.allPlannings = Array.isArray(list) ? list : []),
         error: () => {
           this.allPlannings = [];
-          this.notif.error('Impossible de charger les plannings');
+          this.notif.error(this.i18n.instant('err.planningsLoad'));
         },
       });
     }
@@ -367,7 +370,7 @@ export class GroupDetailComponent implements OnInit {
 
   linkPlanning(): void {
     if (this.groupId == null || this.group == null || this.selectedPlanningIdToLink == null) {
-      this.notif.error('Sélectionnez un planning');
+      this.notif.error(this.i18n.instant('err.selectPlanning'));
       return;
     }
     this.linkingPlanning = true;
@@ -386,7 +389,7 @@ export class GroupDetailComponent implements OnInit {
       next: (g) => {
         this.group = g;
         this.selectedCompanionIds = Array.isArray(g.companionIds) ? [...g.companionIds] : [];
-        this.notif.success('Planning associé au groupe');
+        this.notif.success(this.i18n.instant('notif.planningLinked'));
         this.showLinkPlanning = false;
         this.selectedPlanningIdToLink = null;
         this.linkingPlanning = false;
@@ -408,7 +411,7 @@ export class GroupDetailComponent implements OnInit {
       },
       error: (err) => {
         this.linkingPlanning = false;
-        this.notif.error(err.error?.message || 'Erreur lors de l’association du planning');
+        this.notif.error(err.error?.message || this.i18n.instant('err.planningLink'));
       },
     });
   }
@@ -447,7 +450,7 @@ export class GroupDetailComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.notif.error('Erreur lors du chargement des données du groupe');
+        this.notif.error(this.i18n.instant('err.groupLoad'));
       },
     });
   }
@@ -509,7 +512,7 @@ export class GroupDetailComponent implements OnInit {
           this.loadingPilgrims = false;
         },
         error: () => {
-          this.notif.error('Impossible de charger les pèlerins');
+          this.notif.error(this.i18n.instant('err.pilgrimCatalogLoad'));
           this.loadingPilgrims = false;
         },
       });
@@ -536,7 +539,7 @@ export class GroupDetailComponent implements OnInit {
       .post(this.api.groups.addPilgrim(this.groupId), { pilgrimId: this.selectedPilgrimId }, { responseType: 'text' })
       .subscribe({
         next: () => {
-          this.notif.success('Pèlerin ajouté au groupe');
+          this.notif.success(this.i18n.instant('groups.pilgrim.added'));
           this.showAddPilgrim = false;
           this.selectedPilgrimId = null;
           this.pilgrimSearchInput = '';
@@ -545,20 +548,20 @@ export class GroupDetailComponent implements OnInit {
         },
         error: (err) => {
           this.addingPilgrim = false;
-          this.notif.error(err.error?.message || 'Erreur');
+          this.notif.error(err.error?.message || this.i18n.instant('err.generic'));
         },
       });
   }
 
   removePilgrim(pilgrimId: number): void {
     if (this.groupId == null) return;
-    if (!confirm('Retirer ce pèlerin du groupe ?')) return;
+    if (!confirm(this.i18n.instant('groups.pilgrim.removeConfirm'))) return;
     this.http.delete(this.api.groups.removePilgrim(this.groupId, pilgrimId)).subscribe({
       next: () => {
-        this.notif.success('Pèlerin retiré');
+        this.notif.success(this.i18n.instant('groups.pilgrim.removed'));
         this.loadRelated();
       },
-      error: (err) => this.notif.error(err.error?.message || 'Erreur'),
+      error: (err) => this.notif.error(err.error?.message || this.i18n.instant('err.generic')),
     });
   }
 
@@ -567,14 +570,14 @@ export class GroupDetailComponent implements OnInit {
     if (this.showAssignHotel && this.allHotels.length === 0) {
       this.http.get<Hotel[]>(this.api.hotels.list).subscribe({
         next: (h) => (this.allHotels = h || []),
-        error: () => this.notif.error('Impossible de charger les hôtels'),
+        error: () => this.notif.error(this.i18n.instant('err.hotelsLoad')),
       });
     }
   }
 
   assignHotel(): void {
     if (this.groupId == null || this.assignHotelForm.hotelId == null) {
-      this.notif.error('Sélectionnez un hôtel');
+      this.notif.error(this.i18n.instant('groups.hotel.selectError'));
       return;
     }
     this.assigningHotel = true;
@@ -588,7 +591,7 @@ export class GroupDetailComponent implements OnInit {
     };
     this.http.post<GroupHotel>(this.api.hotels.assignGroup, body).subscribe({
       next: () => {
-        this.notif.success('Hôtel assigné');
+        this.notif.success(this.i18n.instant('notif.hotelAssigned'));
         this.showAssignHotel = false;
         this.assignHotelForm = {
           hotelId: null,
@@ -602,7 +605,7 @@ export class GroupDetailComponent implements OnInit {
       },
       error: (err) => {
         this.assigningHotel = false;
-        this.notif.error(err.error?.message || 'Erreur');
+        this.notif.error(err.error?.message || this.i18n.instant('err.generic'));
       },
     });
   }
@@ -615,7 +618,7 @@ export class GroupDetailComponent implements OnInit {
     if (this.groupId == null) return;
     const amount = parseFloat(this.costForm.amount);
     if (isNaN(amount) || amount <= 0) {
-      this.notif.error('Montant invalide');
+      this.notif.error(this.i18n.instant('err.invalidAmount'));
       return;
     }
     this.addingCost = true;
@@ -627,7 +630,7 @@ export class GroupDetailComponent implements OnInit {
     };
     this.http.post(this.api.tripCosts.create(this.groupId), body).subscribe({
       next: () => {
-        this.notif.success('Coût ajouté');
+        this.notif.success(this.i18n.instant('cost.added'));
         this.showAddCost = false;
         this.costForm = { type: 'FLIGHT', amount: '', currency: 'MAD', description: '' };
         this.addingCost = false;
@@ -635,7 +638,7 @@ export class GroupDetailComponent implements OnInit {
       },
       error: (err) => {
         this.addingCost = false;
-        this.notif.error(err.error?.message || 'Erreur');
+        this.notif.error(err.error?.message || this.i18n.instant('err.generic'));
       },
     });
   }
@@ -645,7 +648,7 @@ export class GroupDetailComponent implements OnInit {
     if (this.showLinkFlight && this.allFlights.length === 0) {
       this.http.get<{ content: Flight[] }>(`${this.api.flights.list}?page=1&size=200`).subscribe({
         next: (r) => (this.allFlights = r.content || []),
-        error: () => this.notif.error('Impossible de charger les vols'),
+        error: () => this.notif.error(this.i18n.instant('err.flightsLoad')),
       });
     }
   }
@@ -655,7 +658,7 @@ export class GroupDetailComponent implements OnInit {
     this.linkingFlight = true;
     this.http.put(this.api.flights.byId(this.selectedFlightId), { groupId: this.groupId }).subscribe({
       next: () => {
-        this.notif.success('Vol lié au groupe');
+        this.notif.success(this.i18n.instant('notif.flightLinked'));
         this.showLinkFlight = false;
         this.selectedFlightId = null;
         this.linkingFlight = false;
@@ -663,7 +666,7 @@ export class GroupDetailComponent implements OnInit {
       },
       error: (err) => {
         this.linkingFlight = false;
-        this.notif.error(err.error?.message || 'Erreur');
+        this.notif.error(err.error?.message || this.i18n.instant('err.generic'));
       },
     });
   }
@@ -673,7 +676,7 @@ export class GroupDetailComponent implements OnInit {
     if (this.showLinkBus && this.allBuses.length === 0) {
       this.http.get<{ content: Bus[] }>(`${this.api.buses.list}?page=0&size=200`).subscribe({
         next: (r) => (this.allBuses = r.content || []),
-        error: () => this.notif.error('Impossible de charger les bus'),
+        error: () => this.notif.error(this.i18n.instant('err.busesLoad')),
       });
     }
   }
@@ -685,7 +688,7 @@ export class GroupDetailComponent implements OnInit {
       .post(this.api.buses.assignGroup, { groupId: this.groupId, busId: this.selectedBusId }, { responseType: 'text' })
       .subscribe({
         next: () => {
-          this.notif.success('Bus lié au groupe');
+          this.notif.success(this.i18n.instant('notif.busLinked'));
           this.showLinkBus = false;
           this.selectedBusId = null;
           this.linkingBus = false;
@@ -693,7 +696,7 @@ export class GroupDetailComponent implements OnInit {
         },
         error: (err) => {
           this.linkingBus = false;
-          this.notif.error(err.error?.message || 'Erreur');
+          this.notif.error(err.error?.message || this.i18n.instant('err.generic'));
         },
       });
   }
@@ -717,36 +720,24 @@ export class GroupDetailComponent implements OnInit {
         this.group = g;
         this.selectedCompanionIds = Array.isArray(g.companionIds) ? [...g.companionIds] : [];
         this.savingCompanions = false;
-        this.notif.success('Accompagnateurs mis à jour');
+        this.notif.success(this.i18n.instant('groups.companions.savedNotif'));
       },
       error: (err) => {
         this.savingCompanions = false;
-        this.notif.error(err.error?.message || 'Erreur');
+        this.notif.error(err.error?.message || this.i18n.instant('err.generic'));
       },
     });
   }
 
-  getCostTypeLabel(type: string): string {
-    const labels: Record<string, string> = {
-      FLIGHT: 'Vol',
-      HOTEL: 'Hôtel',
-      VISA: 'Visa',
-      TRANSPORT: 'Transport',
-      MEALS: 'Repas',
-      OTHER: 'Autre',
+  visaKey(status?: string): string {
+    if (!status) return 'visa.unknown';
+    const k: Record<string, string> = {
+      PENDING: 'visa.pending',
+      SUBMITTED: 'visa.submitted',
+      APPROVED: 'visa.approved',
+      REJECTED: 'visa.rejected',
     };
-    return labels[type] ?? type;
-  }
-
-  visaLabel(status?: string): string {
-    if (!status) return '—';
-    const labels: Record<string, string> = {
-      PENDING: 'En attente',
-      SUBMITTED: 'Soumis',
-      APPROVED: 'Approuvé',
-      REJECTED: 'Refusé',
-    };
-    return labels[status] ?? status;
+    return k[status] ?? status;
   }
 
   visaClass(status?: string): string {
@@ -757,14 +748,24 @@ export class GroupDetailComponent implements OnInit {
     return 'visa-pill--muted';
   }
 
-  paymentStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      PENDING: 'En attente',
-      PAID: 'Payé',
-      PARTIAL: 'Partiel',
-      REFUNDED: 'Remboursé',
-    };
-    return labels[status] ?? status;
+  paymentStatusKey(status: string): string {
+    return `payment.status.${status}`;
+  }
+
+  busIdPart(b: Bus): string {
+    return b.plate || this.i18n.instant('groups.bus.unnamed', { id: String(b.id) });
+  }
+
+  busSeatPart(b: Bus): string {
+    return this.i18n.instant('groups.bus.seatsCount', { n: String(b.capacity ?? '?') });
+  }
+
+  hotelAssignLine(h: GroupHotel): string {
+    const loc = this.i18n.currentLang() === 'ar' ? 'ar' : 'fr-FR';
+    const unk = this.i18n.instant('common.unknown');
+    const inn = h.checkIn ? formatDate(h.checkIn, 'dd/MM/yyyy', loc) : unk;
+    const out = h.checkOut ? formatDate(h.checkOut, 'dd/MM/yyyy', loc) : unk;
+    return this.i18n.instant('groups.hotels.assignedLine', { id: String(h.hotelId), in: inn, out });
   }
 
   documentTypeLabel(t?: string): string {

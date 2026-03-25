@@ -12,6 +12,8 @@ import { MatListModule } from '@angular/material/list';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 import { TaskTemplateNode } from '../task-templates/models/task-template-node.model';
 
 interface PlanningItemDto {
@@ -38,6 +40,7 @@ interface PlanningItemDto {
     MatSelectModule,
     MatListModule,
     PageHeaderComponent,
+    TranslatePipe,
   ],
   templateUrl: './planning-form.component.html',
   styleUrl: './planning-form.component.scss',
@@ -57,7 +60,8 @@ export class PlanningFormComponent implements OnInit {
     private api: ApiService,
     private notif: NotificationService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private i18n: I18nService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -85,7 +89,7 @@ export class PlanningFormComponent implements OnInit {
             sortOrder: it.sortOrder ?? i,
           }));
         },
-        error: () => this.notif.error('Planning introuvable'),
+        error: () => this.notif.error(this.i18n.instant('plannings.notFound')),
       });
     }
   }
@@ -167,23 +171,23 @@ export class PlanningFormComponent implements OnInit {
     if (this.isEdit && this.id != null) {
       this.http.put(this.api.plannings.update(this.id), body).subscribe({
         next: () => {
-          this.notif.success('Planning modifié');
+          this.notif.success(this.i18n.instant('plannings.saved'));
           this.router.navigate(['/plannings']);
         },
         error: (err) => {
           this.loading = false;
-          this.notif.error(err.error?.message || 'Erreur');
+          this.notif.error(err.error?.message || this.i18n.instant('plannings.err'));
         },
       });
     } else {
       this.http.post(this.api.plannings.create, body).subscribe({
         next: () => {
-          this.notif.success('Planning créé');
+          this.notif.success(this.i18n.instant('plannings.created'));
           this.router.navigate(['/plannings']);
         },
         error: (err) => {
           this.loading = false;
-          this.notif.error(err.error?.message || 'Erreur');
+          this.notif.error(err.error?.message || this.i18n.instant('plannings.err'));
         },
       });
     }

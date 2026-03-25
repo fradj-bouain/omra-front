@@ -12,6 +12,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { fileUrlFromUploadResponse } from '../../shared/utils/upload-response';
 
 interface GroupOption {
   id: number;
@@ -115,11 +116,13 @@ export class DocumentFormComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('type', this.form.get('type')?.value || 'general');
-    this.http.post(this.api.files.upload, formData).subscribe({
-      next: (res: { file_url?: string }) => {
+    this.http.post<unknown>(this.api.files.upload, formData).subscribe({
+      next: (res) => {
         this.uploading = false;
-        if (res?.file_url) this.form.patchValue({ fileUrl: res.file_url });
-        this.notif.success('Fichier uploadé');
+        const u = fileUrlFromUploadResponse(res);
+        if (u) this.form.patchValue({ fileUrl: u });
+        if (u) this.notif.success('Fichier uploadé');
+        else this.notif.error('Réponse serveur inattendue après upload');
       },
       error: () => {
         this.uploading = false;
