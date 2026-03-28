@@ -36,6 +36,10 @@ export class ApiService {
   pilgrims = {
     list: `${this.base}/api/pilgrims`,
     byId: (id: number) => `${this.base}/api/pilgrims/${id}`,
+    autocomplete: `${this.base}/api/pilgrims/autocomplete`,
+  };
+  pilgrimSponsorship = {
+    config: `${this.base}/api/pilgrim-sponsorship/config`,
   };
   groups = {
     list: `${this.base}/api/groups`,
@@ -100,6 +104,8 @@ export class ApiService {
     list: `${this.base}/api/documents`,
     byId: (id: number) => `${this.base}/api/documents/${id}`,
     byPilgrim: (id: number) => `${this.base}/api/documents/pilgrim/${id}`,
+    patch: (id: number) => `${this.base}/api/documents/${id}`,
+    delete: (id: number) => `${this.base}/api/documents/${id}`,
   };
   payments = {
     list: `${this.base}/api/payments`,
@@ -120,6 +126,17 @@ export class ApiService {
     list: `${this.base}/api/referrals`,
     validate: `${this.base}/api/referrals/validate`,
     grantReward: (id: number) => `${this.base}/api/referrals/${id}/grant-reward`,
+  };
+  referralRewardTiers = {
+    list: `${this.base}/api/referral-reward-tiers`,
+    update: (id: number) => `${this.base}/api/referral-reward-tiers/${id}`,
+    delete: (id: number) => `${this.base}/api/referral-reward-tiers/${id}`,
+  };
+  referralCampaigns = {
+    list: `${this.base}/api/referral-campaigns`,
+    dashboard: `${this.base}/api/referral-campaigns/dashboard`,
+    activate: (id: number) => `${this.base}/api/referral-campaigns/${id}/activate`,
+    close: (id: number) => `${this.base}/api/referral-campaigns/${id}/close`,
   };
   files = { upload: `${this.base}/api/files/upload` };
 }

@@ -24,6 +24,12 @@ interface PilgrimDetail {
   address?: string;
   visaStatus?: string;
   createdAt?: string;
+  sponsorType?: string;
+  sponsorLabel?: string;
+  referrerDisplayName?: string;
+  referralPoints?: number;
+  nextRewardThreshold?: number;
+  nextRewardTitle?: string;
 }
 
 @Component({
@@ -85,6 +91,13 @@ export class PilgrimDetailComponent implements OnInit {
   getGenderLabel(gender: string | undefined): string {
     if (!gender) return '—';
     return gender === 'M' ? 'Homme' : gender === 'F' ? 'Femme' : gender;
+  }
+
+  sponsorTypeLabel(code: string | undefined): string {
+    if (!code) return '—';
+    if (code === 'PILGRIM') return 'Pèlerin';
+    if (code === 'AGENT') return 'Agent';
+    return code;
   }
 
   deletePilgrim(): void {

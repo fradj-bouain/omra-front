@@ -1,6 +1,44 @@
 /* Pèlerins — design system (--app-*) */
 .pilgrim-list-page {
-  max-width: 1200px;
+  max-width: 1280px;
+}
+
+.list-toolbar__left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-md);
+  flex: 1;
+  min-width: 0;
+}
+
+.link-all-docs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--app-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--app-accent);
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--app-accent) 35%, var(--app-border));
+  background: color-mix(in srgb, var(--app-accent) 6%, transparent);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  mat-icon {
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--app-accent) 12%, transparent);
+    border-color: var(--app-accent);
+  }
 }
 
 .list-card {
@@ -112,6 +150,43 @@
   overflow-x: auto;
 }
 
+.col-documents {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.btn-documents {
+  border-radius: var(--app-radius-sm) !important;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 0 0.75rem !important;
+  min-height: 36px;
+  border-color: color-mix(in srgb, var(--app-accent) 38%, var(--app-border)) !important;
+  color: var(--app-accent) !important;
+
+  mat-icon {
+    margin-right: 0.35rem;
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+  }
+
+  &:hover {
+    background: var(--app-accent-soft) !important;
+    border-color: var(--app-accent) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .btn-documents__text {
+    display: none;
+  }
+
+  .btn-documents mat-icon {
+    margin-right: 0;
+  }
+}
+
 .pilgrim-table {
   font-family: var(--app-font);
 
@@ -134,7 +209,7 @@
     border-bottom: 1px solid var(--app-border);
   }
 
-  tr.mat-mdc-row:hover td {
+  tr.data-row.mat-mdc-row:hover td {
     background: rgba(13, 148, 136, 0.03);
   }
 }
@@ -254,4 +329,27 @@
 
 .full-width {
   width: 100%;
+}
+
+.cell-points {
+  font-variant-numeric: tabular-nums;
+}
+
+.points-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: var(--app-radius-pill);
+  background: color-mix(in srgb, var(--app-accent) 14%, transparent);
+  color: var(--app-accent);
+}
+
+.points-pill--zero {
+  background: var(--app-bg-soft);
+  color: var(--app-muted);
+  font-weight: 600;
 }

@@ -28,6 +28,22 @@
   }
 }
 
+.detail-card--sponsor {
+  border-left: 4px solid var(--app-accent);
+}
+
+.detail-points {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--app-accent);
+}
+
+.detail-next-meta {
+  color: var(--app-text-soft);
+  font-weight: 500;
+}
+
 .detail-card {
   border-radius: var(--app-radius) !important;
   box-shadow: var(--app-shadow) !important;

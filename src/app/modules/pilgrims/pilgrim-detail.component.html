@@ -88,5 +88,36 @@
         </dl>
       </mat-card-content>
     </mat-card>
+
+    <mat-card class="detail-card detail-card--sponsor">
+      <mat-card-header>
+        <mat-card-title>Parrainage</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="detail-dl">
+          <dt>Type de parrain</dt>
+          <dd>{{ sponsorTypeLabel(pilgrim.sponsorType) }}</dd>
+          @if (pilgrim.sponsorLabel) {
+            <dt>Parrainé par (libellé)</dt>
+            <dd>{{ pilgrim.sponsorLabel }}</dd>
+          }
+          @if (pilgrim.referrerDisplayName) {
+            <dt>Pèlerin parrain</dt>
+            <dd>{{ pilgrim.referrerDisplayName }}</dd>
+          }
+          <dt>Points parrainage</dt>
+          <dd>
+            <span class="detail-points">{{ pilgrim.referralPoints ?? 0 }}</span>
+          </dd>
+          @if (pilgrim.nextRewardThreshold != null && pilgrim.nextRewardTitle) {
+            <dt>Prochain palier</dt>
+            <dd>
+              <strong>{{ pilgrim.nextRewardTitle }}</strong>
+              <span class="detail-next-meta"> ({{ pilgrim.nextRewardThreshold }} pts)</span>
+            </dd>
+          }
+        </dl>
+      </mat-card-content>
+    </mat-card>
   </section>
 }

@@ -1,0 +1,41 @@
+<div class="pdd-root">
+  <header class="pdd-header">
+    <div class="pdd-header__glow" aria-hidden="true"></div>
+    <div class="pdd-header__inner">
+      <div class="pdd-header__leading">
+        <div class="pdd-header__icon-badge">
+          <mat-icon aria-hidden="true">folder_special</mat-icon>
+        </div>
+        <div class="pdd-header__copy">
+          <span class="pdd-header__eyebrow">{{ 'pilgrims.documents.dialogEyebrow' | translate }}</span>
+          <h2 mat-dialog-title class="pdd-header__title">{{ 'pilgrims.documents.dialogTitle' | translate }}</h2>
+          @if (data.pilgrimLabel) {
+            <p class="pdd-header__pilgrim">
+              <mat-icon class="pdd-header__pilgrim-icon" aria-hidden="true">person</mat-icon>
+              {{ data.pilgrimLabel }}
+            </p>
+          }
+        </div>
+      </div>
+      <button
+        mat-icon-button
+        type="button"
+        mat-dialog-close
+        class="pdd-header__close"
+        [attr.aria-label]="'pilgrims.documents.close' | translate"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <mat-dialog-content class="pdd-content">
+    <app-pilgrim-documents-panel [pilgrimId]="data.pilgrimId" [pilgrimLabel]="''" [compactHeader]="true" />
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="pdd-actions">
+    <button mat-stroked-button mat-dialog-close type="button" color="primary">
+      {{ 'pilgrims.documents.close' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

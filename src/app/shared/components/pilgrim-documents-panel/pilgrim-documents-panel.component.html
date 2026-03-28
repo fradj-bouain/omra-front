@@ -1,0 +1,155 @@
+<section class="pdp" [class.pdp--compact]="compactHeader">
+  @if (compactHeader) {
+    <div class="pdp__toolbar pdp__toolbar--compact">
+      <button mat-flat-button color="primary" type="button" class="pdp__add-btn" (click)="toggleAddForm()">
+        <mat-icon>add</mat-icon>
+        {{ 'pilgrims.documents.addButton' | translate }}
+      </button>
+    </div>
+  } @else {
+    <div class="pdp__toolbar">
+      <div class="pdp__heading">
+        <mat-icon class="pdp__heading-icon" aria-hidden="true">description</mat-icon>
+        <div>
+          <h3 class="pdp__title">{{ 'pilgrims.documents.history' | translate }}</h3>
+          @if (pilgrimLabel) {
+            <p class="pdp__subtitle">{{ pilgrimLabel }}</p>
+          }
+        </div>
+      </div>
+      <button mat-flat-button color="primary" type="button" class="pdp__add-btn" (click)="toggleAddForm()">
+        <mat-icon>add</mat-icon>
+        {{ 'pilgrims.documents.addButton' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showAddForm) {
+    <div class="pdp__form">
+      <span class="pdp__form-title">{{ 'pilgrims.documents.formSection' | translate }}</span>
+      <div class="pdp__form-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>{{ 'pilgrims.documents.chooseType' | translate }}</mat-label>
+          <mat-select [(ngModel)]="addType" [ngModelOptions]="{ standalone: true }">
+            @for (t of documentTypes; track t) {
+              <mat-option [value]="t">{{ typeLabelKey(t) | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>{{ 'pilgrims.documents.statusLabel' | translate }}</mat-label>
+          <mat-select [(ngModel)]="addStatus" [ngModelOptions]="{ standalone: true }">
+            @for (s of statusOptions; track s) {
+              <mat-option [value]="s">{{ statusLabelKey(s) | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <div class="pdp__file-row">
+          <input
+            #panelFile
+            type="file"
+            class="pdp__file-input"
+            (change)="onFileSelected($event)"
+            [disabled]="uploading"
+          />
+          <button
+            mat-stroked-button
+            type="button"
+            color="primary"
+            (click)="panelFile.click()"
+            [disabled]="uploading"
+          >
+            <mat-icon>upload_file</mat-icon>
+            {{ uploading ? ('pilgrims.documents.uploading' | translate) : ('pilgrims.documents.browse' | translate) }}
+          </button>
+        </div>
+      </div>
+      <p class="pdp__form-hint">{{ 'pilgrims.documents.formHint' | translate }}</p>
+    </div>
+    <mat-divider class="pdp__divider"></mat-divider>
+  }
+
+  @if (loading) {
+    <div class="pdp__loading">
+      <div class="pdp__spinner" aria-hidden="true"></div>
+      <span>{{ 'common.loading' | translate }}</span>
+    </div>
+  } @else if (documents.length === 0) {
+    <div class="pdp__empty">
+      <mat-icon>folder_off</mat-icon>
+      <p>{{ 'pilgrims.documents.empty' | translate }}</p>
+    </div>
+  } @else {
+    <div class="pdp__table-wrap">
+      <table class="pdp__table">
+        <thead>
+          <tr>
+            <th>{{ 'pilgrims.documents.col.type' | translate }}</th>
+            <th class="pdp__th-status">{{ 'pilgrims.documents.col.status' | translate }}</th>
+            <th>{{ 'pilgrims.documents.col.date' | translate }}</th>
+            <th class="pdp__th-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of documents; track doc.id) {
+            <tr>
+              <td class="pdp__cell-type">{{ typeLabelKey(doc.type) | translate }}</td>
+              <td class="pdp__cell-status">
+                <mat-form-field
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                  class="pdp__status-field"
+                  [matTooltip]="'pilgrims.documents.changeStatusHint' | translate"
+                >
+                  <mat-select
+                    [value]="doc.status"
+                    (selectionChange)="onDocStatusChange(doc, $event.value)"
+                    [disabled]="updatingStatusDocId === doc.id"
+                    [attr.aria-label]="'pilgrims.documents.statusLabel' | translate"
+                  >
+                    @for (s of statusOptions; track s) {
+                      <mat-option [value]="s">{{ statusLabelKey(s) | translate }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </td>
+              <td class="pdp__cell-date">
+                {{ doc.createdAt ? (doc.createdAt | date: 'dd/MM/yyyy HH:mm') : ('common.emDash' | translate) }}
+              </td>
+              <td class="pdp__actions">
+                @if (doc.fileUrl) {
+                  <a
+                    mat-icon-button
+                    [href]="resolveMediaUrl(doc.fileUrl)"
+                    download
+                    [matTooltip]="'pilgrims.documents.download' | translate"
+                  >
+                    <mat-icon>download</mat-icon>
+                  </a>
+                  <a
+                    mat-icon-button
+                    [href]="resolveMediaUrl(doc.fileUrl)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [matTooltip]="'pilgrims.documents.open' | translate"
+                  >
+                    <mat-icon>open_in_new</mat-icon>
+                  </a>
+                }
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="pdp__btn-del"
+                  [matTooltip]="'pilgrims.documents.delete' | translate"
+                  (click)="deleteDoc(doc, $event)"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,251 @@
+.pdp {
+  font-family: var(--app-font);
+}
+
+.pdp--compact .pdp__form {
+  margin-top: 0;
+}
+
+.pdp__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--app-space-md);
+  margin-bottom: var(--app-space-md);
+}
+
+.pdp__toolbar--compact {
+  justify-content: flex-end;
+  margin-bottom: var(--app-space-lg);
+}
+
+.pdp__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--app-space-md);
+  min-width: 0;
+}
+
+.pdp__heading-icon {
+  font-size: 2rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  color: var(--app-accent);
+  flex-shrink: 0;
+}
+
+.pdp__title {
+  margin: 0;
+  font-family: var(--app-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.pdp__subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.875rem;
+  color: var(--app-text-soft);
+}
+
+.pdp__add-btn mat-icon {
+  margin-right: 0.35rem;
+  font-size: 1.125rem !important;
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+}
+
+.pdp__form {
+  margin-bottom: var(--app-space-md);
+  padding: var(--app-space-lg);
+  border-radius: var(--app-radius);
+  border: 1px solid var(--app-border);
+  background: var(--app-bg-soft);
+}
+
+.pdp__form-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--app-text-soft);
+  margin-bottom: var(--app-space-md);
+}
+
+.pdp__form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-md);
+  align-items: flex-start;
+}
+
+.pdp__form-grid mat-form-field {
+  min-width: 180px;
+  flex: 1 1 200px;
+}
+
+.pdp__file-row {
+  display: flex;
+  align-items: center;
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+
+.pdp__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pdp__form-hint {
+  margin: var(--app-space-sm) 0 0;
+  font-size: 0.8125rem;
+  color: var(--app-muted);
+}
+
+.pdp__divider {
+  margin: var(--app-space-md) 0 !important;
+}
+
+.pdp__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-md);
+  padding: var(--app-space-xl);
+  color: var(--app-muted);
+}
+
+.pdp__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--app-border);
+  border-top-color: var(--app-accent);
+  border-radius: 50%;
+  animation: pdpSpin 0.75s linear infinite;
+}
+
+@keyframes pdpSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pdp__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--app-space-sm);
+  padding: var(--app-space-xl);
+  text-align: center;
+  color: var(--app-muted);
+
+  mat-icon {
+    font-size: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    opacity: 0.45;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.pdp__table-wrap {
+  overflow-x: auto;
+  border-radius: var(--app-radius-sm);
+  border: 1px solid var(--app-border);
+}
+
+.pdp__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  thead th {
+    text-align: left;
+    padding: 0.65rem 0.75rem;
+    font-family: var(--app-display);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--app-text-soft);
+    background: var(--app-bg-soft);
+    border-bottom: 2px solid var(--app-border);
+  }
+
+  tbody td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--app-border);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.pdp__th-status {
+  min-width: 9rem;
+}
+
+.pdp__th-actions {
+  width: 9rem;
+}
+
+.pdp__cell-status {
+  vertical-align: middle;
+}
+
+.pdp__status-field {
+  width: 100%;
+  max-width: 12rem;
+}
+
+/* Select compact dans le tableau (Material MDC) */
+.pdp__status-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.pdp__status-field ::ng-deep .mat-mdc-text-field-wrapper {
+  padding-bottom: 0;
+}
+
+.pdp__status-field ::ng-deep .mdc-notched-outline__leading,
+.pdp__status-field ::ng-deep .mdc-notched-outline__notch,
+.pdp__status-field ::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--app-border);
+}
+
+.pdp__status-field ::ng-deep .mat-mdc-form-field-infix {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  min-height: 38px;
+  width: auto;
+}
+
+.pdp__cell-type {
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.pdp__cell-date {
+  color: var(--app-text-soft);
+  white-space: nowrap;
+}
+
+.pdp__actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.pdp__btn-del:hover {
+  color: var(--app-error-text) !important;
+  background: var(--app-error-bg) !important;
+}

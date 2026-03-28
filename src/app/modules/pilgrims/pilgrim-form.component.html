@@ -70,6 +70,96 @@
           </div>
         </div>
 
+        @if (!isEdit) {
+          <div class="form-section form-section--sponsor">
+            <h2 class="form-section-title">{{ 'pilgrims.sponsorship.sectionTitle' | translate }}</h2>
+            <p class="form-section-lead">{{ 'pilgrims.sponsorship.lead' | translate }}</p>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.sponsorship.typeLabel' | translate }}</mat-label>
+                <mat-select formControlName="sponsorType">
+                  <mat-option value="">{{ 'pilgrims.sponsorship.typeNone' | translate }}</mat-option>
+                  <mat-option value="PILGRIM">{{ 'pilgrims.sponsorship.typePilgrim' | translate }}</mat-option>
+                  <mat-option value="AGENT">{{ 'pilgrims.sponsorship.typeAgent' | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (form.get('sponsorType')?.value === 'PILGRIM' || form.get('sponsorType')?.value === 'AGENT') {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.sponsorship.labelField' | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="sponsorLabel"
+                    [placeholder]="'pilgrims.sponsorship.labelPlaceholder' | translate"
+                  />
+                </mat-form-field>
+              }
+              @if (form.get('sponsorType')?.value === 'PILGRIM') {
+                <mat-form-field appearance="outline" class="full-width form-field--span-2">
+                  <mat-label>{{ 'pilgrims.sponsorship.searchPilgrim' | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="referrerPilgrim"
+                    [matAutocomplete]="refAuto"
+                    [placeholder]="'pilgrims.sponsorship.searchPh' | translate"
+                  />
+                  <mat-autocomplete #refAuto="matAutocomplete" [displayWith]="displayReferrer.bind(this)">
+                    @for (p of filteredReferrers$ | async; track p.id) {
+                      <mat-option [value]="p">
+                        {{ p.firstName }} {{ p.lastName }}
+                        <span class="autocomplete-sub">· {{ p.passportNumber || ('common.emDash' | translate) }}</span>
+                      </mat-option>
+                    }
+                  </mat-autocomplete>
+                  <mat-hint>{{ 'pilgrims.sponsorship.searchHint' | translate }}</mat-hint>
+                  @if (form.get('referrerPilgrim')?.hasError('referrerRequired')) {
+                    <mat-error>{{ 'pilgrims.sponsorship.errorSelectReferrer' | translate }}</mat-error>
+                  }
+                </mat-form-field>
+              }
+            </div>
+          </div>
+        }
+
+        @if (isEdit && sponsorshipView) {
+          <div class="form-section form-section--sponsor-readonly">
+            <h2 class="form-section-title">{{ 'pilgrims.sponsorship.sectionTitle' | translate }}</h2>
+            <p class="form-section-lead form-section-lead--readonly">{{ 'pilgrims.sponsorship.readOnlyHint' | translate }}</p>
+            <div class="sponsor-summary">
+              <div class="sponsor-summary__item">
+                <span class="sponsor-summary__label">{{ 'pilgrims.sponsorship.typeLabel' | translate }}</span>
+                <span class="sponsor-summary__value">{{ sponsorTypeLabel(sponsorshipView.sponsorType) }}</span>
+              </div>
+              @if (sponsorshipView.sponsorLabel) {
+                <div class="sponsor-summary__item">
+                  <span class="sponsor-summary__label">{{ 'pilgrims.sponsorship.labelField' | translate }}</span>
+                  <span class="sponsor-summary__value">{{ sponsorshipView.sponsorLabel }}</span>
+                </div>
+              }
+              @if (sponsorshipView.referrerDisplayName) {
+                <div class="sponsor-summary__item">
+                  <span class="sponsor-summary__label">{{ 'pilgrims.sponsorship.referrerName' | translate }}</span>
+                  <span class="sponsor-summary__value">{{ sponsorshipView.referrerDisplayName }}</span>
+                </div>
+              }
+              <div class="sponsor-summary__item sponsor-summary__item--points">
+                <span class="sponsor-summary__label">{{ 'pilgrims.sponsorship.points' | translate }}</span>
+                <span class="sponsor-summary__points">{{ sponsorshipView.referralPoints ?? 0 }}</span>
+              </div>
+              @if (sponsorshipView.nextRewardThreshold != null && sponsorshipView.nextRewardTitle) {
+                <div class="sponsor-summary__next">
+                  <mat-icon aria-hidden="true">card_giftcard</mat-icon>
+                  <div>
+                    <span class="sponsor-summary__next-title">{{ sponsorshipView.nextRewardTitle }}</span>
+                    <span class="sponsor-summary__next-meta">{{
+                      'pilgrims.sponsorship.nextReward' | translate: { pts: sponsorshipView.nextRewardThreshold }
+                    }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
         <div class="form-section">
           <h2 class="form-section-title">Voyage</h2>
           <div class="form-grid form-grid--1">
@@ -95,4 +185,93 @@
       </form>
     </mat-card-content>
   </mat-card>
+
+  @if (pilgrimId == null) {
+    <mat-card class="form-card form-card--upload-preview">
+      <mat-card-content>
+        <div class="upload-preview">
+          <div class="upload-preview__lead">
+            <div class="upload-preview__icon-wrap">
+              <mat-icon class="upload-preview__icon" aria-hidden="true">cloud_upload</mat-icon>
+            </div>
+            <div class="upload-preview__copy">
+              <h3 class="upload-preview__title">{{ 'pilgrims.form.uploadZoneTitle' | translate }}</h3>
+              <p class="upload-preview__desc">{{ 'pilgrims.form.uploadZoneDesc' | translate }}</p>
+            </div>
+          </div>
+
+          <div class="pending-docs__form">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pending-docs__field">
+              <mat-label>{{ 'pilgrims.documents.chooseType' | translate }}</mat-label>
+              <mat-select [(ngModel)]="draftDocType">
+                @for (t of documentTypes; track t) {
+                  <mat-option [value]="t">{{ docTypeLabelKey(t) | translate }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pending-docs__field">
+              <mat-label>{{ 'pilgrims.documents.statusLabel' | translate }}</mat-label>
+              <mat-select [(ngModel)]="draftDocStatus">
+                @for (s of statusOptions; track s) {
+                  <mat-option [value]="s">{{ docStatusLabelKey(s) | translate }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <div class="pending-docs__file">
+              <input
+                #draftFileInput
+                type="file"
+                class="pending-docs__file-input"
+                (change)="onDraftFileSelected($event)"
+              />
+              <button mat-stroked-button color="primary" type="button" (click)="draftFileInput.click()">
+                <mat-icon>upload_file</mat-icon>
+                {{ 'pilgrims.documents.browse' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <p class="pending-docs__hint">{{ 'pilgrims.documents.formHint' | translate }}</p>
+
+          <mat-divider class="pending-docs__divider" />
+
+          <h4 class="pending-docs__queue-title">{{ 'pilgrims.form.pendingQueueTitle' | translate }}</h4>
+          @if (pendingDocs.length === 0) {
+            <p class="pending-docs__empty">{{ 'pilgrims.form.pendingQueueEmpty' | translate }}</p>
+          } @else {
+            <ul class="pending-docs__list">
+              @for (p of pendingDocs; track p.tempId) {
+                <li class="pending-docs__row">
+                  <mat-icon class="pending-docs__row-icon" aria-hidden="true">description</mat-icon>
+                  <div class="pending-docs__row-main">
+                    <span class="pending-docs__name">{{ p.file.name }}</span>
+                    <span class="pending-docs__meta">
+                      {{ docTypeLabelKey(p.type) | translate }} · {{ docStatusLabelKey(p.status) | translate }}
+                    </span>
+                  </div>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="pending-docs__remove"
+                    [attr.aria-label]="'pilgrims.documents.delete' | translate"
+                    (click)="removePendingDoc(p.tempId)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (pilgrimId != null) {
+    <mat-card class="form-card form-card--documents">
+      <mat-card-content>
+        <app-pilgrim-documents-panel [pilgrimId]="pilgrimId" [pilgrimLabel]="pilgrimDisplayName" />
+      </mat-card-content>
+    </mat-card>
+  }
 </section>

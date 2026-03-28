@@ -9,12 +9,17 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
+import {
+  PilgrimDocumentsDialogComponent,
+  PilgrimDocumentsDialogData,
+} from '../../shared/components/pilgrim-documents-dialog/pilgrim-documents-dialog.component';
 
 interface Pilgrim {
   id: number;
@@ -25,6 +30,7 @@ interface Pilgrim {
   phone?: string;
   email?: string;
   visaStatus?: string;
+  referralPoints?: number;
 }
 
 interface PageResponse<T> {
@@ -57,7 +63,7 @@ interface PageResponse<T> {
 })
 export class PilgrimListComponent implements OnInit {
   dataSource = new MatTableDataSource<Pilgrim>([]);
-  displayedColumns = ['name', 'passportNumber', 'nationality', 'phone', 'visaStatus', 'actions'];
+  displayedColumns = ['documents', 'name', 'referralPoints', 'passportNumber', 'nationality', 'phone', 'visaStatus', 'actions'];
   totalElements = 0;
   page = 1;
   size = 20;
@@ -68,7 +74,8 @@ export class PilgrimListComponent implements OnInit {
     private http: HttpClient,
     private api: ApiService,
     private notif: NotificationService,
-    private i18n: I18nService
+    private i18n: I18nService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +106,21 @@ export class PilgrimListComponent implements OnInit {
   getVisaKey(status: string | undefined): string {
     if (!status) return 'visa.unknown';
     return `visa.${status.toLowerCase()}`;
+  }
+
+  openDocumentsDialog(row: Pilgrim, ev: Event): void {
+    ev.stopPropagation();
+    const data: PilgrimDocumentsDialogData = {
+      pilgrimId: row.id,
+      pilgrimLabel: `${row.firstName} ${row.lastName}`.trim(),
+    };
+    this.dialog.open(PilgrimDocumentsDialogComponent, {
+      data,
+      width: 'min(96vw, 600px)',
+      maxHeight: '90vh',
+      autoFocus: 'first-tabbable',
+      panelClass: 'pilgrim-documents-dialog',
+    });
   }
 
   delete(id: number): void {

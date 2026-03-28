@@ -1,103 +1,397 @@
 <app-page-header
-  title="Parrainage"
-  subtitle="Partagez votre code et suivez vos filleuls"
+  [title]="'referral.pageTitle' | translate"
+  [subtitle]="'referral.pageSubtitle' | translate"
 ></app-page-header>
 
 <section class="referral-page">
-  @if (error) {
-    <mat-card class="error-card">
-      <mat-card-content>
-        <mat-icon class="error-icon">error_outline</mat-icon>
-        <p>{{ error }}</p>
-      </mat-card-content>
-    </mat-card>
-  } @else if (loading) {
-    <mat-card>
-      <mat-card-content>
-        <p class="loading-text">Chargement…</p>
-      </mat-card-content>
-    </mat-card>
-  } @else if (stats) {
-    <mat-card class="stats-card">
-      <mat-card-header>
-        <mat-card-title>Votre code et lien</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="code-row">
-          <span class="code-value">{{ stats.referralCode }}</span>
-          <button mat-stroked-button (click)="copyCode()" matTooltip="Copier le code">
-            <mat-icon>content_copy</mat-icon>
-            Copier le code
-          </button>
-        </div>
-        <div class="link-row">
-          <input class="link-input" [value]="stats.referralLink" readonly />
-          <button mat-flat-button color="primary" (click)="copyLink()" matTooltip="Copier le lien">
-            <mat-icon>link</mat-icon>
-            Copier le lien
-          </button>
-        </div>
-        <p class="hint">Envoyez ce lien pour inviter des utilisateurs. S’ils s’inscrivent avec ce lien, ils seront comptés comme vos filleuls.</p>
-      </mat-card-content>
-    </mat-card>
+  <div class="referral-content">
+    @if (pointsPerReferral != null) {
+      <mat-card class="points-hero">
+        <mat-card-content>
+          <div class="points-hero__inner">
+            <div class="points-hero__icon-wrap">
+              <mat-icon aria-hidden="true">stars</mat-icon>
+            </div>
+            <div class="points-hero__text">
+              <h3 class="points-hero__title">{{ 'referral.pointsHeroTitle' | translate }}</h3>
+              <p class="points-hero__rule">
+                {{ 'referral.pointsRule' | translate: { n: pointsPerReferral } }}
+              </p>
+              <p class="points-hero__sub">{{ 'referral.pointsHeroSub' | translate }}</p>
+            </div>
+            <div class="points-hero__badge" aria-hidden="true">
+              <span class="points-hero__badge-val">+{{ pointsPerReferral }}</span>
+              <span class="points-hero__badge-unit">{{ 'referral.pointsUnit' | translate }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
 
-    <mat-card class="numbers-card">
-      <mat-card-header>
-        <mat-card-title>Statistiques</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="stat-grid">
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.totalReferrals }}</span>
-            <span class="stat-label">Filleuls</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.pendingReferrals }}</span>
-            <span class="stat-label">En attente</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.completedReferrals }}</span>
-            <span class="stat-label">Complétés</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.rewardsGranted }}</span>
-            <span class="stat-label">Récompenses attribuées</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <mat-tab-group class="referral-tabs" mat-stretch-tabs="false" animationDuration="220ms">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="referral-tab-label">
+            <mat-icon aria-hidden="true">emoji_events</mat-icon>
+            {{ 'referral.campaign.title' | translate }}
+          </span>
+        </ng-template>
+        <div class="referral-tab-panel">
+          <mat-card class="campaign-card">
+            <mat-card-content>
+              <div class="campaign-card__toolbar">
+                <h3 class="campaign-card__heading">{{ 'referral.campaign.title' | translate }}</h3>
+                <button mat-stroked-button type="button" color="primary" (click)="loadDashboard()" [disabled]="dashboardLoading">
+                  <mat-icon>refresh</mat-icon>
+                  {{ 'referral.campaign.refresh' | translate }}
+                </button>
+              </div>
+              <p class="campaign-card__lead">{{ 'referral.campaign.lead' | translate }}</p>
 
-    <mat-card class="list-card">
-      <mat-card-header>
-        <mat-card-title>Liste de vos parrainages</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        @if (referrals.length === 0) {
-          <p class="empty">Aucun filleul pour le moment. Partagez votre lien pour inviter des utilisateurs.</p>
-        } @else {
-          <ul class="referral-list">
-            @for (r of referrals; track r.id) {
-              <li class="referral-item">
-                <span class="ref-id">#{{ r.referredId }}</span>
-                <span class="ref-status">{{ getStatusLabel(r.status) }}</span>
-                @if (r.rewardGiven) {
-                  <mat-icon class="reward-badge" matTooltip="Récompense attribuée">redeem</mat-icon>
-                } @else {
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="grantReward(r)"
-                    [disabled]="grantingId === r.id"
-                    matTooltip="Attribuer la récompense"
-                  >
-                    <mat-icon>{{ grantingId === r.id ? 'hourglass_empty' : 'card_giftcard' }}</mat-icon>
-                  </button>
+              @if (dashboardLoading) {
+                <p class="loading-text">{{ 'common.loading' | translate }}</p>
+              } @else if (dashboardError) {
+                <p class="campaign-card__error">{{ dashboardError }}</p>
+              } @else if (dashboard) {
+                <div
+                  class="campaign-phase"
+                  [class.campaign-phase--idle]="dashboard.phase === 'IDLE'"
+                  [class.campaign-phase--live]="dashboard.phase === 'LIVE'"
+                  [class.campaign-phase--upcoming]="dashboard.phase === 'UPCOMING'"
+                  [class.campaign-phase--ended]="dashboard.phase === 'ENDED_TIME' || dashboard.phase === 'ENDED_FULL'"
+                >
+                  <mat-icon aria-hidden="true">{{
+                    dashboard.phase === 'LIVE' ? 'emoji_events' : dashboard.phase === 'IDLE' ? 'event_busy' : 'schedule'
+                  }}</mat-icon>
+                  <div class="campaign-phase__text">
+                    <span class="campaign-phase__label">{{ phaseLabelKey(dashboard.phase) | translate }}</span>
+                    @if (!dashboard.idle && dashboard.campaignId) {
+                      <span class="campaign-phase__sub">
+                        {{
+                          (dashboard.winnersCount > 0 ? 'referral.campaign.winnersYes' : 'referral.campaign.winnersNo')
+                            | translate: { count: dashboard.winnersCount, max: dashboard.maxWinners ?? 0 }
+                        }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                @if (!dashboard.idle && dashboard.campaignId) {
+                  <div class="campaign-detail">
+                    @if (dashboard.title) {
+                      <h4 class="campaign-detail__title">{{ dashboard.title }}</h4>
+                    }
+                    <dl class="campaign-detail__grid">
+                      <div>
+                        <dt>{{ 'referral.campaign.starts' | translate }}</dt>
+                        <dd>{{ dashboard.startsAt ? (dashboard.startsAt | date: 'short') : ('common.emDash' | translate) }}</dd>
+                      </div>
+                      <div>
+                        <dt>{{ 'referral.campaign.ends' | translate }}</dt>
+                        <dd>{{ dashboard.endsAt ? (dashboard.endsAt | date: 'short') : ('common.emDash' | translate) }}</dd>
+                      </div>
+                      <div>
+                        <dt>{{ 'referral.campaign.slots' | translate }}</dt>
+                        <dd>{{ dashboard.winnersCount }} / {{ dashboard.maxWinners }}</dd>
+                      </div>
+                    </dl>
+                    @if (dashboard.slots.length > 0) {
+                      <h5 class="campaign-slots-preview__title">{{ 'referral.campaign.slotsPrizesTitle' | translate }}</h5>
+                      <ul class="campaign-slots-preview">
+                        @for (s of dashboard.slots; track s.rankOrder) {
+                          <li class="campaign-slots-preview__row">
+                            <span class="campaign-slots-preview__rank">#{{ s.rankOrder }}</span>
+                            <span class="campaign-slots-preview__meta">
+                              {{ s.pointsThreshold ?? ('common.emDash' | translate) }} {{ 'referral.campaign.pts' | translate }} —
+                              {{ s.giftTitle ?? ('common.emDash' | translate) }}
+                            </span>
+                            @if (s.giftDescription) {
+                              <span class="campaign-slots-preview__desc">{{ s.giftDescription }}</span>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    }
+
+                    @if (dashboard.winners.length > 0) {
+                      <h5 class="campaign-winners__title">{{ 'referral.campaign.winnersTitle' | translate }}</h5>
+                      <ul class="campaign-winners">
+                        @for (w of dashboard.winners; track w.pilgrimId + '-' + w.rankOrder) {
+                          <li class="campaign-winners__row">
+                            <span class="campaign-winners__rank">#{{ w.rankOrder }}</span>
+                            <span class="campaign-winners__name">{{ w.pilgrimDisplayName }}</span>
+                            @if (w.giftTitle) {
+                              <span class="campaign-winners__gift">{{ w.giftTitle }}</span>
+                            }
+                            <span class="campaign-winners__meta"
+                              >{{ w.pointsAtWin }} {{ 'referral.campaign.pts' | translate }} ·
+                              {{ w.wonAt ? (w.wonAt | date: 'short') : '' }}</span
+                            >
+                          </li>
+                        }
+                      </ul>
+                    } @else if (dashboard.phase === 'LIVE' || dashboard.phase === 'UPCOMING') {
+                      <p class="campaign-no-winners">{{ 'referral.campaign.noWinnersYet' | translate }}</p>
+                    }
+
+                    @if (dashboard.status === 'ACTIVE' && (dashboard.phase === 'LIVE' || dashboard.phase === 'UPCOMING')) {
+                      <div class="campaign-actions">
+                        <button mat-stroked-button color="warn" type="button" (click)="closeActiveCampaign()">
+                          {{ 'referral.campaign.closeManual' | translate }}
+                        </button>
+                      </div>
+                    }
+                  </div>
                 }
-              </li>
-            }
-          </ul>
-        }
-      </mat-card-content>
-    </mat-card>
-  }
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="campaign-form-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'referral.campaign.newTitle' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="intro-text">{{ 'referral.campaign.newLead' | translate }}</p>
+              <form [formGroup]="campaignForm" (ngSubmit)="createAndActivateCampaign()" class="campaign-form">
+                <div class="campaign-form__grid">
+                  <mat-form-field appearance="outline" class="campaign-form__full">
+                    <mat-label>{{ 'referral.campaign.fieldTitle' | translate }}</mat-label>
+                    <input matInput formControlName="title" [placeholder]="'referral.campaign.fieldTitlePh' | translate" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'referral.campaign.fieldStart' | translate }}</mat-label>
+                    <input matInput type="datetime-local" formControlName="startsAt" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'referral.campaign.fieldEnd' | translate }}</mat-label>
+                    <input matInput type="datetime-local" formControlName="endsAt" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="campaign-form__full">
+                    <mat-label>{{ 'referral.campaign.fieldMaxWinners' | translate }}</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="maxWinners"
+                      min="1"
+                      max="500"
+                      (change)="onMaxWinnersChange()"
+                    />
+                  </mat-form-field>
+                  <div formArrayName="slotTiers" class="campaign-form__slot-tiers">
+                    @for (_ of slotTiers.controls; track $index; let i = $index) {
+                      <mat-form-field appearance="outline" class="campaign-form__full">
+                        <mat-label>{{ 'referral.campaign.fieldRankGift' | translate: { rank: i + 1 } }}</mat-label>
+                        <mat-select [formControlName]="i">
+                          @for (t of tiers; track t.id) {
+                            <mat-option [value]="t.id">{{ t.pointsThreshold }} pts — {{ t.giftTitle }}</mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    }
+                  </div>
+                </div>
+                <div class="campaign-form__actions">
+                  <button mat-flat-button color="primary" type="submit" [disabled]="campaignForm.invalid || campaignSaving || tiers.length === 0">
+                    {{ campaignSaving ? ('common.loading' | translate) : ('referral.campaign.createActivate' | translate) }}
+                  </button>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+
+          @if (history.length > 0 || historyLoading) {
+            <mat-card class="history-card">
+              <mat-card-header>
+                <mat-card-title>{{ 'referral.campaign.historyTitle' | translate }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                @if (historyLoading) {
+                  <p class="loading-text">{{ 'common.loading' | translate }}</p>
+                } @else {
+                  <div class="history-filters" [formGroup]="historyFilterForm">
+                    <mat-form-field appearance="outline" class="history-filters__status" subscriptSizing="dynamic">
+                      <mat-label>{{ 'referral.campaign.historyFilterStatus' | translate }}</mat-label>
+                      <mat-select formControlName="status">
+                        <mat-option value="ALL">{{ 'referral.campaign.historyStatusAll' | translate }}</mat-option>
+                        <mat-option value="DRAFT">{{ 'referral.campaign.statusDraft' | translate }}</mat-option>
+                        <mat-option value="ACTIVE">{{ 'referral.campaign.statusActive' | translate }}</mat-option>
+                        <mat-option value="CLOSED">{{ 'referral.campaign.statusClosed' | translate }}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="history-filters__search" subscriptSizing="dynamic">
+                      <mat-label>{{ 'referral.campaign.historyFilterSearch' | translate }}</mat-label>
+                      <input matInput formControlName="search" [placeholder]="'referral.campaign.historyFilterSearchPh' | translate" />
+                      <button
+                        mat-icon-button
+                        matSuffix
+                        type="button"
+                        class="history-filters__clear"
+                        (click)="clearHistoryFilters()"
+                        [matTooltip]="'referral.campaign.historyFilterClear' | translate"
+                        [disabled]="
+                          historyFilterForm.get('status')?.value === 'ALL' && !(historyFilterForm.get('search')?.value || '').trim()
+                        "
+                      >
+                        <mat-icon>filter_alt_off</mat-icon>
+                      </button>
+                    </mat-form-field>
+                  </div>
+                  @if (filteredHistory.length === 0) {
+                    <p class="history-empty-filter">{{ 'referral.campaign.historyNoMatch' | translate }}</p>
+                  } @else {
+                    <div class="table-scroll">
+                      <table class="history-table">
+                        <thead>
+                          <tr>
+                            <th>{{ 'referral.campaign.hColStatus' | translate }}</th>
+                            <th>{{ 'referral.campaign.hColTitle' | translate }}</th>
+                            <th>{{ 'referral.campaign.starts' | translate }}</th>
+                            <th>{{ 'referral.campaign.ends' | translate }}</th>
+                            <th>{{ 'referral.campaign.slots' | translate }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (h of filteredHistory; track h.id) {
+                            <tr>
+                              <td>
+                                <span
+                                  class="history-status"
+                                  [class.history-status--active]="h.status === 'ACTIVE'"
+                                  [class.history-status--closed]="h.status === 'CLOSED'"
+                                  [class.history-status--draft]="h.status === 'DRAFT'"
+                                  >{{ campaignStatusLabelKey(h.status) | translate }}</span
+                                >
+                              </td>
+                              <td class="history-table__title">{{ h.title?.trim() ? h.title : ('common.emDash' | translate) }}</td>
+                              <td>{{ h.startsAt | date: 'short' }}</td>
+                              <td>{{ h.endsAt | date: 'short' }}</td>
+                              <td>{{ h.maxWinners }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  }
+                }
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="referral-tab-label">
+            <mat-icon aria-hidden="true">redeem</mat-icon>
+            {{ 'referral.tiers.introTitle' | translate }}
+          </span>
+        </ng-template>
+        <div class="referral-tab-panel">
+          <mat-card class="intro-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'referral.tiers.introTitle' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="intro-text">{{ 'referral.tiers.introBody' | translate }}</p>
+            </mat-card-content>
+          </mat-card>
+
+          @if (tiersError) {
+            <mat-card class="error-card">
+              <mat-card-content>
+                <mat-icon class="error-icon">error_outline</mat-icon>
+                <p>{{ tiersError }}</p>
+              </mat-card-content>
+            </mat-card>
+          }
+
+          <mat-card class="tier-form-card">
+            <mat-card-header>
+              <mat-card-title>{{ editingTierId ? ('referral.tiers.editTitle' | translate) : ('referral.tiers.addTitle' | translate) }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="tierForm" (ngSubmit)="saveTier()" class="tier-form">
+                <div class="tier-form-grid">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'referral.tiers.points' | translate }}</mat-label>
+                    <input matInput type="number" formControlName="pointsThreshold" min="1" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'referral.tiers.sort' | translate }}</mat-label>
+                    <input matInput type="number" formControlName="sortOrder" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="tier-form-grid__full">
+                    <mat-label>{{ 'referral.tiers.giftTitle' | translate }}</mat-label>
+                    <input matInput formControlName="giftTitle" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="tier-form-grid__full">
+                    <mat-label>{{ 'referral.tiers.giftDesc' | translate }}</mat-label>
+                    <textarea matInput rows="2" formControlName="giftDescription"></textarea>
+                  </mat-form-field>
+                </div>
+                <div class="tier-form-actions">
+                  @if (editingTierId) {
+                    <button mat-button type="button" (click)="cancelTierEdit()">{{ 'common.cancel' | translate }}</button>
+                  }
+                  <button mat-flat-button color="primary" type="submit" [disabled]="tierForm.invalid || tierSaving">
+                    {{
+                      tierSaving
+                        ? ('common.loading' | translate)
+                        : editingTierId
+                          ? ('common.save' | translate)
+                          : ('referral.tiers.create' | translate)
+                    }}
+                  </button>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="tier-table-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'referral.tiers.tableTitle' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (tiersLoading) {
+                <p class="loading-text">{{ 'common.loading' | translate }}</p>
+              } @else if (tiers.length === 0) {
+                <p class="empty">{{ 'referral.tiers.empty' | translate }}</p>
+              } @else {
+                <div class="table-scroll">
+                  <table mat-table [dataSource]="tiers" class="tier-table">
+                    <ng-container matColumnDef="pointsThreshold">
+                      <th mat-header-cell *matHeaderCellDef>{{ 'referral.tiers.colPoints' | translate }}</th>
+                      <td mat-cell *matCellDef="let row">{{ row.pointsThreshold }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="giftTitle">
+                      <th mat-header-cell *matHeaderCellDef>{{ 'referral.tiers.colGift' | translate }}</th>
+                      <td mat-cell *matCellDef="let row">{{ row.giftTitle }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="giftDescription">
+                      <th mat-header-cell *matHeaderCellDef>{{ 'referral.tiers.colDesc' | translate }}</th>
+                      <td mat-cell *matCellDef="let row" class="cell-desc">{{ row.giftDescription || ('common.emDash' | translate) }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef></th>
+                      <td mat-cell *matCellDef="let row" class="cell-actions">
+                        <button mat-icon-button type="button" (click)="startEditTier(row)" [matTooltip]="'common.edit' | translate">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button type="button" color="warn" (click)="deleteTier(row)" [matTooltip]="'common.delete' | translate">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="tierColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: tierColumns"></tr>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </section>
