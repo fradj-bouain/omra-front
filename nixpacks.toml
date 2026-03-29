@@ -1,17 +1,15 @@
 # Nixpacks config for Railway (Angular CLI requires Node v20.19+ or v22.12+)
 # Pin nixpkgs so we get Node 22.13.x (default archive had 22.11 / 20.18 which Angular rejects)
 #
-# Evite l’avertissement « Use --omit=dev instead » et garantit devDependencies pour le build.
-
-[variables]
-NPM_CONFIG_PRODUCTION = "false"
+# Unset NPM_CONFIG_PRODUCTION avant npm (Railway l’injecte ; la clé « production » est dépréciée dans npm 10+).
 
 [phases.setup]
 nixpkgsArchive = "51ad838b03a05b1de6f9f2a0fffecee64a9788ee"
 
 [phases.install]
-cmds = ["npm ci --include=dev"]
+cmds = ["unset NPM_CONFIG_PRODUCTION; npm ci --include=dev"]
 
 [phases.build]
-# More heap for Angular/Vite build (avoids OOM exit code 3 in CI)
-cmds = ["export NODE_OPTIONS='--max-old-space-size=4096' && npm run build"]
+cmds = [
+  "unset NPM_CONFIG_PRODUCTION; export NODE_OPTIONS='--max-old-space-size=4096'; npm run build",
+]

@@ -3,9 +3,9 @@
 
 [build]
 builder = "nixpacks"
-buildCommand = "npm run build"
+buildCommand = "unset NPM_CONFIG_PRODUCTION; export NODE_OPTIONS='--max-old-space-size=4096'; npm run build"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "node server.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
