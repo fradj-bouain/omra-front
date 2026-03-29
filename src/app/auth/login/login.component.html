@@ -1,64 +1,105 @@
-<div class="login-page">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <div class="login-card__head">
-        <div>
-          <mat-card-title>{{ 'login.title' | translate }}</mat-card-title>
-          <mat-card-subtitle>{{ 'login.subtitle' | translate }}</mat-card-subtitle>
+<div class="login-page" [class.login-page--rtl]="i18n.currentLang() === 'ar'">
+  <div class="login-page__veil" aria-hidden="true"></div>
+
+  <div class="login-page__layout">
+    <aside class="login-page__hero" aria-hidden="false">
+      <div class="login-page__hero-inner">
+        <div class="login-page__ornament" aria-hidden="true">
+          <svg class="login-page__star" viewBox="0 0 120 120" focusable="false">
+            <path
+              fill="currentColor"
+              d="M60 4l7.2 22.1h23.4L73.2 41.8 80.4 64 60 51.9 39.6 64l7.2-22.2L29.4 26.1H52.8L60 4z"
+            />
+            <path
+              fill="currentColor"
+              opacity="0.5"
+              d="M60 28l4.8 14.7h15.6L68.8 58.5l4.8 14.7L60 66.6 46.4 73.2l4.8-14.7-11.6-8.4h15.6L60 28z"
+            />
+          </svg>
         </div>
-        <div class="lang-toggle">
-          <button
-            type="button"
-            mat-stroked-button
-            class="lang-btn"
-            [class.lang-btn--active]="i18n.currentLang() === 'fr'"
-            (click)="setLang('fr')"
-          >
-            FR
-          </button>
-          <button
-            type="button"
-            mat-stroked-button
-            class="lang-btn"
-            [class.lang-btn--active]="i18n.currentLang() === 'ar'"
-            (click)="setLang('ar')"
-          >
-            عربي
-          </button>
+        <p class="login-page__eyebrow">{{ 'login.brandTitle' | translate }}</p>
+        <h1 class="login-page__headline">{{ 'login.brandTagline' | translate }}</h1>
+        <div class="login-page__divider" aria-hidden="true">
+          <span class="login-page__divider-line"></span>
+          <span class="login-page__divider-diamond"></span>
+          <span class="login-page__divider-line"></span>
         </div>
+        <p class="login-page__hint">{{ 'login.heroMotto' | translate }}</p>
       </div>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'login.email' | translate }}</mat-label>
-          <input matInput type="email" formControlName="email" [placeholder]="'login.emailPlaceholder' | translate" />
-          @if (form.get('email')?.hasError('required')) {
-            <mat-error>{{ 'login.emailRequired' | translate }}</mat-error>
+    </aside>
+
+    <div class="login-page__panel">
+      <mat-card class="login-card">
+        <div class="login-card__arch" aria-hidden="true"></div>
+        <mat-card-header>
+          <div class="login-card__head">
+            <div class="login-card__titles">
+              <p class="login-card__eyebrow">{{ 'login.formEyebrow' | translate }}</p>
+              <mat-card-title>{{ 'login.title' | translate }}</mat-card-title>
+              <mat-card-subtitle class="login-card__subtitle">{{ 'login.subtitle' | translate }}</mat-card-subtitle>
+            </div>
+            <div class="lang-toggle">
+              <button
+                type="button"
+                mat-stroked-button
+                class="lang-btn"
+                [class.lang-btn--active]="i18n.currentLang() === 'fr'"
+                (click)="setLang('fr')"
+              >
+                FR
+              </button>
+              <button
+                type="button"
+                mat-stroked-button
+                class="lang-btn"
+                [class.lang-btn--active]="i18n.currentLang() === 'ar'"
+                (click)="setLang('ar')"
+              >
+                عربي
+              </button>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          @if (sessionNotice()) {
+            <div class="login-session-notice" role="alert">
+              <div class="login-session-notice__text">{{ sessionNoticeBody() }}</div>
+              <button type="button" class="login-session-notice__close" (click)="dismissSessionNotice()" aria-label="Fermer">
+                ×
+              </button>
+            </div>
           }
-          @if (form.get('email')?.hasError('email')) {
-            <mat-error>{{ 'login.emailInvalid' | translate }}</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'login.password' | translate }}</mat-label>
-          <input matInput type="password" formControlName="password" />
-          <mat-error>{{ 'login.passwordRequired' | translate }}</mat-error>
-        </mat-form-field>
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          class="full-width submit-btn"
-          [disabled]="form.invalid || loading"
-        >
-          @if (loading) {
-            <mat-spinner diameter="24"></mat-spinner>
-          } @else {
-            {{ 'login.submit' | translate }}
-          }
-        </button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+            <mat-form-field appearance="outline" class="login-field">
+              <mat-label>{{ 'login.email' | translate }}</mat-label>
+              <input matInput type="email" formControlName="email" [placeholder]="'login.emailPlaceholder' | translate" />
+              @if (form.get('email')?.hasError('required')) {
+                <mat-error>{{ 'login.emailRequired' | translate }}</mat-error>
+              }
+              @if (form.get('email')?.hasError('email')) {
+                <mat-error>{{ 'login.emailInvalid' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="login-field">
+              <mat-label>{{ 'login.password' | translate }}</mat-label>
+              <input matInput type="password" formControlName="password" />
+              <mat-error>{{ 'login.passwordRequired' | translate }}</mat-error>
+            </mat-form-field>
+            <button
+              mat-flat-button
+              type="submit"
+              class="login-submit"
+              [disabled]="form.invalid || loading"
+            >
+              @if (loading) {
+                <mat-spinner diameter="24"></mat-spinner>
+              } @else {
+                {{ 'login.submit' | translate }}
+              }
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
 </div>

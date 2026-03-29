@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UpperCasePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -23,6 +23,40 @@ import { I18nService, type UiLang } from '../../core/services/i18n.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { resolveMediaUrl } from '../../shared/utils/media-url';
 import { fileUrlFromUploadResponse } from '../../shared/utils/upload-response';
+import { forkJoin } from 'rxjs';
+
+export interface AgencySubscriptionRow {
+  id: number;
+  agencyId: number;
+  planId: number;
+  planCode: string | null;
+  planName: string | null;
+  periodStart: string;
+  periodEnd: string;
+  status: string;
+  paidAt: string | null;
+  paymentReference: string | null;
+  amountPaid: number | string | null;
+  currency: string | null;
+  notes: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface AgencySubscriptionSummary {
+  latest: AgencySubscriptionRow | null;
+  currentValid: AgencySubscriptionRow | null;
+}
+
+export interface SubscriptionPageResponse {
+  content: AgencySubscriptionRow[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
 
 type BrandingForm = {
   logoUrl: string;
@@ -75,6 +109,7 @@ function stripFromPreset(p: AgencyTheme | undefined): string[] {
   imports: [
     FormsModule,
     UpperCasePipe,
+    DatePipe,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -111,6 +146,14 @@ export class SettingsComponent implements OnInit {
   uploadingLogo = false;
   uploadingFavicon = false;
 
+  subscriptionSummary: AgencySubscriptionSummary | null = null;
+  subscriptionPage: SubscriptionPageResponse | null = null;
+  subscriptionLoading = false;
+  subscriptionLoadFailed = false;
+  selectedSubscription: AgencySubscriptionRow | null = null;
+  subPageIndex = 0;
+  readonly subPageSize = 12;
+
   selectedPreset = '';
 
   branding: BrandingForm = this.defaultBranding();
@@ -133,6 +176,61 @@ export class SettingsComponent implements OnInit {
         this.selectedPreset = this.detectPreset(this.branding);
       },
     });
+    this.loadSubscriptionData();
+  }
+
+  loadSubscriptionData(): void {
+    if (!this.auth.agency()) return;
+    this.subscriptionLoading = true;
+    this.subscriptionLoadFailed = false;
+    forkJoin({
+      summary: this.http.get<AgencySubscriptionSummary>(this.api.meSubscriptions.summary),
+      page: this.http.get<SubscriptionPageResponse>(
+        this.api.meSubscriptions.listPage(this.subPageIndex, this.subPageSize),
+      ),
+    }).subscribe({
+      next: ({ summary, page }) => {
+        this.subscriptionSummary = summary;
+        this.subscriptionPage = page;
+        this.subscriptionLoading = false;
+        this.subscriptionLoadFailed = false;
+        this.selectedSubscription = null;
+      },
+      error: () => {
+        this.subscriptionLoading = false;
+        this.subscriptionLoadFailed = true;
+        this.notif.error(this.i18n.instant('settings.subscription.loadError'));
+      },
+    });
+  }
+
+  changeSubPage(delta: number): void {
+    const next = this.subPageIndex + delta;
+    if (next < 0) return;
+    const total = this.subscriptionPage?.totalPages ?? 0;
+    if (total > 0 && next >= total) return;
+    this.subPageIndex = next;
+    this.loadSubscriptionData();
+  }
+
+  selectSubscriptionRow(row: AgencySubscriptionRow): void {
+    this.selectedSubscription = row;
+  }
+
+  subscriptionStatusLabel(status: string): string {
+    const key = `settings.subscription.status.${status}`;
+    const t = this.i18n.instant(key);
+    return t === key ? status : t;
+  }
+
+  formatSubscriptionAmount(row: AgencySubscriptionRow): string {
+    if (row.amountPaid == null || row.amountPaid === '') return '—';
+    const n = typeof row.amountPaid === 'number' ? row.amountPaid : Number(row.amountPaid);
+    if (Number.isNaN(n)) return String(row.amountPaid);
+    return (
+      new Intl.NumberFormat(this.i18n.angularLocaleId(), { maximumFractionDigits: 2 }).format(n) +
+      (row.currency ? ` ${row.currency}` : '')
+    );
   }
 
   hexForPicker(hex: string | undefined): string {

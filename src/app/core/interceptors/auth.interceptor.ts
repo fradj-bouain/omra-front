@@ -12,6 +12,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(cloned).pipe(
     catchError((err: HttpErrorResponse) => {
+      if (err.status === 403) {
+        const code = err.error?.code as string | undefined;
+        if (code === 'SUBSCRIPTION_INACTIVE' || code === 'AGENCY_SUSPENDED') {
+          const msg = typeof err.error?.message === 'string' ? err.error.message : '';
+          auth.sessionTerminatedByServer(msg, code);
+          return throwError(() => err);
+        }
+      }
       if (err.status === 401) {
         return auth.refreshToken().pipe(
           switchMap(() => {

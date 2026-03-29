@@ -1,4 +1,4 @@
-/* Layout — topbar et sidebar pilotés par les variables d’agence */
+/* Layout — navigation latérale pleine hauteur (logo + actions intégrés) */
 .layout {
   height: 100vh;
   display: flex;
@@ -7,108 +7,22 @@
 
 $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cdefs%3E%3Cpattern id='g' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 30h60M30 0v60' stroke='%23fff' stroke-opacity='0.06' stroke-width='0.4' fill='none'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke='%23fff' stroke-opacity='0.045' stroke-width='0.35' fill='none'/%3E%3Cpath d='M0 15l30 30l30-30' stroke='%23fff' stroke-opacity='0.03' stroke-width='0.3' fill='none'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3C/svg%3E");
 
-.header {
-  background: var(--header-bg) !important;
-  color: var(--app-text);
-  box-shadow:
-    0 1px 0 color-mix(in srgb, var(--sidebar-color) 10%, transparent),
-    0 4px 20px color-mix(in srgb, var(--sidebar-color) 8%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--sidebar-color) 14%, var(--background-color) 86%);
-  z-index: 10;
-  min-height: 56px;
-  height: auto;
-  padding: 0 var(--app-space-md) 0 var(--app-space-sm);
-  align-items: center;
-  gap: var(--app-space-sm);
-}
-
-.header__start {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  min-width: 0;
-}
-
-.header__menu-btn,
-.header__user-btn {
-  flex-shrink: 0;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease;
-
-  &:hover {
-    background: color-mix(in srgb, var(--primary-color) 14%, transparent) !important;
-  }
-
-  &:active {
-    transform: scale(0.96);
-  }
-}
-
-.header__user-btn {
-  border: 1px solid color-mix(in srgb, var(--sidebar-color) 18%, var(--app-border) 82%);
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-  margin-left: 2px;
-  padding: 6px 12px;
-  border-radius: var(--app-radius-sm);
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-  }
-}
-
-.logo-img {
-  height: 36px;
-  width: auto;
-  object-fit: contain;
-}
-
-.logo-text {
-  font-family: var(--app-display);
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--primary-color);
-}
-
-.spacer {
-  flex: 1;
-}
-
-.menu-user-info {
-  padding: var(--app-space-md) var(--app-space-lg);
-  border-bottom: 1px solid var(--app-border);
-  display: flex;
-  flex-direction: column;
-  gap: var(--app-space-xs);
-  strong {
-    font-size: 0.95rem;
-    font-family: var(--app-display);
-    color: var(--app-text);
-  }
-  small {
-    color: var(--app-text-soft);
-    font-size: 0.8rem;
-    font-family: var(--app-font);
-  }
-}
-
 .sidenav-container {
   flex: 1;
   min-height: 0;
   background: var(--app-bg);
+}
+
+.layout__drawer-trigger {
+  position: fixed;
+  inset-inline-start: 12px;
+  top: 12px;
+  z-index: 8;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--primary-color) 40%, rgba(0, 0, 0, 0.25));
+}
+
+.content--fab-pad .main {
+  padding-top: calc(var(--app-space-xl) + 52px);
 }
 
 /* Side-by-side: content area takes remaining width so itâ€™s visible next to the sidebar */
@@ -160,11 +74,269 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   ) !important;
   border-right: 1px solid color-mix(in srgb, var(--sidebar-color) 65%, #000000 35%);
   overflow-x: hidden !important;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .sidenav--rail {
   --sidenav-width: var(--sidenav-rail-width);
+}
+
+:host ::ng-deep .sidenav .mat-drawer-inner-container {
+  display: flex !important;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.sidenav__header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 10px 8px 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidenav__toggle {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.92) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+}
+
+.sidenav__logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  text-decoration: none;
+  color: #fff;
+  padding: 6px 8px;
+  margin: -4px 0;
+  border-radius: var(--app-radius-sm);
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--primary-color) 70%, white);
+    outline-offset: 2px;
+  }
+}
+
+.sidenav__logo-img {
+  max-height: 42px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.25));
+}
+
+.sidenav__logo-text {
+  font-family: var(--app-display);
+  font-weight: 700;
+  font-size: 1.28rem;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.sidenav__logo-icon {
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.sidenav__scroll {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidenav__list--grouped {
+  padding: 6px 6px 10px;
+}
+
+.sidenav__group {
+  min-width: 0;
+}
+
+.sidenav__nav-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidenav__static-group {
+  margin: 0 4px;
+  min-width: 0;
+}
+
+.sidenav__static-group-label {
+  padding: 10px 14px 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.25;
+  user-select: none;
+}
+
+.sidenav__nav-chunk {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Tableau de bord — même lecture qu’un item de liste (pas de carte) */
+.sidenav__nav-chunk--hero {
+  margin: 0 0 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.sidenav__nav-chunk--hero .mat-mdc-list-item {
+  margin: var(--app-space-xs) var(--app-space-md) !important;
+  border-radius: var(--app-radius-sm) !important;
+}
+
+.sidenav__panel-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-family: var(--app-font);
+}
+
+.sidenav__footer {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  padding: 8px 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.14));
+}
+
+.sidenav__user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+  padding: 0 4px;
+  min-width: 0;
+}
+
+.sidenav__user-name {
+  font-family: var(--app-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidenav__user-email {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.58);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidenav__actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sidenav__action {
+  flex: 1 1 calc(50% - 3px);
+  min-width: 0;
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  color: rgba(255, 255, 255, 0.96) !important;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+
+  mat-icon {
+    margin-right: 4px;
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Boutons outlined compacts (Material MDC) */
+:host ::ng-deep .sidenav__action.mat-mdc-outlined-button {
+  min-height: 28px;
+  height: 28px;
+  padding: 0 8px;
+}
+
+:host ::ng-deep .sidenav__action.mat-mdc-outlined-button .mat-mdc-button-touch-target {
+  height: 28px !important;
+}
+
+.sidenav__action--logout {
+  border-color: rgba(248, 113, 113, 0.5) !important;
+  color: #fecaca !important;
+}
+
+.sidenav--rail .sidenav__header {
+  flex-direction: column;
+  padding: 12px 6px;
+  gap: 4px;
+}
+
+.sidenav--rail .sidenav__logo {
+  justify-content: center;
+  padding: 4px;
+}
+
+.sidenav--rail .sidenav__logo-img {
+  max-height: 34px;
+}
+
+.sidenav--rail .sidenav__actions {
+  flex-direction: column;
+}
+
+.sidenav--rail .sidenav__action {
+  flex: none;
+  width: 100%;
+  justify-content: center;
+  min-height: 28px;
+  height: 28px;
+  padding-inline: 0 !important;
+
+  mat-icon {
+    margin-right: 0;
+  }
 }
 
 :host ::ng-deep .sidenav.mat-drawer,
@@ -243,12 +415,114 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
       color: #fff !important;
     }
   }
+
+  .sidenav__panel.mat-expansion-panel {
+    /* Material M3 : sans ça, le thème global impose on-surface (texte noir) sur le header */
+    --mat-expansion-header-text-color: rgba(255, 255, 255, 0.92);
+    --mat-expansion-header-indicator-color: rgba(255, 255, 255, 0.92);
+    --mat-expansion-header-description-color: rgba(255, 255, 255, 0.68);
+    --mat-expansion-container-text-color: rgba(255, 255, 255, 0.95);
+    --mat-expansion-header-hover-state-layer-color: rgba(255, 255, 255, 0.08);
+    --mat-expansion-header-focus-state-layer-color: rgba(255, 255, 255, 0.12);
+
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0;
+    overflow: visible;
+  }
+
+  .sidenav__panel.mat-expanded {
+    box-shadow: none !important;
+  }
+
+  .sidenav__panel .mat-expansion-panel-header {
+    color: rgba(255, 255, 255, 0.92) !important;
+    background: transparent !important;
+    padding-inline: calc(var(--app-space-md) + 2px) 8px;
+    transition: background 0.2s ease;
+    border-radius: var(--app-radius-sm) !important;
+  }
+
+  .sidenav__panel .mat-expansion-panel-header-title,
+  .sidenav__panel .mat-expansion-panel-header-description {
+    color: inherit !important;
+  }
+
+  .sidenav__panel .mat-expansion-panel-header .mat-content {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .sidenav__panel:not(.mat-expanded) .mat-expansion-panel-header,
+  .sidenav__panel.mat-expanded .mat-expansion-panel-header {
+    border-radius: var(--app-radius-sm) !important;
+    border-bottom: none;
+  }
+
+  .sidenav__panel .mat-expansion-panel-header:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  .sidenav__panel .mat-expansion-panel-header.mat-expanded:focus-visible,
+  .sidenav__panel .mat-expansion-panel-header:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--primary-color) 65%, white);
+    outline-offset: 2px;
+  }
+
+  .sidenav__panel .mat-expansion-indicator {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .sidenav__panel .mat-expansion-indicator svg {
+    fill: rgba(255, 255, 255, 0.92) !important;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidenav__panel .mat-expansion-panel-body {
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0;
+  }
+
+  .sidenav__nav-chunk--static-single {
+    margin: 0;
+    padding: 0 !important;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sidenav__nav-chunk--static-single .mat-mdc-list-item {
+    margin: var(--app-space-xs) var(--app-space-md) !important;
+    border-radius: var(--app-radius-sm) !important;
+  }
+
+  .sidenav__nav-chunk--in-panel {
+    padding: 2px 0 4px !important;
+    background: transparent;
+  }
+
+  .sidenav__nav-chunk--in-panel .mat-mdc-list-item {
+    margin: var(--app-space-xs) var(--app-space-md) !important;
+    border-radius: var(--app-radius-sm) !important;
+    font-size: 0.9375rem;
+    min-height: unset;
+    transition: background 0.2s ease;
+  }
 }
 
 /* Rail (desktop): fixed narrow width, icons centered, labels screen-reader only */
 :host ::ng-deep .sidenav--rail {
   .sidenav__list {
     padding-top: var(--app-space-sm);
+  }
+
+  .sidenav__group--rail-divider {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .mat-mdc-list-item {
@@ -267,7 +541,7 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   }
 
   a.active {
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+    box-shadow: none;
   }
 }
 

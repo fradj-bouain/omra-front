@@ -1,53 +1,4 @@
 <div class="layout">
-  <mat-toolbar class="header">
-    <div class="header__start">
-      <button
-        mat-icon-button
-        type="button"
-        class="header__menu-btn"
-        (click)="toggleSidebar()"
-        [matTooltip]="navToggleTooltipKey() | translate"
-        matTooltipShowDelay="400"
-        [attr.aria-label]="navToggleTooltipKey() | translate"
-      >
-        <mat-icon>{{ navToggleIcon() }}</mat-icon>
-      </button>
-      <a routerLink="/dashboard" class="logo">
-        @if (auth.agency()?.logoUrl) {
-          <img [src]="resolveMediaUrl(auth.agency()!.logoUrl)" [attr.alt]="'layout.logoAlt' | translate" class="logo-img" />
-        } @else {
-          <span class="logo-text">Omra</span>
-        }
-      </a>
-    </div>
-    <span class="spacer"></span>
-    <button
-      mat-icon-button
-      type="button"
-      class="header__user-btn"
-      [matMenuTriggerFor]="userMenu"
-      [matTooltip]="'layout.userMenu' | translate"
-      matTooltipShowDelay="500"
-      [attr.aria-label]="'layout.userMenu' | translate"
-    >
-      <mat-icon>account_circle</mat-icon>
-    </button>
-    <mat-menu #userMenu="matMenu">
-      <div class="menu-user-info">
-        <strong>{{ auth.user()?.name ?? auth.admin()?.username }}</strong>
-        <small>{{ auth.user()?.email ?? auth.admin()?.email }}</small>
-      </div>
-      <button mat-menu-item routerLink="/settings" (click)="closeIfMobile()">
-        <mat-icon>settings</mat-icon>
-        <span>{{ 'layout.settings' | translate }}</span>
-      </button>
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        <span>{{ 'layout.logout' | translate }}</span>
-      </button>
-    </mat-menu>
-  </mat-toolbar>
-
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav
       [opened]="sidenavOpened"
@@ -56,31 +7,193 @@
       class="sidenav"
       [class.sidenav--rail]="!isMobile && !sidebarExpanded"
     >
-      <mat-nav-list class="sidenav__list">
-        @for (item of (auth.isAdmin() ? adminMenuItems : menuItems); track item.path) {
-          <a
-            mat-list-item
-            [routerLink]="item.path"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            (click)="closeIfMobile()"
-            [matTooltip]="item.labelKey | translate"
-            [matTooltipDisabled]="showNavLabels()"
-            matTooltipPosition="after"
-            matTooltipShowDelay="300"
-          >
-            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-            <span
-              matListItemTitle
-              [class.sidenav__label-sr]="!showNavLabels()"
-            >
-              {{ item.labelKey | translate }}
-            </span>
-          </a>
+      <header class="sidenav__header">
+        <button
+          mat-icon-button
+          type="button"
+          class="sidenav__toggle"
+          (click)="toggleSidebar()"
+          [matTooltip]="navToggleTooltipKey() | translate"
+          matTooltipShowDelay="400"
+          [attr.aria-label]="navToggleTooltipKey() | translate"
+        >
+          <mat-icon>{{ navToggleIcon() }}</mat-icon>
+        </button>
+        <a routerLink="/dashboard" class="sidenav__logo" (click)="closeIfMobile()">
+          @if (auth.agency()?.logoUrl) {
+            <img
+              [src]="resolveMediaUrl(auth.agency()!.logoUrl)"
+              [attr.alt]="'layout.logoAlt' | translate"
+              class="sidenav__logo-img"
+            />
+          } @else if (showNavLabels()) {
+            <span class="sidenav__logo-text">Omra</span>
+          } @else {
+            <mat-icon class="sidenav__logo-icon" aria-hidden="true">travel_explore</mat-icon>
+          }
+        </a>
+      </header>
+
+      <nav class="sidenav__scroll" aria-label="Navigation principale">
+        <div class="sidenav__list sidenav__list--grouped">
+          @if (showNavLabels()) {
+            <div class="sidenav__nav-blocks">
+              @for (group of menuGroups; track group.id) {
+                @if (!group.labelKey) {
+                  <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--hero">
+                    @for (item of group.items; track item.path) {
+                      <a
+                      mat-list-item
+                      [routerLink]="item.path"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: item.linkExact === true }"
+                        (click)="closeIfMobile()"
+                        [matTooltip]="item.labelKey | translate"
+                        matTooltipPosition="after"
+                        matTooltipShowDelay="300"
+                      >
+                        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                        <span matListItemTitle>{{ item.labelKey | translate }}</span>
+                      </a>
+                    }
+                  </mat-nav-list>
+                } @else if (group.items.length === 1) {
+                  <div class="sidenav__static-group">
+                    <div class="sidenav__static-group-label" role="presentation">
+                      {{ group.labelKey | translate }}
+                    </div>
+                    <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--static-single">
+                      @for (item of group.items; track item.path) {
+                        <a
+                          mat-list-item
+                          [routerLink]="item.path"
+                          routerLinkActive="active"
+                          [routerLinkActiveOptions]="{ exact: item.linkExact === true }"
+                          (click)="closeIfMobile()"
+                          [matTooltip]="item.labelKey | translate"
+                          matTooltipPosition="after"
+                          matTooltipShowDelay="300"
+                        >
+                          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                          <span matListItemTitle>{{ item.labelKey | translate }}</span>
+                        </a>
+                      }
+                    </mat-nav-list>
+                  </div>
+                } @else {
+                  <mat-expansion-panel
+                    class="sidenav__panel"
+                    [expanded]="isNavPanelExpanded(group)"
+                    (expandedChange)="onNavPanelExpandedChange(group, $event)"
+                  >
+                    <mat-expansion-panel-header collapsedHeight="44px" expandedHeight="44px">
+                      <mat-panel-title class="sidenav__panel-title">
+                        {{ group.labelKey | translate }}
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--in-panel">
+                      @for (item of group.items; track item.path) {
+                        <a
+                          mat-list-item
+                          [routerLink]="item.path"
+                          routerLinkActive="active"
+                          [routerLinkActiveOptions]="{ exact: item.linkExact === true }"
+                          (click)="closeIfMobile()"
+                          [matTooltip]="item.labelKey | translate"
+                          matTooltipPosition="after"
+                          matTooltipShowDelay="300"
+                        >
+                          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                          <span matListItemTitle>{{ item.labelKey | translate }}</span>
+                        </a>
+                      }
+                    </mat-nav-list>
+                  </mat-expansion-panel>
+                }
+              }
+            </div>
+          } @else {
+            <mat-nav-list class="sidenav__nav-chunk">
+              @for (group of menuGroups; track group.id) {
+                <div
+                  class="sidenav__group"
+                  [class.sidenav__group--rail-divider]="group.labelKey"
+                >
+                  @for (item of group.items; track item.path) {
+                    <a
+                      mat-list-item
+                      [routerLink]="item.path"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: item.linkExact === true }"
+                      (click)="closeIfMobile()"
+                      [matTooltip]="item.labelKey | translate"
+                      matTooltipPosition="after"
+                      matTooltipShowDelay="300"
+                    >
+                      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                      <span matListItemTitle class="sidenav__label-sr">{{ item.labelKey | translate }}</span>
+                    </a>
+                  }
+                </div>
+              }
+            </mat-nav-list>
+          }
+        </div>
+      </nav>
+
+      <footer class="sidenav__footer">
+        @if (showNavLabels()) {
+          <div class="sidenav__user">
+            <span class="sidenav__user-name">{{ auth.user()?.name }}</span>
+            <span class="sidenav__user-email">{{ auth.user()?.email }}</span>
+          </div>
         }
-      </mat-nav-list>
+        <div class="sidenav__actions">
+          <a
+            mat-stroked-button
+            routerLink="/settings"
+            (click)="closeIfMobile()"
+            class="sidenav__action"
+            [matTooltip]="'layout.settings' | translate"
+            [matTooltipDisabled]="showNavLabels()"
+            matTooltipPosition="above"
+          >
+            <mat-icon>tune</mat-icon>
+            @if (showNavLabels()) {
+              <span>{{ 'layout.settings' | translate }}</span>
+            }
+          </a>
+          <button
+            mat-stroked-button
+            type="button"
+            class="sidenav__action sidenav__action--logout"
+            (click)="logout()"
+            [matTooltip]="'layout.logout' | translate"
+            [matTooltipDisabled]="showNavLabels()"
+            matTooltipPosition="above"
+          >
+            <mat-icon>logout</mat-icon>
+            @if (showNavLabels()) {
+              <span>{{ 'layout.logout' | translate }}</span>
+            }
+          </button>
+        </div>
+      </footer>
     </mat-sidenav>
-    <mat-sidenav-content class="content">
+
+    <mat-sidenav-content class="content" [class.content--fab-pad]="isMobile && !opened">
+      @if (isMobile && !opened) {
+        <button
+          type="button"
+          class="layout__drawer-trigger"
+          mat-mini-fab
+          color="primary"
+          (click)="toggleSidebar()"
+          [attr.aria-label]="'layout.toggleMenu' | translate"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
       <main class="main">
         <router-outlet></router-outlet>
       </main>

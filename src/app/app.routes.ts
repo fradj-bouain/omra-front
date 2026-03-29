@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -16,7 +15,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES) },
-      { path: 'agencies', loadChildren: () => import('./modules/agencies/agencies.routes').then(m => m.AGENCIES_ROUTES), canActivate: [adminGuard] },
       { path: 'pilgrims', loadChildren: () => import('./modules/pilgrims/pilgrims.routes').then(m => m.PILGRIMS_ROUTES) },
       { path: 'groups', loadChildren: () => import('./modules/groups/groups.routes').then(m => m.GROUPS_ROUTES) },
       { path: 'flights', loadChildren: () => import('./modules/flights/flights.routes').then(m => m.FLIGHTS_ROUTES) },

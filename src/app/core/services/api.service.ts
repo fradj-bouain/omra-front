@@ -16,11 +16,6 @@ export class ApiService {
     refresh: `${this.base}/api/auth/refresh`,
     logout: `${this.base}/api/auth/logout`,
   };
-  adminAuth = {
-    login: `${this.base}/api/admin/auth/login`,
-    refresh: `${this.base}/api/admin/auth/refresh`,
-    logout: `${this.base}/api/admin/auth/logout`,
-  };
   agencies = {
     list: `${this.base}/api/agencies`,
     theme: `${this.base}/api/agencies/theme`,
@@ -139,4 +134,10 @@ export class ApiService {
     close: (id: number) => `${this.base}/api/referral-campaigns/${id}/close`,
   };
   files = { upload: `${this.base}/api/files/upload` };
+  /** Abonnement de l’agence connectée (lecture seule, portail agence). */
+  meSubscriptions = {
+    summary: `${this.base}/api/me/subscriptions/summary`,
+    listPage: (page: number, size: number) =>
+      `${this.base}/api/me/subscriptions?page=${page}&size=${size}`,
+  };
 }

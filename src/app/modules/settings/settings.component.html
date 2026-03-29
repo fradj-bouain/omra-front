@@ -233,5 +233,166 @@
         </mat-card>
       </section>
     }
+
+    @if (auth.agency()) {
+      <section class="settings-subscription-section" aria-labelledby="settings-subscription-heading">
+        <mat-card class="settings-card settings-card--subscription" appearance="outlined">
+          <mat-card-header class="settings-card__head">
+            <div mat-card-avatar class="settings-card__head-icon" aria-hidden="true">
+              <mat-icon>calendar_month</mat-icon>
+            </div>
+            <mat-card-title id="settings-subscription-heading">{{ 'settings.subscription.cardTitle' | translate }}</mat-card-title>
+            <mat-card-subtitle class="settings-card__head-subtitle--muted">{{
+              'settings.subscription.cardSubtitle' | translate
+            }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            @if (subscriptionLoading) {
+              <p class="settings-hint">{{ 'settings.subscription.loading' | translate }}</p>
+            } @else if (subscriptionLoadFailed) {
+              <p class="settings-hint">{{ 'settings.subscription.loadError' | translate }}</p>
+              <button mat-stroked-button type="button" color="primary" (click)="loadSubscriptionData()">
+                {{ 'settings.subscription.retry' | translate }}
+              </button>
+            } @else if (subscriptionSummary) {
+              @if (subscriptionSummary.currentValid; as cur) {
+                <div class="sub-banner sub-banner--ok">
+                  <mat-icon>verified</mat-icon>
+                  <div>
+                    <span class="sub-banner__title">{{ 'settings.subscription.bannerOkTitle' | translate }}</span>
+                    <span class="sub-banner__meta"
+                      >{{ cur.planName }} · {{ cur.periodStart }} → {{ cur.periodEnd }} ·
+                      {{ subscriptionStatusLabel(cur.status) }}</span
+                    >
+                  </div>
+                </div>
+              } @else {
+                <div class="sub-banner sub-banner--warn">
+                  <mat-icon>warning</mat-icon>
+                  <div>
+                    <span class="sub-banner__title">{{ 'settings.subscription.bannerWarnTitle' | translate }}</span>
+                    <span class="sub-banner__meta">{{ 'settings.subscription.bannerWarnHint' | translate }}</span>
+                  </div>
+                </div>
+              }
+
+              <h3 class="settings-section-label settings-section-label--tight">{{ 'settings.subscription.historyTitle' | translate }}</h3>
+              @if (subscriptionPage?.content?.length) {
+                <div class="sub-table-wrap">
+                  <table class="sub-table">
+                    <thead>
+                      <tr>
+                        <th>{{ 'settings.subscription.colPlan' | translate }}</th>
+                        <th>{{ 'settings.subscription.colPeriod' | translate }}</th>
+                        <th>{{ 'settings.subscription.colStatus' | translate }}</th>
+                        <th>{{ 'settings.subscription.colPaid' | translate }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of subscriptionPage!.content; track row.id) {
+                        <tr
+                          class="sub-table__row"
+                          [class.sub-table__row--selected]="selectedSubscription?.id === row.id"
+                          (click)="selectSubscriptionRow(row)"
+                          (keydown.enter)="selectSubscriptionRow(row)"
+                          (keydown.space)="$event.preventDefault(); selectSubscriptionRow(row)"
+                          tabindex="0"
+                          role="button"
+                          [attr.aria-label]="row.planName"
+                        >
+                          <td class="sub-table__cell sub-table__cell--plan">
+                            <span class="sub-table__plan-name">{{ row.planName }}</span>
+                            <span class="sub-table__code">{{ row.planCode }}</span>
+                          </td>
+                          <td class="sub-table__cell sub-table__cell--period">
+                            <span class="sub-table__period-start">{{ row.periodStart }}</span>
+                            <span class="sub-table__period-sep" aria-hidden="true">→</span>
+                            <span class="sub-table__period-end">{{ row.periodEnd }}</span>
+                          </td>
+                          <td class="sub-table__cell sub-table__cell--status">{{ subscriptionStatusLabel(row.status) }}</td>
+                          <td class="sub-table__cell sub-table__cell--paid">
+                            {{ row.paidAt ? ('settings.subscription.paidYes' | translate) : ('settings.subscription.paidNo' | translate) }}
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                @if (subscriptionPage && subscriptionPage.totalPages > 1) {
+                  <div class="sub-pager">
+                    <button
+                      mat-button
+                      type="button"
+                      [disabled]="subscriptionPage.first"
+                      (click)="changeSubPage(-1)"
+                    >
+                      {{ 'settings.subscription.prev' | translate }}
+                    </button>
+                    <span class="sub-pager__label">{{
+                      'settings.subscription.pageOf'
+                        | translate: { current: subscriptionPage.page + 1, total: subscriptionPage.totalPages }
+                    }}</span>
+                    <button
+                      mat-button
+                      type="button"
+                      [disabled]="subscriptionPage.last"
+                      (click)="changeSubPage(1)"
+                    >
+                      {{ 'settings.subscription.next' | translate }}
+                    </button>
+                  </div>
+                }
+              } @else {
+                <p class="settings-hint">{{ 'settings.subscription.historyEmpty' | translate }}</p>
+              }
+
+              <div class="sub-detail">
+                <h4 class="sub-detail__title">{{ 'settings.subscription.detailTitle' | translate }}</h4>
+                @if (selectedSubscription; as d) {
+                  <dl class="sub-detail__grid">
+                    <dt>{{ 'settings.subscription.fieldPlan' | translate }}</dt>
+                    <dd>{{ d.planName }} ({{ d.planCode }})</dd>
+                    <dt>{{ 'settings.subscription.fieldPeriod' | translate }}</dt>
+                    <dd>{{ d.periodStart }} → {{ d.periodEnd }}</dd>
+                    <dt>{{ 'settings.subscription.fieldStatus' | translate }}</dt>
+                    <dd>{{ subscriptionStatusLabel(d.status) }}</dd>
+                    <dt>{{ 'settings.subscription.fieldPaidAt' | translate }}</dt>
+                    <dd>
+                      @if (d.paidAt) {
+                        {{ d.paidAt | date: 'medium' : undefined : i18n.angularLocaleId() }}
+                      } @else {
+                        —
+                      }
+                    </dd>
+                    <dt>{{ 'settings.subscription.fieldAmount' | translate }}</dt>
+                    <dd>{{ formatSubscriptionAmount(d) }}</dd>
+                    <dt>{{ 'settings.subscription.fieldPaymentRef' | translate }}</dt>
+                    <dd>{{ d.paymentReference || '—' }}</dd>
+                    <dt>{{ 'settings.subscription.fieldCreated' | translate }}</dt>
+                    <dd>
+                      @if (d.createdAt) {
+                        {{ d.createdAt | date: 'medium' : undefined : i18n.angularLocaleId() }}
+                      } @else {
+                        —
+                      }
+                    </dd>
+                    <dt>{{ 'settings.subscription.fieldUpdated' | translate }}</dt>
+                    <dd>
+                      @if (d.updatedAt) {
+                        {{ d.updatedAt | date: 'medium' : undefined : i18n.angularLocaleId() }}
+                      } @else {
+                        —
+                      }
+                    </dd>
+                  </dl>
+                } @else {
+                  <p class="settings-hint">{{ 'settings.subscription.detailHint' | translate }}</p>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </section>
+    }
   </div>
 </div>

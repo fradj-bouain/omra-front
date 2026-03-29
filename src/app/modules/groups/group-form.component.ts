@@ -15,11 +15,6 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { toIsoDateString } from '../../shared/utils/date-form';
 
-interface AgencyOption {
-  id: number;
-  name: string;
-}
-
 interface PlanningOption {
   id: number;
   name: string;
@@ -52,14 +47,8 @@ interface CompanionOption {
 export class GroupFormComponent implements OnInit {
   loading = false;
   form: FormGroup;
-  /** Liste des agences (chargée pour super admin). */
-  agencies: AgencyOption[] = [];
-  /** Liste des plannings (pour assigner au groupe). */
   plannings: PlanningOption[] = [];
-  /** Utilisateurs rôle Accompagnateur (PILGRIM_COMPANION) pour affectation au groupe. */
   companions: CompanionOption[] = [];
-  /** True si connecté en tant qu'admin plateforme (super admin). */
-  isSuperAdmin = false;
 
   constructor(
     private fb: FormBuilder,
@@ -69,10 +58,7 @@ export class GroupFormComponent implements OnInit {
     private notif: NotificationService,
     private router: Router
   ) {
-    this.isSuperAdmin = this.auth.isAdmin();
-    const needAgency = this.auth.isAdmin();
     this.form = this.fb.group({
-      agencyId: [null as number | null, needAgency ? Validators.required : []],
       name: ['', Validators.required],
       description: [''],
       departureDate: [null as Date | null],
@@ -86,12 +72,6 @@ export class GroupFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.isSuperAdmin) {
-      this.http.get<{ content: AgencyOption[] }>(`${this.api.agencies.list}?page=0&size=500`).subscribe({
-        next: (res) => (this.agencies = res.content ?? []),
-        error: () => (this.agencies = []),
-      });
-    }
     this.http.get<PlanningOption[]>(this.api.plannings.list).subscribe({
       next: (res) => (this.plannings = Array.isArray(res) ? res : []),
       error: () => (this.plannings = []),
@@ -106,6 +86,11 @@ export class GroupFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid || this.loading) return;
+    const agency = this.auth.agency();
+    if (!agency?.id) {
+      this.notif.error('Agence non disponible pour ce compte.');
+      return;
+    }
     this.loading = true;
     const v = this.form.getRawValue();
     const body: {
@@ -117,7 +102,7 @@ export class GroupFormComponent implements OnInit {
       price?: number;
       planningId?: number | null;
       status: string;
-      agencyId?: number;
+      agencyId: number;
       companionIds?: number[];
     } = {
       name: v.name,
@@ -128,13 +113,9 @@ export class GroupFormComponent implements OnInit {
       price: v.price != null ? Number(v.price) : undefined,
       planningId: v.planningId != null ? Number(v.planningId) : undefined,
       status: v.status || 'OPEN',
+      agencyId: agency.id,
       companionIds: Array.isArray(v.companionIds) && v.companionIds.length > 0 ? v.companionIds : undefined,
     };
-    if (this.isSuperAdmin && v.agencyId != null) {
-      body.agencyId = Number(v.agencyId);
-    } else if (!this.isSuperAdmin && this.auth.agency()) {
-      body.agencyId = this.auth.agency()!.id;
-    }
     this.http.post(this.api.groups.list, body).subscribe({
       next: () => {
         this.notif.success('Groupe créé');

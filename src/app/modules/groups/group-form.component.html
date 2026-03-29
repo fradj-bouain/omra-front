@@ -9,23 +9,6 @@
           <p class="form-hero-text">Créez un nouveau groupe (départ Omra). Renseignez les dates, la capacité et le prix. Les champs marqués d’un astérisque sont obligatoires.</p>
         </div>
 
-        @if (isSuperAdmin) {
-          <div class="form-section">
-            <h2 class="form-section-title">Agence</h2>
-            <div class="form-grid form-grid--1">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Agence</mat-label>
-                <mat-select formControlName="agencyId" placeholder="Choisir une agence">
-                  @for (a of agencies; track a.id) {
-                    <mat-option [value]="a.id">{{ a.name }}</mat-option>
-                  }
-                </mat-select>
-                <mat-error>Requis pour super admin</mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-        }
-
         <div class="form-section">
           <h2 class="form-section-title">Informations du groupe</h2>
           <div class="form-grid form-grid--2">
