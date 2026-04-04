@@ -32,6 +32,7 @@ export class ApiService {
     list: `${this.base}/api/pilgrims`,
     byId: (id: number) => `${this.base}/api/pilgrims/${id}`,
     autocomplete: `${this.base}/api/pilgrims/autocomplete`,
+    familyBatch: `${this.base}/api/pilgrims/family-batch`,
   };
   pilgrimSponsorship = {
     config: `${this.base}/api/pilgrim-sponsorship/config`,

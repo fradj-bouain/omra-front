@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { finalize, switchMap } from 'rxjs';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { NotificationService } from '../../core/services/notification.service';
@@ -87,13 +87,16 @@ export class LoginComponent implements OnInit {
     this.auth
       .login(email, password)
       .pipe(
-        switchMap(() => this.theme.loadTheme$()),
         finalize(() => {
           this.loading = false;
-        })
+        }),
       )
       .subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => {
+          // Ne pas attendre GET /agencies/theme : une API lente bloquait toute navigation malgré login 200.
+          void this.router.navigateByUrl('/dashboard');
+          this.theme.loadTheme();
+        },
         error: (err) => {
           this.notif.error(err.error?.message || this.i18n.instant('login.error.badCredentials'));
         },

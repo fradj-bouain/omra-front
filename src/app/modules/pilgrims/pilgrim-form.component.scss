@@ -410,3 +410,155 @@
   color: var(--app-text-soft);
   margin-top: 0.25rem;
 }
+
+/* —— Mode création Individuel / Famille —— */
+.creation-mode {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-md);
+  padding: var(--app-space-lg);
+  border-radius: var(--app-radius);
+  background: color-mix(in srgb, var(--app-accent) 5%, var(--app-card));
+  border: 1px solid color-mix(in srgb, var(--app-accent) 14%, var(--app-border));
+}
+
+.creation-mode__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--app-text-soft);
+}
+
+.creation-toggle {
+  align-self: flex-start;
+  border-radius: var(--app-radius-sm) !important;
+  overflow: hidden;
+  border: 1px solid var(--app-border) !important;
+  background: var(--app-card) !important;
+}
+
+.creation-toggle__btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+
+  mat-icon {
+    font-size: 1.15rem !important;
+    width: 1.15rem !important;
+    height: 1.15rem !important;
+  }
+}
+
+.famille-intro {
+  margin-bottom: var(--app-space-sm);
+}
+
+.family-count-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--app-space-md);
+}
+
+.family-count-row__field {
+  flex: 1 1 200px;
+  max-width: 280px;
+}
+
+.family-count-row__action mat-icon {
+  margin-right: 0.25rem;
+  vertical-align: middle;
+  font-size: 1.1rem !important;
+  width: 1.1rem !important;
+  height: 1.1rem !important;
+}
+
+.members-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-lg);
+}
+
+.member-card {
+  border-radius: var(--app-radius-lg);
+  padding: var(--app-space-lg);
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: color-mix(in srgb, var(--app-accent) 35%, var(--app-border));
+    box-shadow: 0 8px 28px rgba(13, 148, 136, 0.12);
+  }
+}
+
+.member-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-md);
+  margin-bottom: var(--app-space-md);
+  padding-bottom: var(--app-space-sm);
+  border-bottom: 1px dashed var(--app-border);
+}
+
+.member-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--app-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--app-accent);
+  letter-spacing: -0.02em;
+
+  &::before {
+    content: '🧍';
+    font-size: 1.1rem;
+  }
+}
+
+.member-card__role {
+  flex: 1 1 200px;
+  max-width: 320px;
+}
+
+.member-card__grid {
+  margin-top: 0;
+}
+
+.form-card--family-docs-hint {
+  margin-top: var(--app-space-xl);
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--app-accent) 25%, var(--app-border));
+  background: color-mix(in srgb, var(--app-accent) 4%, var(--app-card));
+
+  mat-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--app-space-md);
+    padding: var(--app-space-lg) !important;
+  }
+}
+
+.family-docs-hint__icon {
+  flex-shrink: 0;
+  color: var(--app-accent);
+  margin-top: 2px;
+}
+
+.family-docs-hint__text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--app-text-soft);
+}
+
+.mat-mdc-form-field.ng-invalid.ng-touched,
+.member-card .mat-mdc-form-field.ng-invalid.ng-touched {
+  --mat-form-field-outlined-outline-color: color-mix(in srgb, #b91c1c 55%, var(--app-border));
+}

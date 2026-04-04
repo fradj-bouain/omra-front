@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of, tap } from 'rxjs';
+import { Observable, catchError, map, of, tap, timeout } from 'rxjs';
 import { resolveMediaUrl } from '../../shared/utils/media-url';
 import { ApiService } from './api.service';
 import { AuthService, type Agency } from './auth.service';
@@ -132,6 +132,7 @@ export class ThemeService {
       return of(undefined);
     }
     return this.http.get<AgencyTheme | null>(this.api.agencies.theme).pipe(
+      timeout(8000),
       tap((theme) => {
         if (theme && typeof theme === 'object') {
           this.applyTheme(theme);

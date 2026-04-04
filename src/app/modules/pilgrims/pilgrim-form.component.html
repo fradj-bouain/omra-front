@@ -1,74 +1,252 @@
-<app-page-header [title]="isEdit ? 'Modifier le pèlerin' : 'Nouveau pèlerin'"></app-page-header>
+<app-page-header [title]="isEdit ? ('pilgrims.mo3tamir.pageTitleEdit' | translate) : ('pilgrims.mo3tamir.pageTitleNew' | translate)"></app-page-header>
 
 <section class="pilgrim-form-page">
   <mat-card class="form-card">
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="pilgrim-form">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="pilgrim-form" novalidate>
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">person_add</mat-icon>
-          <p class="form-hero-text">Renseignez les informations du pèlerin. Les champs marqués d’un astérisque sont obligatoires.</p>
+          <p class="form-hero-text">{{ 'pilgrims.mo3tamir.heroLead' | translate }}</p>
         </div>
 
-        <div class="form-section">
-          <h2 class="form-section-title">Identité</h2>
-          <div class="form-grid form-grid--2">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Prénom</mat-label>
-              <input matInput formControlName="firstName" placeholder="Ex. Mohamed" />
-              <mat-error>Le prénom est requis</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nom</mat-label>
-              <input matInput formControlName="lastName" placeholder="Ex. Benali" />
-              <mat-error>Le nom est requis</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Genre</mat-label>
-              <mat-select formControlName="gender">
-                <mat-option value="M">Homme</mat-option>
-                <mat-option value="F">Femme</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Date de naissance</mat-label>
-              <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" placeholder="jj/mm/aaaa" />
-              <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
-              <mat-datepicker #dobPicker />
-            </mat-form-field>
+        @if (!isEdit) {
+          <div class="creation-mode">
+            <span class="creation-mode__label">{{ 'pilgrims.mo3tamir.modeLabel' | translate }}</span>
+            <mat-button-toggle-group formControlName="type" class="creation-toggle" appearance="standard">
+              <mat-button-toggle value="individuel" class="creation-toggle__btn">
+                <mat-icon aria-hidden="true">person</mat-icon>
+                {{ 'pilgrims.mo3tamir.modeIndividuel' | translate }}
+              </mat-button-toggle>
+              <mat-button-toggle value="famille" class="creation-toggle__btn">
+                <mat-icon aria-hidden="true">family_restroom</mat-icon>
+                {{ 'pilgrims.mo3tamir.modeFamille' | translate }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
           </div>
-        </div>
+        }
 
-        <div class="form-section">
-          <h2 class="form-section-title">Document & nationalité</h2>
-          <div class="form-grid form-grid--2">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>N° Passeport</mat-label>
-              <input matInput formControlName="passportNumber" placeholder="Ex. AB123456" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nationalité</mat-label>
-              <input matInput formControlName="nationality" placeholder="Ex. Maroc" />
-            </mat-form-field>
+        @if (isEdit) {
+          <div class="form-section">
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionIdentity' | translate }}</h2>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.firstName' | translate }}</mat-label>
+                <input matInput formControlName="firstName" />
+                <mat-error>{{ 'pilgrims.mo3tamir.firstNameRequired' | translate }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.lastName' | translate }}</mat-label>
+                <input matInput formControlName="lastName" />
+                <mat-error>{{ 'pilgrims.mo3tamir.lastNameRequired' | translate }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.gender' | translate }}</mat-label>
+                <mat-select formControlName="gender">
+                  <mat-option value="M">{{ 'pilgrims.mo3tamir.genderM' | translate }}</mat-option>
+                  <mat-option value="F">{{ 'pilgrims.mo3tamir.genderF' | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.birthDate' | translate }}</mat-label>
+                <input matInput [matDatepicker]="dobPickerEdit" formControlName="dateOfBirth" />
+                <mat-datepicker-toggle matIconSuffix [for]="dobPickerEdit" />
+                <mat-datepicker #dobPickerEdit />
+              </mat-form-field>
+            </div>
           </div>
-        </div>
 
-        <div class="form-section">
-          <h2 class="form-section-title">Contact</h2>
-          <div class="form-grid form-grid--2">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Téléphone</mat-label>
-              <input matInput formControlName="phone" placeholder="Ex. +212 6 12 34 56 78" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" placeholder="exemple@email.com" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width form-field--span-2">
-              <mat-label>Adresse</mat-label>
-              <input matInput formControlName="address" placeholder="Ville, code postal..." />
-            </mat-form-field>
+          <div class="form-section">
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionDoc' | translate }}</h2>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.passport' | translate }}</mat-label>
+                <input matInput formControlName="passportNumber" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.nationality' | translate }}</mat-label>
+                <input matInput formControlName="nationality" />
+              </mat-form-field>
+            </div>
           </div>
-        </div>
+        } @else if (isFamilleCreate) {
+          <div class="famille-intro" @famillePanel>
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionFamilySetup' | translate }}</h2>
+            <p class="form-section-lead">{{ 'pilgrims.mo3tamir.familySetupLead' | translate }}</p>
+            <div class="family-count-row">
+              <mat-form-field appearance="outline" class="family-count-row__field">
+                <mat-label>{{ 'pilgrims.mo3tamir.membersCountLabel' | translate }}</mat-label>
+                <input matInput type="number" min="2" formControlName="membersCount" />
+                <mat-hint>{{ 'pilgrims.mo3tamir.membersCountHint' | translate }}</mat-hint>
+                @if (form.get('membersCount')?.hasError('min')) {
+                  <mat-error>{{ 'pilgrims.mo3tamir.membersCountMin' | translate }}</mat-error>
+                }
+                @if (form.get('membersCount')?.hasError('required')) {
+                  <mat-error>{{ 'pilgrims.mo3tamir.membersCountRequired' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <button mat-stroked-button color="primary" type="button" class="family-count-row__action" (click)="applyMembersCountFromInput()">
+                <mat-icon>refresh</mat-icon>
+                {{ 'pilgrims.mo3tamir.applyCount' | translate }}
+              </button>
+              <button mat-stroked-button type="button" class="family-count-row__action" (click)="addFamilyMember()">
+                <mat-icon>person_add_alt</mat-icon>
+                {{ 'pilgrims.mo3tamir.addMember' | translate }}
+              </button>
+              <button
+                mat-stroked-button
+                type="button"
+                class="family-count-row__action"
+                [disabled]="members.length <= 2"
+                (click)="removeLastFamilyMember()"
+              >
+                <mat-icon>person_remove</mat-icon>
+                {{ 'pilgrims.mo3tamir.removeMember' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="members-stack" formArrayName="members">
+            @for (ctrl of members.controls; track $index; let i = $index) {
+              <div class="member-card" [formGroupName]="i" @famillePanel>
+                <div class="member-card__head">
+                  <span class="member-card__badge">{{ 'pilgrims.mo3tamir.memberBadge' | translate: { n: i + 1 } }}</span>
+                  <mat-form-field appearance="outline" class="member-card__role" subscriptSizing="dynamic">
+                    <mat-label>{{ 'pilgrims.mo3tamir.roleLabel' | translate }}</mat-label>
+                    <mat-select formControlName="familyRole">
+                      @for (r of familyRoles; track r.value) {
+                        <mat-option [value]="r.value">{{ r.labelKey | translate }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-grid form-grid--1 member-card__grid">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'pilgrims.mo3tamir.fullName' | translate }}</mat-label>
+                    <input matInput formControlName="fullName" [placeholder]="'pilgrims.mo3tamir.fullNamePh' | translate" />
+                    @if (ctrl.get('fullName')?.invalid && ctrl.get('fullName')?.touched) {
+                      <mat-error>{{ 'pilgrims.mo3tamir.fullNameRequired' | translate }}</mat-error>
+                    }
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'pilgrims.mo3tamir.birthDate' | translate }}</mat-label>
+                    <input matInput [matDatepicker]="bd" formControlName="birthDate" />
+                    <mat-datepicker-toggle matIconSuffix [for]="bd" />
+                    <mat-datepicker #bd />
+                    @if (ctrl.get('birthDate')?.invalid && ctrl.get('birthDate')?.touched) {
+                      <mat-error>{{ 'pilgrims.mo3tamir.birthDateRequired' | translate }}</mat-error>
+                    }
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'pilgrims.mo3tamir.cin' | translate }}</mat-label>
+                    <input matInput formControlName="cin" />
+                    <mat-hint>{{ 'pilgrims.mo3tamir.cinHint' | translate }}</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'pilgrims.mo3tamir.documentsNotes' | translate }}</mat-label>
+                    <textarea matInput formControlName="documentsNotes" rows="2"></textarea>
+                    <mat-hint>{{ 'pilgrims.mo3tamir.documentsNotesHint' | translate }}</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="form-section" @famillePanel>
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionFamilySharedDoc' | translate }}</h2>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width form-field--span-2">
+                <mat-label>{{ 'pilgrims.mo3tamir.nationality' | translate }}</mat-label>
+                <input matInput formControlName="nationality" />
+              </mat-form-field>
+            </div>
+          </div>
+        } @else {
+          <div @individuelPanel>
+            <div class="form-section">
+              <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionIdentity' | translate }}</h2>
+              <div class="form-grid form-grid--2">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.firstName' | translate }}</mat-label>
+                  <input matInput formControlName="firstName" />
+                  <mat-error>{{ 'pilgrims.mo3tamir.firstNameRequired' | translate }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.lastName' | translate }}</mat-label>
+                  <input matInput formControlName="lastName" />
+                  <mat-error>{{ 'pilgrims.mo3tamir.lastNameRequired' | translate }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.gender' | translate }}</mat-label>
+                  <mat-select formControlName="gender">
+                    <mat-option value="M">{{ 'pilgrims.mo3tamir.genderM' | translate }}</mat-option>
+                    <mat-option value="F">{{ 'pilgrims.mo3tamir.genderF' | translate }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.birthDate' | translate }}</mat-label>
+                  <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
+                  <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
+                  <mat-datepicker #dobPicker />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionDoc' | translate }}</h2>
+              <div class="form-grid form-grid--2">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.passport' | translate }}</mat-label>
+                  <input matInput formControlName="passportNumber" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.nationality' | translate }}</mat-label>
+                  <input matInput formControlName="nationality" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (!isEdit) {
+          <div class="form-section">
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionContact' | translate }}</h2>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.phone' | translate }}</mat-label>
+                <input matInput formControlName="phone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.email' | translate }}</mat-label>
+                <input matInput type="email" formControlName="email" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width form-field--span-2">
+                <mat-label>{{ 'pilgrims.mo3tamir.address' | translate }}</mat-label>
+                <input matInput formControlName="address" />
+                @if (isFamilleCreate) {
+                  <mat-hint>{{ 'pilgrims.mo3tamir.addressFamilyHint' | translate }}</mat-hint>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        } @else {
+          <div class="form-section">
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionContact' | translate }}</h2>
+            <div class="form-grid form-grid--2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.phone' | translate }}</mat-label>
+                <input matInput formControlName="phone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.email' | translate }}</mat-label>
+                <input matInput type="email" formControlName="email" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width form-field--span-2">
+                <mat-label>{{ 'pilgrims.mo3tamir.address' | translate }}</mat-label>
+                <input matInput formControlName="address" />
+              </mat-form-field>
+            </div>
+          </div>
+        }
 
         @if (!isEdit) {
           <div class="form-section form-section--sponsor">
@@ -161,14 +339,14 @@
         }
 
         <div class="form-section">
-          <h2 class="form-section-title">Voyage</h2>
+          <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionTravel' | translate }}</h2>
           <div class="form-grid form-grid--1">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Statut visa</mat-label>
+              <mat-label>{{ 'pilgrims.mo3tamir.visaStatus' | translate }}</mat-label>
               <mat-select formControlName="visaStatus">
-                <mat-option value="PENDING">En attente</mat-option>
-                <mat-option value="APPROVED">Approuvé</mat-option>
-                <mat-option value="REJECTED">Refusé</mat-option>
+                <mat-option value="PENDING">{{ 'pilgrims.mo3tamir.visaPending' | translate }}</mat-option>
+                <mat-option value="APPROVED">{{ 'pilgrims.mo3tamir.visaApproved' | translate }}</mat-option>
+                <mat-option value="REJECTED">{{ 'pilgrims.mo3tamir.visaRejected' | translate }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -176,17 +354,17 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/pilgrims" class="btn-cancel">
-            Annuler
+            {{ 'common.cancel' | translate }}
           </button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
-            {{ loading ? 'Enregistrement...' : (isEdit ? 'Enregistrer' : 'Créer le pèlerin') }}
+          <button mat-flat-button color="primary" type="submit" [disabled]="createSubmitDisabled()" class="btn-submit">
+            {{ submitLabel() }}
           </button>
         </div>
       </form>
     </mat-card-content>
   </mat-card>
 
-  @if (pilgrimId == null) {
+  @if (pilgrimId == null && !isFamilleCreate) {
     <mat-card class="form-card form-card--upload-preview">
       <mat-card-content>
         <div class="upload-preview">
@@ -263,6 +441,15 @@
             </ul>
           }
         </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (pilgrimId == null && isFamilleCreate) {
+    <mat-card class="form-card form-card--family-docs-hint">
+      <mat-card-content>
+        <mat-icon class="family-docs-hint__icon" aria-hidden="true">info</mat-icon>
+        <p class="family-docs-hint__text">{{ 'pilgrims.mo3tamir.familyDocsHint' | translate }}</p>
       </mat-card-content>
     </mat-card>
   }

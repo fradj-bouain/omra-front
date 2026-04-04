@@ -47,10 +47,15 @@ const AGENCY_KEY = 'omra_agency';
 export class AuthService {
   private readonly currentUser = signal<User | null>(this.getStoredUser());
   private readonly currentAgency = signal<Agency | null>(this.getStoredAgency());
+  /** Invalide `isLoggedIn` après login / logout (le token est dans localStorage, pas un signal). */
+  private readonly sessionTick = signal(0);
 
   user = this.currentUser.asReadonly();
   agency = this.currentAgency.asReadonly();
-  isLoggedIn = computed(() => !!this.getToken());
+  isLoggedIn = computed(() => {
+    this.sessionTick();
+    return !!localStorage.getItem(TOKEN_KEY);
+  });
 
   constructor(
     private http: HttpClient,
@@ -78,6 +83,7 @@ export class AuthService {
     localStorage.setItem(AGENCY_KEY, JSON.stringify(res.agency ?? null));
     this.currentUser.set(res.user ?? null);
     this.currentAgency.set(res.agency ?? null);
+    this.sessionTick.update((n) => n + 1);
   }
 
   logout() {
@@ -110,6 +116,7 @@ export class AuthService {
     localStorage.removeItem(AGENCY_KEY);
     this.currentUser.set(null);
     this.currentAgency.set(null);
+    this.sessionTick.update((n) => n + 1);
   }
 
   refreshToken() {
