@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import {
   HotelMapLocation,
   HotelMapPickerComponent,
@@ -27,6 +28,7 @@ import {
     MatButtonModule,
     MatIconModule,
     PageHeaderComponent,
+    TranslatePipe,
     HotelMapPickerComponent,
   ],
   templateUrl: './hotel-form.component.html',

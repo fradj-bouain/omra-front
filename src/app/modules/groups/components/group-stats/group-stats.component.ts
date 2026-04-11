@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-group-stats',
   standalone: true,
-  imports: [DecimalPipe, MatIconModule],
+  imports: [DecimalPipe, MatIconModule, TranslatePipe],
   templateUrl: './group-stats.component.html',
   styleUrl: './group-stats.component.scss',
 })

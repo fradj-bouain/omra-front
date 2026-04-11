@@ -1,13 +1,13 @@
-/* Thème Hajj / Omra : or, ivoire, vert profond — complète un fond vert / silhouette de mosquée */
+/* Thème agence voyage : or, ivoire, vert profond */
 
 :host {
   display: block;
-  --hajj-gold: #d4af37;
-  --hajj-gold-mid: #c9a227;
-  --hajj-gold-soft: rgba(212, 175, 55, 0.55);
-  --hajj-ivory: #faf8f3;
-  --hajj-ink: #1a2f28;
-  --hajj-green-shadow: rgba(8, 48, 38, 0.55);
+  --brand-gold: #d4af37;
+  --brand-gold-mid: #c9a227;
+  --brand-gold-soft: rgba(212, 175, 55, 0.55);
+  --brand-ivory: #faf8f3;
+  --brand-ink: #1a2f28;
+  --brand-green-shadow: rgba(8, 48, 38, 0.55);
 }
 
 .login-page {
@@ -63,8 +63,8 @@
   flex-direction: column;
   justify-content: center;
   padding-inline-end: clamp(0.5rem, 2vw, 2rem);
-  color: var(--hajj-ivory);
-  text-shadow: 0 2px 24px var(--hajj-green-shadow);
+  color: var(--brand-ivory);
+  text-shadow: 0 2px 24px var(--brand-green-shadow);
 }
 
 @media (min-width: 880px) {
@@ -78,7 +78,7 @@
 }
 
 .login-page__ornament {
-  color: var(--hajj-gold-soft);
+  color: var(--brand-gold-soft);
   margin-bottom: 1.25rem;
 }
 
@@ -95,7 +95,7 @@
   font-size: clamp(1.75rem, 3.5vw, 2.35rem);
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: var(--hajj-gold);
+  color: var(--brand-gold);
   text-transform: uppercase;
 }
 
@@ -120,14 +120,14 @@
 .login-page__divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--hajj-gold-soft), transparent);
+  background: linear-gradient(90deg, transparent, var(--brand-gold-soft), transparent);
   max-width: 6rem;
 }
 
 .login-page__divider-diamond {
   width: 8px;
   height: 8px;
-  background: var(--hajj-gold);
+  background: var(--brand-gold);
   transform: rotate(45deg);
   opacity: 0.85;
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
@@ -222,14 +222,14 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--hajj-gold-mid);
+  color: var(--brand-gold-mid);
 }
 
 .login-card .mat-mdc-card-title {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
   font-size: 1.75rem !important;
   font-weight: 700 !important;
-  color: var(--hajj-ink) !important;
+  color: var(--brand-ink) !important;
   letter-spacing: 0.02em;
 }
 
@@ -252,12 +252,12 @@
   padding: 0 10px;
   font-size: 0.8125rem;
   border-color: rgba(212, 175, 55, 0.45) !important;
-  color: var(--hajj-ink) !important;
+  color: var(--brand-ink) !important;
 }
 
 .lang-btn--active {
-  background: color-mix(in srgb, var(--hajj-gold) 18%, transparent) !important;
-  border-color: var(--hajj-gold-mid) !important;
+  background: color-mix(in srgb, var(--brand-gold) 18%, transparent) !important;
+  border-color: var(--brand-gold-mid) !important;
   font-weight: 600;
 }
 
@@ -285,7 +285,7 @@
 .login-field ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 .login-field ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 .login-field ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: var(--hajj-gold-mid) !important;
+  border-color: var(--brand-gold-mid) !important;
 }
 
 .login-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
@@ -303,7 +303,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #1a1a12 !important;
-  background: linear-gradient(145deg, #e8c547 0%, var(--hajj-gold) 42%, var(--hajj-gold-mid) 100%) !important;
+  background: linear-gradient(145deg, #e8c547 0%, var(--brand-gold) 42%, var(--brand-gold-mid) 100%) !important;
   box-shadow: 0 10px 28px rgba(201, 162, 39, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.35) !important;
 }

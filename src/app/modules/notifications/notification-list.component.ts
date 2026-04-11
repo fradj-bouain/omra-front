@@ -9,6 +9,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService as SnackbarService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface Notification {
   id: number;
@@ -29,7 +30,16 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [DatePipe, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatPaginatorModule, PageHeaderComponent],
+  imports: [
+    DatePipe,
+    MatCardModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
+    MatPaginatorModule,
+    PageHeaderComponent,
+    TranslatePipe,
+  ],
   templateUrl: './notification-list.component.html',
   styleUrl: './notification-list.component.scss',
 })

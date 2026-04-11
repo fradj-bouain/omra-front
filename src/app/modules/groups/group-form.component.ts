@@ -12,6 +12,8 @@ import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { toIsoDateString } from '../../shared/utils/date-form';
 
@@ -40,6 +42,7 @@ interface CompanionOption {
     MatIconModule,
     MatDatepickerModule,
     PageHeaderComponent,
+    TranslatePipe,
   ],
   templateUrl: './group-form.component.html',
   styleUrl: './group-form.component.scss',
@@ -56,7 +59,8 @@ export class GroupFormComponent implements OnInit {
     private api: ApiService,
     private auth: AuthService,
     private notif: NotificationService,
-    private router: Router
+    private router: Router,
+    private i18n: I18nService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -88,7 +92,7 @@ export class GroupFormComponent implements OnInit {
     if (this.form.invalid || this.loading) return;
     const agency = this.auth.agency();
     if (!agency?.id) {
-      this.notif.error('Agence non disponible pour ce compte.');
+      this.notif.error(this.i18n.instant('groups.form.agencyMissing'));
       return;
     }
     this.loading = true;
@@ -118,12 +122,12 @@ export class GroupFormComponent implements OnInit {
     };
     this.http.post(this.api.groups.list, body).subscribe({
       next: () => {
-        this.notif.success('Groupe créé');
+        this.notif.success(this.i18n.instant('groups.form.created'));
         this.router.navigate(['/groups']);
       },
       error: (err) => {
         this.loading = false;
-        this.notif.error(err.error?.message || 'Erreur lors de la création');
+        this.notif.error(err.error?.message || this.i18n.instant('groups.form.createError'));
       },
     });
   }

@@ -1,7 +1,7 @@
 <app-page-header
-  title="Plannings"
-  subtitle="Programmes types (liste ordonnée de tâches) pour les groupes de voyage"
-  actionLabel="Nouveau planning"
+  [title]="'planningList.title' | translate"
+  [subtitle]="'planningList.subtitle' | translate"
+  [actionLabel]="'planningList.new' | translate"
   actionLink="/plannings/new"
 ></app-page-header>
 
@@ -9,15 +9,15 @@
   <mat-card>
     <mat-card-content>
       @if (loading) {
-        <p>Chargement…</p>
+        <p>{{ 'planningList.loading' | translate }}</p>
       } @else {
         <table mat-table [dataSource]="dataSource" class="full-width">
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'planningList.col.name' | translate }}</th>
             <td mat-cell *matCellDef="let row">{{ row.name }}</td>
           </ng-container>
           <ng-container matColumnDef="itemsPreview">
-            <th mat-header-cell *matHeaderCellDef>Programme</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'planningList.col.preview' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="items-preview">{{ itemsPreview(row) }}</span>
             </td>
@@ -25,18 +25,21 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let row">
-              <a mat-icon-button [routerLink]="['/plannings', row.id, 'edit']" matTooltip="Modifier">
+              <a mat-icon-button [routerLink]="['/plannings', row.id, 'edit']" [matTooltip]="'planningList.edit' | translate">
                 <mat-icon>edit</mat-icon>
               </a>
-              <button mat-icon-button (click)="delete(row.id, row.name)" matTooltip="Supprimer">
+              <button mat-icon-button (click)="delete(row.id, row.name)" [matTooltip]="'planningList.delete' | translate">
                 <mat-icon>delete</mat-icon>
               </button>
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           <tr *matNoDataRow>
-            <td class="mat-cell" [attr.colspan]="displayedColumns.length">Aucun planning. <a routerLink="/plannings/new">En créer un</a>.</td>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+              {{ 'planningList.empty' | translate }}
+              <a routerLink="/plannings/new">{{ 'planningList.emptyLink' | translate }}</a>.
+            </td>
           </tr>
         </table>
       }

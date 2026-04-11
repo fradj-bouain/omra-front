@@ -5,7 +5,7 @@
     </div>
     <div class="stat-card__body">
       <span class="stat-card__value">{{ totalPilgrims }}</span>
-      <span class="stat-card__label">Voyageurs</span>
+      <span class="stat-card__label">{{ 'dashboard.totalPilgrims' | translate }}</span>
     </div>
   </article>
 
@@ -15,7 +15,7 @@
     </div>
     <div class="stat-card__body">
       <span class="stat-card__value">{{ paymentsReceived | number: '1.0-0' }} {{ paymentsCurrency }}</span>
-      <span class="stat-card__label">Paiements reçus</span>
+      <span class="stat-card__label">{{ 'dashboard.paymentsReceived' | translate }}</span>
     </div>
   </article>
 
@@ -25,7 +25,7 @@
     </div>
     <div class="stat-card__body">
       <span class="stat-card__value">{{ pendingVisas }}</span>
-      <span class="stat-card__label">Visas en attente</span>
+      <span class="stat-card__label">{{ 'dashboard.pendingVisas' | translate }}</span>
     </div>
   </article>
 
@@ -35,7 +35,7 @@
     </div>
     <div class="stat-card__body">
       <span class="stat-card__value">{{ documentsCount }}</span>
-      <span class="stat-card__label">Documents</span>
+      <span class="stat-card__label">{{ 'nav.documents' | translate }}</span>
     </div>
   </article>
 </div>

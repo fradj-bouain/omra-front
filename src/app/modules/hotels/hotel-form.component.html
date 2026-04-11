@@ -1,4 +1,4 @@
-<app-page-header title="Nouvel hôtel"></app-page-header>
+<app-page-header [title]="'hotels.form.pageTitle' | translate"></app-page-header>
 
 <section class="hotel-form-page">
   <mat-card class="form-card">
@@ -6,7 +6,7 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hotel-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">hotel</mat-icon>
-          <p class="form-hero-text">Enregistrez un nouvel hôtel (Makkah, Madinah…). Le nom est obligatoire. Vous pourrez ensuite l’assigner à un groupe.</p>
+          <p class="form-hero-text">{{ 'hotels.form.hero' | translate }}</p>
         </div>
 
         <div class="form-section">
@@ -19,7 +19,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Ville</mat-label>
-              <input matInput formControlName="city" placeholder="Ex. Makkah, Madinah" />
+              <input matInput formControlName="city" [placeholder]="'hotels.form.cityPh' | translate" />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Pays</mat-label>

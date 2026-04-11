@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface PlanningItemDto {
   taskTemplateName: string;
@@ -25,7 +26,16 @@ interface Planning {
 @Component({
   selector: 'app-planning-list',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink, PageHeaderComponent],
+  imports: [
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    RouterLink,
+    PageHeaderComponent,
+    TranslatePipe,
+  ],
   templateUrl: './planning-list.component.html',
 })
 export class PlanningListComponent implements OnInit {
