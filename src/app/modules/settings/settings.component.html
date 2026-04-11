@@ -50,6 +50,80 @@
           }
         </mat-card-content>
       </mat-card>
+
+      @if (canManageSubAgencies() && agencyProfile) {
+        <mat-card class="settings-card settings-card--sub-agencies" appearance="outlined">
+          <mat-card-header class="settings-card__head">
+            <div mat-card-avatar class="settings-card__head-icon" aria-hidden="true">
+              <mat-icon>account_tree</mat-icon>
+            </div>
+            <mat-card-title>{{ 'settings.subAgencies.title' | translate }}</mat-card-title>
+            <mat-card-subtitle class="settings-card__head-subtitle--muted">{{
+              'settings.subAgencies.subtitle' | translate
+            }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            @if (subsLoading) {
+              <p class="settings-hint">{{ 'settings.subAgencies.loading' | translate }}</p>
+            } @else if (subAgencies.length === 0) {
+              <p class="settings-hint">{{ 'settings.subAgencies.empty' | translate }}</p>
+            } @else {
+              <div class="sub-agencies-table-wrap">
+                <table class="sub-agencies-table">
+                  <thead>
+                    <tr>
+                      <th>{{ 'settings.subAgencies.colName' | translate }}</th>
+                      <th>{{ 'settings.subAgencies.colEmail' | translate }}</th>
+                      <th>{{ 'settings.subAgencies.colStatus' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (s of subAgencies; track s.id) {
+                      <tr>
+                        <td>{{ s.name }}</td>
+                        <td>{{ s.email }}</td>
+                        <td>{{ s.status || '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+
+            <mat-divider class="settings-divider"></mat-divider>
+
+            <h3 class="settings-section-label settings-section-label--tight">{{ 'settings.subAgencies.newTitle' | translate }}</h3>
+            <div class="sub-agencies-form">
+              <mat-form-field appearance="outline" class="settings-field">
+                <mat-label>{{ 'settings.subAgencies.formName' | translate }}</mat-label>
+                <input matInput name="newSubName" [(ngModel)]="newSubName" [disabled]="creatingSub" autocomplete="organization" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings-field">
+                <mat-label>{{ 'settings.subAgencies.formEmail' | translate }}</mat-label>
+                <input
+                  matInput
+                  name="newSubEmail"
+                  type="email"
+                  [(ngModel)]="newSubEmail"
+                  [disabled]="creatingSub"
+                  autocomplete="off"
+                />
+              </mat-form-field>
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                class="sub-agencies-form__btn"
+                [disabled]="creatingSub"
+                (click)="submitNewSubAgency()"
+              >
+                <mat-icon>add_business</mat-icon>
+                {{ creatingSub ? ('settings.subAgencies.creating' | translate) : ('settings.subAgencies.create' | translate) }}
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
     </section>
 
     @if (auth.agency()) {

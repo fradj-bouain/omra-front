@@ -19,6 +19,8 @@ export interface Agency {
   id: number;
   name: string;
   email: string;
+  /** Set when this tenant is a sub-agency of a main (root) agency. */
+  parentAgencyId?: number | null;
   /** ISO 3166-1 alpha-2 (ex. MA). */
   country?: string;
   /** ISO 4217 (ex. MAD). */

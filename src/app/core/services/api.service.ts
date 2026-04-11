@@ -22,6 +22,8 @@ export class ApiService {
     themeByAgencyId: (id: number) => `${this.base}/api/agencies/${id}/theme`,
     branding: `${this.base}/api/agencies/branding`,
     byId: (id: number) => `${this.base}/api/agencies/${id}`,
+    /** Direct sub-agencies of a main agency (single-level hierarchy). */
+    subAgencies: (parentId: number) => `${this.base}/api/agencies/${parentId}/subs`,
   };
   dashboard = {
     stats: `${this.base}/api/dashboard/stats`,

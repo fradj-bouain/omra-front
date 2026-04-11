@@ -79,6 +79,48 @@
   }
 }
 
+.settings-card--sub-agencies {
+  .sub-agencies-table-wrap {
+    overflow-x: auto;
+    margin-bottom: var(--app-space-sm);
+  }
+
+  .sub-agencies-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th,
+    td {
+      padding: 0.5rem 0.35rem;
+      text-align: start;
+      border-bottom: 1px solid var(--app-border);
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--app-text-soft);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  .sub-agencies-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--app-space-sm);
+  }
+
+  .sub-agencies-form__btn mat-icon {
+    margin-right: 4px;
+    vertical-align: middle;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
 .settings-card {
   border-radius: var(--app-radius-lg) !important;
   border-color: var(--app-border) !important;

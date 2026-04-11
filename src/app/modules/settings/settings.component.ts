@@ -58,6 +58,15 @@ export interface SubscriptionPageResponse {
   last: boolean;
 }
 
+/** Agency row as returned by GET /api/agencies/{id} or sub-agency list/create. */
+export interface AgencyApiDto {
+  id: number;
+  name: string;
+  email: string;
+  parentAgencyId?: number | null;
+  status?: string;
+}
+
 type BrandingForm = {
   logoUrl: string;
   faviconUrl: string;
@@ -154,6 +163,14 @@ export class SettingsComponent implements OnInit {
   subPageIndex = 0;
   readonly subPageSize = 12;
 
+  /** Loaded via API so {@link AgencyApiDto#parentAgencyId} is reliable for hierarchy. */
+  agencyProfile: AgencyApiDto | null = null;
+  subAgencies: AgencyApiDto[] = [];
+  subsLoading = false;
+  newSubName = '';
+  newSubEmail = '';
+  creatingSub = false;
+
   selectedPreset = '';
 
   branding: BrandingForm = this.defaultBranding();
@@ -168,7 +185,27 @@ export class SettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (!this.auth.agency()) return;
+    const ag = this.auth.agency();
+    if (!ag) return;
+    this.http.get<AgencyApiDto>(this.api.agencies.byId(ag.id)).subscribe({
+      next: (profile) => {
+        this.agencyProfile = profile;
+        if (this.canManageSubAgencies()) {
+          this.loadSubAgencies();
+        }
+      },
+      error: () => {
+        this.agencyProfile = {
+          id: ag.id,
+          name: ag.name,
+          email: ag.email,
+          parentAgencyId: ag.parentAgencyId ?? null,
+        };
+        if (this.canManageSubAgencies()) {
+          this.loadSubAgencies();
+        }
+      },
+    });
     this.http.get<AgencyTheme | null>(this.api.agencies.theme).subscribe({
       next: (t) => {
         if (!t) return;
@@ -177,6 +214,62 @@ export class SettingsComponent implements OnInit {
       },
     });
     this.loadSubscriptionData();
+  }
+
+  /** Main agency admins only; sub-agency accounts cannot create further subs. */
+  canManageSubAgencies(): boolean {
+    if (this.auth.user()?.role !== 'AGENCY_ADMIN') {
+      return false;
+    }
+    const parent = this.agencyProfile?.parentAgencyId ?? this.auth.agency()?.parentAgencyId ?? null;
+    return parent == null;
+  }
+
+  loadSubAgencies(): void {
+    const id = this.auth.agency()?.id;
+    if (!id) return;
+    this.subsLoading = true;
+    this.http.get<AgencyApiDto[]>(this.api.agencies.subAgencies(id)).subscribe({
+      next: (list) => {
+        this.subAgencies = list;
+        this.subsLoading = false;
+      },
+      error: () => {
+        this.subsLoading = false;
+        this.notif.error(this.i18n.instant('settings.subAgencies.loadError'));
+      },
+    });
+  }
+
+  submitNewSubAgency(): void {
+    const name = this.newSubName.trim();
+    const email = this.newSubEmail.trim();
+    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.notif.error(this.i18n.instant('settings.subAgencies.validation'));
+      return;
+    }
+    const parentId = this.auth.agency()?.id;
+    if (!parentId) return;
+    this.creatingSub = true;
+    this.http
+      .post<AgencyApiDto>(this.api.agencies.subAgencies(parentId), {
+        name,
+        email,
+        status: 'ACTIVE',
+      })
+      .subscribe({
+        next: (created) => {
+          this.subAgencies = [...this.subAgencies, created];
+          this.newSubName = '';
+          this.newSubEmail = '';
+          this.creatingSub = false;
+          this.notif.success(this.i18n.instant('settings.subAgencies.created'));
+        },
+        error: () => {
+          this.creatingSub = false;
+          this.notif.error(this.i18n.instant('settings.subAgencies.createError'));
+        },
+      });
   }
 
   loadSubscriptionData(): void {
