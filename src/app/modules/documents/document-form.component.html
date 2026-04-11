@@ -6,14 +6,14 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="document-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">upload_file</mat-icon>
-          <p class="form-hero-text">Associez un document à un pèlerin (passeport, visa, billet…). Saisissez l’URL du fichier ou uploadez-le ci-dessous. L’URL est obligatoire.</p>
+          <p class="form-hero-text">Associez un document à un voyageur (passeport, visa, billet…). Saisissez l’URL du fichier ou uploadez-le ci-dessous. L’URL est obligatoire.</p>
         </div>
 
         <div class="form-section">
           <h2 class="form-section-title">Lien</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Pèlerin</mat-label>
+              <mat-label>Voyageur</mat-label>
               <input
                 matInput
                 [formControl]="pilgrimDisplay"
@@ -25,7 +25,7 @@
               />
               <mat-autocomplete #docPilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
                 @if (filteredPilgrims.length === 0) {
-                  <mat-option disabled>Tapez pour rechercher un pèlerin</mat-option>
+                  <mat-option disabled>Tapez pour rechercher un voyageur</mat-option>
                 }
                 @for (p of filteredPilgrims; track p.id) {
                   <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>

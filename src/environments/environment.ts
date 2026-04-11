@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://omra-spring-production.up.railway.app',
+  apiUrl: 'http://localhost:8080',
   /** Clé API Google Cloud (Maps JavaScript API + Places) — https://console.cloud.google.com/google/maps-apis */
   googleMapsApiKey: '',
 };

@@ -1,6 +1,6 @@
 <app-page-header
   title="Documents"
-  subtitle="Passeports, visas et pièces des pèlerins"
+  subtitle="Passeports, visas et pièces des voyageurs"
   actionLabel="Upload document"
   actionLink="/documents/new"
 ></app-page-header>
@@ -20,7 +20,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="pilgrimId">
-          <th mat-header-cell *matHeaderCellDef>Pèlerin ID</th>
+          <th mat-header-cell *matHeaderCellDef>ID voyageur</th>
           <td mat-cell *matCellDef="let row">{{ row.pilgrimId ?? '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="status">

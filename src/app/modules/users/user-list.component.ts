@@ -44,8 +44,8 @@ export class UserListComponent implements OnInit {
     const labels: Record<string, string> = {
       AGENCY_ADMIN: 'Admin',
       AGENCY_AGENT: 'Service',
-      PILGRIM_COMPANION: 'Accompagnateur pèlerinage',
-      PILGRIM: 'Pèlerin',
+      PILGRIM_COMPANION: 'Accompagnateur voyage',
+      PILGRIM: 'Client voyageur',
     };
     return labels[role] ?? role;
   }

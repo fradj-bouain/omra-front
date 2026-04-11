@@ -47,6 +47,8 @@ const FALLBACK_FR: Record<string, string> = {
   'nav.group.agency': 'Mon agence',
   'layout.settings': 'Paramètres',
   'layout.logout': 'Déconnexion',
+  /** Barre latérale sans logo agence */
+  'layout.brandText': 'Voyage',
   'common.save': 'Enregistrer',
   'common.cancel': 'Annuler',
   'common.loading': 'Chargement…',

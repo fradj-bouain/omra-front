@@ -10,13 +10,13 @@ import { RouterLink } from '@angular/router';
   styleUrl: './page-header.component.scss',
 })
 export class PageHeaderComponent {
-  /** Page title (e.g. "Pèlerins", "Nouveau pèlerin") */
+  /** Page title (e.g. "Voyageurs", "Nouveau voyageur") */
   @Input() title = '';
 
   /** Optional short subtitle below the title */
   @Input() subtitle = '';
 
-  /** Label for the action link (e.g. "Ajouter pèlerin", "Retour aux groupes") */
+  /** Label for the action link (e.g. "Ajouter un voyageur", "Retour aux groupes") */
   @Input() actionLabel = '';
 
   /** Route for the action link (string or array) */

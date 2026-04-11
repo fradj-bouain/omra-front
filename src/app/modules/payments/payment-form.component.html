@@ -6,14 +6,14 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="payment-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">payments</mat-icon>
-          <p class="form-hero-text">Enregistrez un paiement pour un pèlerin ou un groupe. Indiquez le montant, la devise (MAD par défaut), la méthode et le statut. Le montant est obligatoire.</p>
+          <p class="form-hero-text">Enregistrez un paiement pour un voyageur ou un groupe. Indiquez le montant, la devise (MAD par défaut), la méthode et le statut. Le montant est obligatoire.</p>
         </div>
 
         <div class="form-section">
-          <h2 class="form-section-title">Pèlerin & groupe</h2>
+          <h2 class="form-section-title">Voyageur & groupe</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Pèlerin</mat-label>
+              <mat-label>Voyageur</mat-label>
               <input
                 matInput
                 [formControl]="pilgrimDisplay"
@@ -23,10 +23,10 @@
                 (input)="pilgrimTrigger.openPanel()"
                 placeholder="Tapez pour rechercher"
               />
-              <mat-error>Le pèlerin est obligatoire</mat-error>
+              <mat-error>Le voyageur est obligatoire</mat-error>
               <mat-autocomplete #pilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
                 @if (filteredPilgrims.length === 0) {
-                  <mat-option disabled>Tapez pour rechercher un pèlerin</mat-option>
+                  <mat-option disabled>Tapez pour rechercher un voyageur</mat-option>
                 }
                 @for (p of filteredPilgrims; track p.id) {
                   <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>

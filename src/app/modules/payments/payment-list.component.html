@@ -1,6 +1,6 @@
 <app-page-header
   title="Paiements"
-  subtitle="Suivi des paiements par pèlerin et par groupe"
+  subtitle="Suivi des paiements par voyageur et par groupe"
   actionLabel="Nouveau paiement"
   actionLink="/payments/new"
 ></app-page-header>
@@ -14,7 +14,7 @@
     <div class="table-wrap">
       <table mat-table [dataSource]="dataSource" class="payment-table full-width">
         <ng-container matColumnDef="pilgrimId">
-          <th mat-header-cell *matHeaderCellDef>Pèlerin ID</th>
+          <th mat-header-cell *matHeaderCellDef>ID voyageur</th>
           <td mat-cell *matCellDef="let row">{{ row.pilgrimId ?? '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="groupId">

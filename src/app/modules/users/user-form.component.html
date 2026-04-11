@@ -6,7 +6,7 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">person_add</mat-icon>
-          <p class="form-hero-text">Créez un compte utilisateur : nom, email et mot de passe sont obligatoires. Choisissez le rôle (admin, service, accompagnateur, pèlerin) et le statut (actif ou désactivé).</p>
+          <p class="form-hero-text">Créez un compte utilisateur : nom, email et mot de passe sont obligatoires. Choisissez le rôle (admin, service, accompagnateur voyage, client voyageur) et le statut (actif ou désactivé).</p>
         </div>
 
         <div class="form-section">
@@ -48,8 +48,8 @@
               <mat-select formControlName="role">
                 <mat-option value="AGENCY_ADMIN">Admin</mat-option>
                 <mat-option value="AGENCY_AGENT">Service</mat-option>
-                <mat-option value="PILGRIM_COMPANION">Accompagnateur pèlerinage</mat-option>
-                <mat-option value="PILGRIM">Pèlerin</mat-option>
+                <mat-option value="PILGRIM_COMPANION">Accompagnateur voyage</mat-option>
+                <mat-option value="PILGRIM">Client voyageur</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">

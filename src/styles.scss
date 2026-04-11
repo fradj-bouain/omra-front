@@ -1,30 +1,40 @@
 /* Angular Material prebuilt theme */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
-/* ========== Design system — interface client Omra (thème pèlerin) ==========
-   Fonts: Outfit (body), Syne (display/headings).
-   Accent: teal pèlerin (#0d9488). Use --app-* in components.
+/* ========== Design system — SaaS multi-agence ==========
+   Couleurs d’agence : --primary-color, --sidebar-color, etc. (Blue SaaS par défaut).
+   ThemeService met à jour ces variables sur :root après connexion.
 */
 :root {
+  /* Tokens marque (défaut Blue SaaS) */
+  --primary-color: #2563eb;
+  --secondary-color: #1e293b;
+  --sidebar-color: #0f172a;
+  --background-color: #f8fafc;
+  --card-color: #ffffff;
+  --text-color: #111827;
+  --menu-color: var(--sidebar-color);
+  --button-color: var(--primary-color);
+
   /* Typography */
   --app-font: 'Outfit', system-ui, -apple-system, sans-serif;
   --app-display: 'Syne', system-ui, sans-serif;
-  --app-text: #0f172a;
-  --app-text-soft: #475569;
+  --app-text: var(--text-color);
+  --app-text-soft: color-mix(in srgb, var(--text-color) 70%, transparent);
   --app-muted: #64748b;
 
   /* Surfaces */
-  --app-bg: #f8fafc;
-  --app-bg-soft: #f1f5f9;
-  --app-card: #ffffff;
-  --app-border: #e2e8f0;
-  --app-border-focus: #0f766e;
+  --app-bg: var(--background-color);
+  --app-bg-soft: color-mix(in srgb, var(--background-color) 90%, var(--text-color) 10%);
+  --app-card: var(--card-color);
+  --app-border: color-mix(in srgb, var(--text-color) 14%, var(--background-color) 86%);
+  --app-border-focus: var(--primary-color);
 
-  /* Brand & actions — thème pèlerin (teal) */
-  --app-accent: #0d9488;
-  --app-accent-hover: #0f766e;
-  --app-accent-soft: #ccfbf1;
-  --app-accent-ring: rgba(13, 148, 136, 0.35);
+  /* Brand & actions */
+  --app-accent: var(--primary-color);
+  --app-accent-hover: var(--secondary-color);
+  --app-accent-soft: color-mix(in srgb, var(--primary-color) 20%, white);
+  --app-accent-ring: color-mix(in srgb, var(--primary-color) 35%, transparent);
 
   /* Semantic */
   --app-success-bg: #ecfdf5;
@@ -40,7 +50,7 @@
   --app-radius-lg: 18px;
   --app-radius-pill: 9999px;
   --app-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --app-shadow: 0 4px 14px rgba(13, 148, 136, 0.08);
+  --app-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 12%, transparent);
   --app-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.08);
 
   /* Spacing */
@@ -51,28 +61,22 @@
   --app-space-xl: 2rem;
   --app-space-2xl: 2.5rem;
 
-  /* Chart palette (same as accent theme) */
-  --chart-1: #0d9488;
-  --chart-2: #0891b2;
-  --chart-3: #0f766e;
-  --chart-4: #14b8a6;
-  --chart-5: #5eead4;
-  --chart-6: #2dd4bf;
+  /* Charts */
+  --chart-1: var(--primary-color);
+  --chart-2: color-mix(in srgb, var(--primary-color) 55%, #06b6d4 45%);
+  --chart-3: var(--secondary-color);
+  --chart-4: var(--menu-color);
+  --chart-5: var(--button-color);
+  --chart-6: color-mix(in srgb, var(--primary-color) 40%, white);
 
-  /* Backward compat for existing components */
+  /* Aliases historiques */
   --font-heading: var(--app-display);
   --font-body: var(--app-font);
-  --primary-color: var(--app-accent);
-  --primary-dark: var(--app-accent-hover);
+  --primary-dark: var(--secondary-color);
   --primary-light: var(--app-accent-soft);
-  --secondary-color: var(--app-accent);
-  --menu-color: var(--app-accent-hover);
-  --button-color: var(--app-accent);
-  --background-color: var(--app-bg);
-  --text-color: var(--app-text);
   --text-muted: var(--app-muted);
-  --header-bg: var(--app-card);
-  --card-bg: var(--app-card);
+  --header-bg: color-mix(in srgb, var(--background-color) 88%, var(--sidebar-color) 12%);
+  --card-bg: var(--card-color);
   --border-color: var(--app-border);
   --shadow-sm: var(--app-shadow-sm);
   --shadow-md: var(--app-shadow);
@@ -80,6 +84,22 @@
   --radius-sm: var(--app-radius-sm);
   --radius-md: var(--app-radius);
   --radius-lg: var(--app-radius-lg);
+
+  /* Snackbars (MatSnackBar) — couleurs fixes, indépendantes du thème agence */
+  --toast-success-bg: #15803d;
+  --toast-success-fg: #ffffff;
+  --toast-error-bg: #b91c1c;
+  --toast-error-fg: #ffffff;
+}
+
+[data-theme='dark'] {
+  --app-muted: #94a3b8;
+}
+
+html.theme-transition,
+html.theme-transition * {
+  transition: background-color 0.35s ease, color 0.28s ease, border-color 0.28s ease,
+    box-shadow 0.28s ease, fill 0.28s ease, stroke 0.28s ease;
 }
 
 * {
@@ -128,14 +148,45 @@ h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title {
   --mdc-filled-button-container-color: var(--app-accent);
 }
 
+/*
+ * Règle produit : succès API = toujours vert, erreur = toujours rouge (pas --app-accent / thème agence).
+ */
+.mat-mdc-snack-bar-container.snack-success .mdc-snackbar__surface,
 .snack-success .mdc-snackbar__surface {
-  background: var(--app-accent) !important;
-  color: #fff;
+  background: var(--toast-success-bg) !important;
+  color: var(--toast-success-fg) !important;
 }
 
+.mat-mdc-snack-bar-container.snack-success .mat-mdc-snack-bar-label,
+.mat-mdc-snack-bar-container.snack-success .mdc-snackbar__label,
+.snack-success .mdc-snackbar__label {
+  color: var(--toast-success-fg) !important;
+}
+
+.mat-mdc-snack-bar-container.snack-success .mat-mdc-button,
+.mat-mdc-snack-bar-container.snack-success .mat-mdc-snack-bar-action,
+.snack-success .mat-mdc-snack-bar-action {
+  color: var(--toast-success-fg) !important;
+  --mat-mdc-button-persistent-ripple-color: rgba(255, 255, 255, 0.2);
+}
+
+.mat-mdc-snack-bar-container.snack-error .mdc-snackbar__surface,
 .snack-error .mdc-snackbar__surface {
-  background: var(--app-error-text) !important;
-  color: #fff;
+  background: var(--toast-error-bg) !important;
+  color: var(--toast-error-fg) !important;
+}
+
+.mat-mdc-snack-bar-container.snack-error .mat-mdc-snack-bar-label,
+.mat-mdc-snack-bar-container.snack-error .mdc-snackbar__label,
+.snack-error .mdc-snackbar__label {
+  color: var(--toast-error-fg) !important;
+}
+
+.mat-mdc-snack-bar-container.snack-error .mat-mdc-button,
+.mat-mdc-snack-bar-container.snack-error .mat-mdc-snack-bar-action,
+.snack-error .mat-mdc-snack-bar-action {
+  color: var(--toast-error-fg) !important;
+  --mat-mdc-button-persistent-ripple-color: rgba(255, 255, 255, 0.2);
 }
 
 .mat-mdc-card {
@@ -166,14 +217,14 @@ h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title {
 .app-toast-icon { flex-shrink: 0; }
 .app-toast-text { flex: 1; min-width: 0; }
 .app-toast--success {
-  background: var(--app-success-bg);
-  color: var(--app-success-text);
-  border-color: rgba(5, 95, 70, 0.2);
+  background: var(--toast-success-bg);
+  color: var(--toast-success-fg);
+  border-color: color-mix(in srgb, var(--toast-success-bg) 65%, #000 35%);
 }
 .app-toast--error {
-  background: var(--app-error-bg);
-  color: var(--app-error-text);
-  border-color: rgba(153, 27, 27, 0.2);
+  background: var(--toast-error-bg);
+  color: var(--toast-error-fg);
+  border-color: color-mix(in srgb, var(--toast-error-bg) 65%, #000 35%);
 }
 .app-toast--warn {
   background: var(--app-warn-bg);
@@ -228,9 +279,13 @@ h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title {
   gap: 0.25rem;
   flex-wrap: wrap;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, rgba(15, 118, 110, 0.04) 100%);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--app-accent) 8%, transparent) 0%,
+    color-mix(in srgb, var(--app-accent-hover) 6%, transparent) 100%
+  );
   border-radius: var(--app-radius);
-  border: 1px solid rgba(13, 148, 136, 0.12);
+  border: 1px solid color-mix(in srgb, var(--app-accent) 14%, transparent);
 }
 .app-breadcrumb-link {
   display: inline-flex;
@@ -276,8 +331,20 @@ h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title {
   padding: 0.4rem 0.75rem;
   background: rgba(255, 255, 255, 0.9);
   border-radius: var(--app-radius-sm);
-  border: 1px solid rgba(13, 148, 136, 0.2);
-  box-shadow: 0 1px 3px rgba(13, 148, 136, 0.08);
+  border: 1px solid color-mix(in srgb, var(--app-accent) 22%, transparent);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--app-accent) 10%, transparent);
+}
+
+/* ========== Dialog : documents pèlerin (liste) */
+.pilgrim-documents-dialog .mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-lg);
+}
+
+.pilgrim-documents-dialog .mat-mdc-dialog-container .mat-mdc-dialog-title {
+  display: block;
 }
 
 /* ========== Responsive */
