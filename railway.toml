@@ -1,11 +1,11 @@
-# Railway deploy: Node serves the built Angular app (no Docker, no Nginx)
-# Set "Root Directory" to omra-front in Railway dashboard if repo root is parent.
+# Railway deploy: multi-stage Dockerfile (Node 22) — avoids Nixpacks nix-env / GitHub nixpkgs fetch failures.
+# Set "Root Directory" to this folder (omra-front) if the Git repo root is the monorepo parent.
 
 [build]
-builder = "nixpacks"
-buildCommand = "unset NPM_CONFIG_PRODUCTION; export NODE_OPTIONS='--max-old-space-size=4096'; npm run build"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "npm start"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
