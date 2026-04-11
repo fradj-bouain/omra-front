@@ -56,6 +56,12 @@
             <span class="cell-name">{{ row.firstName }} {{ row.lastName }}</span>
           </td>
         </ng-container>
+        <ng-container matColumnDef="travelerType">
+          <th mat-header-cell *matHeaderCellDef>{{ 'pilgrims.col.travelerType' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            {{ ('pilgrims.travelerType.' + (row.travelerType || 'PILGRIM')) | translate }}
+          </td>
+        </ng-container>
         <ng-container matColumnDef="referralPoints">
           <th mat-header-cell *matHeaderCellDef>{{ 'pilgrims.col.referralPoints' | translate }}</th>
           <td mat-cell *matCellDef="let row" class="cell-points">

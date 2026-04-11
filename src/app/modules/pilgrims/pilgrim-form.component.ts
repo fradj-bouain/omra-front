@@ -162,6 +162,8 @@ export class PilgrimFormComponent implements OnInit {
     { value: 'AUTRE', labelKey: 'pilgrims.mo3tamir.roleAutre' },
   ];
 
+  readonly travelerTypes = ['PILGRIM', 'LEISURE', 'WORK', 'BUSINESS', 'OTHER'] as const;
+
   private readonly validateReferrerPilgrim: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     if (this.isEdit) return null;
     const st = this.form?.get('sponsorType')?.value;
@@ -194,6 +196,7 @@ export class PilgrimFormComponent implements OnInit {
       email: [''],
       address: [''],
       visaStatus: ['PENDING'],
+      travelerType: ['PILGRIM'],
       sponsorType: [''],
       sponsorLabel: [''],
       referrerPilgrim: [null as PilgrimSearchResult | string | null, this.validateReferrerPilgrim],
@@ -393,6 +396,7 @@ export class PilgrimFormComponent implements OnInit {
           email: res['email'] ?? '',
           address: res['address'] ?? '',
           visaStatus: res['visaStatus'] ?? 'PENDING',
+          travelerType: (res['travelerType'] as string) ?? 'PILGRIM',
         });
         this.sponsorshipView = {
           sponsorType: res['sponsorType'] != null ? String(res['sponsorType']) : undefined,
@@ -405,7 +409,7 @@ export class PilgrimFormComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.notif.error('Pèlerin introuvable');
+        this.notif.error(this.i18n.instant('pilgrims.notif.notFound'));
         this.loading = false;
         this.router.navigate(['/pilgrims']);
       },
@@ -414,8 +418,8 @@ export class PilgrimFormComponent implements OnInit {
 
   sponsorTypeLabel(code: string | undefined): string {
     if (!code) return '—';
-    if (code === 'PILGRIM') return 'Pèlerin';
-    if (code === 'AGENT') return 'Agent';
+    if (code === 'PILGRIM') return this.i18n.instant('pilgrims.sponsorship.typePilgrim');
+    if (code === 'AGENT') return this.i18n.instant('pilgrims.sponsorship.typeAgent');
     return code;
   }
 
@@ -487,10 +491,11 @@ export class PilgrimFormComponent implements OnInit {
         email: v.email || undefined,
         address: v.address || undefined,
         visaStatus: v.visaStatus || 'PENDING',
+        travelerType: v.travelerType || 'PILGRIM',
       };
       this.http.put(this.api.pilgrims.byId(this.pilgrimId), body).subscribe({
         next: () => {
-          this.notif.success('Pèlerin modifié');
+          this.notif.success(this.i18n.instant('pilgrims.notif.updated'));
           this.router.navigate(['/pilgrims', this.pilgrimId]);
         },
         error: (err) => {
@@ -530,6 +535,7 @@ export class PilgrimFormComponent implements OnInit {
         email: v.email || undefined,
         address: v.address || undefined,
         visaStatus: v.visaStatus || 'PENDING',
+        travelerType: v.travelerType || 'PILGRIM',
         members,
       };
       const st = v.sponsorType as string;
@@ -571,6 +577,7 @@ export class PilgrimFormComponent implements OnInit {
       email: v.email || undefined,
       address: v.address || undefined,
       visaStatus: v.visaStatus || 'PENDING',
+      travelerType: v.travelerType || 'PILGRIM',
     };
 
     const st = v.sponsorType as string;
@@ -605,7 +612,7 @@ export class PilgrimFormComponent implements OnInit {
       .subscribe({
         next: ({ created, docsOk }) => {
           this.loading = false;
-          this.notif.success('Pèlerin créé');
+          this.notif.success(this.i18n.instant('pilgrims.notif.created'));
           if (queueSnapshot.length > 0) {
             if (docsOk) {
               this.pendingDocs = [];

@@ -19,6 +19,10 @@ export interface Agency {
   id: number;
   name: string;
   email: string;
+  /** ISO 3166-1 alpha-2 (ex. MA). */
+  country?: string;
+  /** ISO 4217 (ex. MAD). */
+  currency?: string;
   logoUrl?: string;
   primaryColor?: string;
   secondaryColor?: string;

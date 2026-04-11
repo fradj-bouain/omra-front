@@ -1,6 +1,6 @@
 <app-page-header
-  [title]="pilgrim ? (pilgrim.firstName + ' ' + pilgrim.lastName) : 'Détail pèlerin'"
-  actionLabel="Retour aux pèlerins"
+  [title]="pilgrim ? (pilgrim.firstName + ' ' + pilgrim.lastName) : ('pilgrims.detail.title' | translate)"
+  [actionLabel]="'pilgrims.detail.back' | translate"
   actionLink="/pilgrims"
   actionIcon="arrow_back"
 ></app-page-header>
@@ -43,6 +43,8 @@
           <dd>{{ getGenderLabel(pilgrim.gender) }}</dd>
           <dt>Date de naissance</dt>
           <dd>{{ pilgrim.dateOfBirth ? (pilgrim.dateOfBirth | date:'dd/MM/yyyy') : '—' }}</dd>
+          <dt>{{ 'pilgrims.mo3tamir.travelerType' | translate }}</dt>
+          <dd>{{ ('pilgrims.travelerType.' + (pilgrim.travelerType || 'PILGRIM')) | translate }}</dd>
         </dl>
       </mat-card-content>
     </mat-card>
@@ -91,21 +93,21 @@
 
     <mat-card class="detail-card detail-card--sponsor">
       <mat-card-header>
-        <mat-card-title>Parrainage</mat-card-title>
+        <mat-card-title>{{ 'pilgrims.sponsorship.sectionTitle' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <dl class="detail-dl">
-          <dt>Type de parrain</dt>
+          <dt>{{ 'pilgrims.sponsorship.typeLabel' | translate }}</dt>
           <dd>{{ sponsorTypeLabel(pilgrim.sponsorType) }}</dd>
           @if (pilgrim.sponsorLabel) {
-            <dt>Parrainé par (libellé)</dt>
+            <dt>{{ 'pilgrims.sponsorship.labelField' | translate }}</dt>
             <dd>{{ pilgrim.sponsorLabel }}</dd>
           }
           @if (pilgrim.referrerDisplayName) {
-            <dt>Pèlerin parrain</dt>
+            <dt>{{ 'pilgrims.sponsorship.referrerName' | translate }}</dt>
             <dd>{{ pilgrim.referrerDisplayName }}</dd>
           }
-          <dt>Points parrainage</dt>
+          <dt>{{ 'pilgrims.sponsorship.points' | translate }}</dt>
           <dd>
             <span class="detail-points">{{ pilgrim.referralPoints ?? 0 }}</span>
           </dd>

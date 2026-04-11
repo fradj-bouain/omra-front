@@ -52,6 +52,14 @@
                 <mat-datepicker-toggle matIconSuffix [for]="dobPickerEdit" />
                 <mat-datepicker #dobPickerEdit />
               </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.travelerType' | translate }}</mat-label>
+                <mat-select formControlName="travelerType">
+                  @for (tt of travelerTypes; track tt) {
+                    <mat-option [value]="tt">{{ ('pilgrims.travelerType.' + tt) | translate }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             </div>
           </div>
 
@@ -154,9 +162,17 @@
           <div class="form-section" @famillePanel>
             <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionFamilySharedDoc' | translate }}</h2>
             <div class="form-grid form-grid--2">
-              <mat-form-field appearance="outline" class="full-width form-field--span-2">
+              <mat-form-field appearance="outline" class="full-width">
                 <mat-label>{{ 'pilgrims.mo3tamir.nationality' | translate }}</mat-label>
                 <input matInput formControlName="nationality" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.travelerType' | translate }}</mat-label>
+                <mat-select formControlName="travelerType">
+                  @for (tt of travelerTypes; track tt) {
+                    <mat-option [value]="tt">{{ ('pilgrims.travelerType.' + tt) | translate }}</mat-option>
+                  }
+                </mat-select>
               </mat-form-field>
             </div>
           </div>
@@ -187,6 +203,14 @@
                   <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
                   <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
                   <mat-datepicker #dobPicker />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'pilgrims.mo3tamir.travelerType' | translate }}</mat-label>
+                  <mat-select formControlName="travelerType">
+                    @for (tt of travelerTypes; track tt) {
+                      <mat-option [value]="tt">{{ ('pilgrims.travelerType.' + tt) | translate }}</mat-option>
+                    }
+                  </mat-select>
                 </mat-form-field>
               </div>
             </div>

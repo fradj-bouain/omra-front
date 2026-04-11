@@ -31,6 +31,7 @@ interface Pilgrim {
   email?: string;
   visaStatus?: string;
   referralPoints?: number;
+  travelerType?: string;
 }
 
 interface PageResponse<T> {
@@ -63,7 +64,17 @@ interface PageResponse<T> {
 })
 export class PilgrimListComponent implements OnInit {
   dataSource = new MatTableDataSource<Pilgrim>([]);
-  displayedColumns = ['documents', 'name', 'referralPoints', 'passportNumber', 'nationality', 'phone', 'visaStatus', 'actions'];
+  displayedColumns = [
+    'documents',
+    'name',
+    'travelerType',
+    'referralPoints',
+    'passportNumber',
+    'nationality',
+    'phone',
+    'visaStatus',
+    'actions',
+  ];
   totalElements = 0;
   page = 1;
   size = 20;

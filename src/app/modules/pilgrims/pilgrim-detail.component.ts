@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 interface PilgrimDetail {
   id: number;
@@ -23,6 +25,7 @@ interface PilgrimDetail {
   email?: string;
   address?: string;
   visaStatus?: string;
+  travelerType?: string;
   createdAt?: string;
   sponsorType?: string;
   sponsorLabel?: string;
@@ -35,7 +38,7 @@ interface PilgrimDetail {
 @Component({
   selector: 'app-pilgrim-detail',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatCardModule, MatIconModule, MatButtonModule, PageHeaderComponent],
+  imports: [DatePipe, RouterLink, MatCardModule, MatIconModule, MatButtonModule, PageHeaderComponent, TranslatePipe],
   templateUrl: './pilgrim-detail.component.html',
   styleUrl: './pilgrim-detail.component.scss',
 })
@@ -49,7 +52,8 @@ export class PilgrimDetailComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private api: ApiService,
-    private notif: NotificationService
+    private notif: NotificationService,
+    private i18n: I18nService
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +75,7 @@ export class PilgrimDetailComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.notif.error('Pèlerin introuvable');
+        this.notif.error(this.i18n.instant('pilgrims.notif.notFound'));
         this.loading = false;
         this.router.navigate(['/pilgrims']);
       },
@@ -95,16 +99,16 @@ export class PilgrimDetailComponent implements OnInit {
 
   sponsorTypeLabel(code: string | undefined): string {
     if (!code) return '—';
-    if (code === 'PILGRIM') return 'Pèlerin';
-    if (code === 'AGENT') return 'Agent';
+    if (code === 'PILGRIM') return this.i18n.instant('pilgrims.sponsorship.typePilgrim');
+    if (code === 'AGENT') return this.i18n.instant('pilgrims.sponsorship.typeAgent');
     return code;
   }
 
   deletePilgrim(): void {
-    if (!this.pilgrim?.id || !confirm('Supprimer ce pèlerin ? Cette action est irréversible.')) return;
+    if (!this.pilgrim?.id || !confirm(this.i18n.instant('pilgrims.detail.deleteConfirm'))) return;
     this.http.delete(this.api.pilgrims.byId(this.pilgrim.id)).subscribe({
       next: () => {
-        this.notif.success('Pèlerin supprimé');
+        this.notif.success(this.i18n.instant('pilgrims.detail.deleted'));
         this.router.navigate(['/pilgrims']);
       },
       error: () => this.notif.error('Erreur lors de la suppression'),
