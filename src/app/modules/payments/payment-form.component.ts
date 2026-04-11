@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,8 +10,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { toIsoDateString } from '../../shared/utils/date-form';
 
@@ -41,12 +43,14 @@ interface PilgrimOption {
     MatAutocompleteModule,
     MatDatepickerModule,
     PageHeaderComponent,
+    TranslatePipe,
   ],
   templateUrl: './payment-form.component.html',
   styleUrl: './payment-form.component.scss',
 })
 export class PaymentFormComponent implements OnInit {
   loading = false;
+  readonly auth = inject(AuthService);
   form: FormGroup;
   pilgrimDisplay = new FormControl('', { validators: Validators.required });
   groupDisplay = new FormControl('', { validators: Validators.required });
@@ -65,7 +69,7 @@ export class PaymentFormComponent implements OnInit {
       pilgrimId: [null as number | null, Validators.required],
       groupId: [null as number | null, Validators.required],
       amount: [null as number | null, Validators.required],
-      currency: ['MAD'],
+      currency: [this.auth.agencyCurrency()],
       paymentMethod: ['CASH'],
       status: ['PENDING'],
       paymentDate: [null as Date | null],
@@ -153,7 +157,7 @@ export class PaymentFormComponent implements OnInit {
       pilgrimId: v.pilgrimId != null && v.pilgrimId !== '' ? Number(v.pilgrimId) : undefined,
       groupId: v.groupId != null && v.groupId !== '' ? Number(v.groupId) : undefined,
       amount: Number(v.amount),
-      currency: v.currency || 'MAD',
+      currency: v.currency || this.auth.agencyCurrency(),
       paymentMethod: v.paymentMethod || 'CASH',
       status: v.status || 'PENDING',
       paymentDate: toIsoDateString(v.paymentDate as Date | null),

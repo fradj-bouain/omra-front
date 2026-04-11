@@ -66,7 +66,7 @@
             <mat-card-title>{{ 'dashboard.totalRevenue' | translate }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <p class="summary-value">{{ stats.totalRevenue | number:'1.0-0' }} <span class="summary-unit">MAD</span></p>
+            <p class="summary-value">{{ stats.totalRevenue | number:'1.0-0' }} <span class="summary-unit">{{ auth.agencyCurrency() }}</span></p>
           </mat-card-content>
         </mat-card>
         <mat-card class="summary-card">
@@ -111,11 +111,11 @@
                   <td mat-cell *matCellDef="let row">{{ row.maxCapacity }}</td>
                 </ng-container>
                 <ng-container matColumnDef="totalPaid">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.paidMad' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.paidWithCurrency' | translate: { currency: auth.agencyCurrency() } }}</th>
                   <td mat-cell *matCellDef="let row">{{ row.totalPaid | number:'1.0-0' }}</td>
                 </ng-container>
                 <ng-container matColumnDef="price">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.priceMad' | translate }}</th>
+                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.priceWithCurrency' | translate: { currency: auth.agencyCurrency() } }}</th>
                   <td mat-cell *matCellDef="let row">{{ row.price | number:'1.0-0' }}</td>
                 </ng-container>
                 <ng-container matColumnDef="status">
@@ -145,7 +145,7 @@
                     <li class="chart-list-item">
                       <span class="chart-bar" [style.--chart-color]="getChartColor(i)" [style.--chart-pct]="getPaymentBarPct(item.amount) + '%'"></span>
                       <span class="chart-label">{{ item.period }}</span>
-                      <span class="chart-value">{{ item.amount | number:'1.0-0' }} MAD</span>
+                      <span class="chart-value">{{ item.amount | number:'1.0-0' }} {{ auth.agencyCurrency() }}</span>
                     </li>
                   }
                 </ul>

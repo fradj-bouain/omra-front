@@ -411,6 +411,8 @@ const FALLBACK_FR: Record<string, string> = {
   'dashboard.col.capacity': 'Capacité',
   'dashboard.col.paidMad': 'Payé (MAD)',
   'dashboard.col.priceMad': 'Prix (MAD)',
+  'dashboard.col.paidWithCurrency': 'Payé ({{currency}})',
+  'dashboard.col.priceWithCurrency': 'Prix ({{currency}})',
   'dashboard.col.status': 'Statut',
   'dashboard.paymentsByPeriod': 'Paiements par période',
   'dashboard.visaDistribution': 'Répartition des visas',
@@ -558,6 +560,7 @@ const FALLBACK_FR: Record<string, string> = {
   'groups.form.planning': 'Modèle de planning',
   'groups.form.planningNone': 'Aucun',
   'groups.form.price': 'Prix (MAD)',
+  'groups.form.priceLabel': 'Prix ({{currency}})',
   'groups.form.status': 'Statut',
   'groups.form.status.OPEN': 'Ouvert',
   'groups.form.status.CONFIRMED': 'Confirmé',
@@ -618,6 +621,8 @@ const FALLBACK_FR: Record<string, string> = {
   'hotels.form.hero':
     'Enregistrez un hébergement (villes d’étape, destinations…). Le nom est obligatoire. Vous pourrez l’assigner à un groupe.',
   'hotels.form.cityPh': 'Ex. Paris, Istanbul, Dubaï',
+  'payments.form.hero':
+    'Enregistrez un paiement pour un voyageur ou un groupe. Indiquez le montant, la devise ({{currency}} par défaut), la méthode et le statut. Le montant est obligatoire.',
 };
 
 @Injectable({ providedIn: 'root' })

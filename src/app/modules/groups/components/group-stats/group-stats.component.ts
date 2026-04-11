@@ -13,7 +13,8 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 export class GroupStatsComponent {
   @Input() totalPilgrims = 0;
   @Input() paymentsReceived = 0;
-  @Input() paymentsCurrency = 'MAD';
+  /** Devise d’affichage (ex. depuis l’agence ou les paiements du groupe). */
+  @Input() paymentsCurrency = '';
   @Input() pendingVisas = 0;
   @Input() documentsCount = 0;
 }

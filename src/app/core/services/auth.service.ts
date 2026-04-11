@@ -56,6 +56,12 @@ export class AuthService {
 
   user = this.currentUser.asReadonly();
   agency = this.currentAgency.asReadonly();
+
+  /** ISO 4217 depuis le profil agence (login / refresh) ; défaut MAD si absent. */
+  readonly agencyCurrency = computed(() => {
+    const c = this.currentAgency()?.currency?.trim();
+    return c || 'MAD';
+  });
   isLoggedIn = computed(() => {
     this.sessionTick();
     return !!localStorage.getItem(TOKEN_KEY);

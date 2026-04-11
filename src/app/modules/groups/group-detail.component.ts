@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DecimalPipe, NgClass, formatDate } from '@angular/common';
@@ -18,6 +18,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { toIsoDateString } from '../../shared/utils/date-form';
@@ -157,6 +158,7 @@ interface PageResponse<T> {
   styleUrl: './group-detail.component.scss',
 })
 export class GroupDetailComponent implements OnInit {
+  private readonly auth = inject(AuthService);
   groupId: number | null = null;
   group: Group | null = null;
   planning: PlanningSummary | null = null;
@@ -205,7 +207,7 @@ export class GroupDetailComponent implements OnInit {
 
   // Add trip cost
   showAddCost = false;
-  costForm = { type: 'FLIGHT' as string, amount: '', currency: 'MAD', description: '' };
+  costForm = { type: 'FLIGHT' as string, amount: '', currency: this.auth.agencyCurrency(), description: '' };
   addingCost = false;
   tripCostTypes = ['FLIGHT', 'HOTEL', 'VISA', 'TRANSPORT', 'MEALS', 'OTHER'];
 
@@ -462,7 +464,7 @@ export class GroupDetailComponent implements OnInit {
   }
 
   get paymentsCurrency(): string {
-    return this.groupPayments.find((p) => p.currency)?.currency || 'MAD';
+    return this.groupPayments.find((p) => p.currency)?.currency || this.auth.agencyCurrency();
   }
 
   get pendingVisasCount(): number {
@@ -625,14 +627,14 @@ export class GroupDetailComponent implements OnInit {
     const body = {
       type: this.costForm.type,
       amount,
-      currency: this.costForm.currency || 'MAD',
+      currency: this.costForm.currency || this.auth.agencyCurrency(),
       description: this.costForm.description || undefined,
     };
     this.http.post(this.api.tripCosts.create(this.groupId), body).subscribe({
       next: () => {
         this.notif.success(this.i18n.instant('cost.added'));
         this.showAddCost = false;
-        this.costForm = { type: 'FLIGHT', amount: '', currency: 'MAD', description: '' };
+        this.costForm = { type: 'FLIGHT', amount: '', currency: this.auth.agencyCurrency(), description: '' };
         this.addingCost = false;
         this.loadRelated();
       },

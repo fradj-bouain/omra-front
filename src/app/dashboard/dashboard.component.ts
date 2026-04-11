@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 import { ApiService } from '../core/services/api.service';
+import { AuthService } from '../core/services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -46,7 +47,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private api: ApiService
+    private api: ApiService,
+    readonly auth: AuthService
   ) {}
 
   /** Chart palette – same as CSS --chart-1 … --chart-6 */

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -48,6 +48,7 @@ interface CompanionOption {
   styleUrl: './group-form.component.scss',
 })
 export class GroupFormComponent implements OnInit {
+  readonly auth = inject(AuthService);
   loading = false;
   form: FormGroup;
   plannings: PlanningOption[] = [];
@@ -57,7 +58,6 @@ export class GroupFormComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private api: ApiService,
-    private auth: AuthService,
     private notif: NotificationService,
     private router: Router,
     private i18n: I18nService

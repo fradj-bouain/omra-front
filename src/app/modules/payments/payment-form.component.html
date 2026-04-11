@@ -6,7 +6,7 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="payment-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">payments</mat-icon>
-          <p class="form-hero-text">Enregistrez un paiement pour un voyageur ou un groupe. Indiquez le montant, la devise (MAD par défaut), la méthode et le statut. Le montant est obligatoire.</p>
+          <p class="form-hero-text">{{ 'payments.form.hero' | translate: { currency: auth.agencyCurrency() } }}</p>
         </div>
 
         <div class="form-section">
@@ -67,7 +67,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Devise</mat-label>
-              <input matInput formControlName="currency" placeholder="MAD" />
+              <input matInput formControlName="currency" [placeholder]="auth.agencyCurrency()" />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Méthode</mat-label>
