@@ -63,6 +63,21 @@
             }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
+            @if (subAgencyQuota && !subsLoading) {
+              <p class="settings-hint sub-agencies-quota">
+                {{ 'settings.subAgencies.quotaLine' | translate }}
+                <strong>{{ subAgencyQuota.activeSubAgencies }}</strong>
+                /
+                @if (subAgencyQuota.maxSubAgencies == null) {
+                  {{ 'settings.subAgencies.unlimited' | translate }}
+                } @else {
+                  {{ subAgencyQuota.maxSubAgencies }}
+                }
+                @if (!subAgencyQuota.canCreate) {
+                  <span class="sub-agencies-quota__warn"> — {{ 'settings.subAgencies.quotaFull' | translate }}</span>
+                }
+              </p>
+            }
             @if (subsLoading) {
               <p class="settings-hint">{{ 'settings.subAgencies.loading' | translate }}</p>
             } @else if (subAgencies.length === 0) {
@@ -75,6 +90,7 @@
                       <th>{{ 'settings.subAgencies.colName' | translate }}</th>
                       <th>{{ 'settings.subAgencies.colEmail' | translate }}</th>
                       <th>{{ 'settings.subAgencies.colStatus' | translate }}</th>
+                      <th class="sub-agencies-table__actions">{{ 'settings.subAgencies.colActions' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -83,6 +99,21 @@
                         <td>{{ s.name }}</td>
                         <td>{{ s.email }}</td>
                         <td>{{ s.status || '—' }}</td>
+                        <td class="sub-agencies-table__actions">
+                          @if (s.status !== 'SUSPENDED') {
+                            <button
+                              mat-stroked-button
+                              type="button"
+                              color="warn"
+                              [disabled]="deactivatingSubId === s.id"
+                              (click)="deactivateSub(s)"
+                            >
+                              {{ 'settings.subAgencies.deactivate' | translate }}
+                            </button>
+                          } @else {
+                            <span class="settings-hint">{{ 'settings.subAgencies.inactive' | translate }}</span>
+                          }
+                        </td>
                       </tr>
                     }
                   </tbody>
@@ -96,7 +127,13 @@
             <div class="sub-agencies-form">
               <mat-form-field appearance="outline" class="settings-field">
                 <mat-label>{{ 'settings.subAgencies.formName' | translate }}</mat-label>
-                <input matInput name="newSubName" [(ngModel)]="newSubName" [disabled]="creatingSub" autocomplete="organization" />
+                <input
+                  matInput
+                  name="newSubName"
+                  [(ngModel)]="newSubName"
+                  [disabled]="creatingSub || subAgencyQuota?.canCreate === false"
+                  autocomplete="organization"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="settings-field">
                 <mat-label>{{ 'settings.subAgencies.formEmail' | translate }}</mat-label>
@@ -105,7 +142,7 @@
                   name="newSubEmail"
                   type="email"
                   [(ngModel)]="newSubEmail"
-                  [disabled]="creatingSub"
+                  [disabled]="creatingSub || subAgencyQuota?.canCreate === false"
                   autocomplete="off"
                 />
               </mat-form-field>
@@ -114,7 +151,7 @@
                 color="primary"
                 type="button"
                 class="sub-agencies-form__btn"
-                [disabled]="creatingSub"
+                [disabled]="creatingSub || subAgencyQuota?.canCreate === false"
                 (click)="submitNewSubAgency()"
               >
                 <mat-icon>add_business</mat-icon>

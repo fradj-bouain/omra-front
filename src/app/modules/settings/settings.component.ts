@@ -67,6 +67,12 @@ export interface AgencyApiDto {
   status?: string;
 }
 
+export interface SubAgencyQuotaDto {
+  activeSubAgencies: number;
+  maxSubAgencies: number | null;
+  canCreate: boolean;
+}
+
 type BrandingForm = {
   logoUrl: string;
   faviconUrl: string;
@@ -166,10 +172,12 @@ export class SettingsComponent implements OnInit {
   /** Loaded via API so {@link AgencyApiDto#parentAgencyId} is reliable for hierarchy. */
   agencyProfile: AgencyApiDto | null = null;
   subAgencies: AgencyApiDto[] = [];
+  subAgencyQuota: SubAgencyQuotaDto | null = null;
   subsLoading = false;
   newSubName = '';
   newSubEmail = '';
   creatingSub = false;
+  deactivatingSubId: number | null = null;
 
   selectedPreset = '';
 
@@ -229,9 +237,13 @@ export class SettingsComponent implements OnInit {
     const id = this.auth.agency()?.id;
     if (!id) return;
     this.subsLoading = true;
-    this.http.get<AgencyApiDto[]>(this.api.agencies.subAgencies(id)).subscribe({
-      next: (list) => {
+    forkJoin({
+      list: this.http.get<AgencyApiDto[]>(this.api.agencies.subAgencies(id)),
+      quota: this.http.get<SubAgencyQuotaDto>(this.api.agencies.subAgencyQuota(id)),
+    }).subscribe({
+      next: ({ list, quota }) => {
         this.subAgencies = list;
+        this.subAgencyQuota = quota;
         this.subsLoading = false;
       },
       error: () => {
@@ -258,18 +270,43 @@ export class SettingsComponent implements OnInit {
         status: 'ACTIVE',
       })
       .subscribe({
-        next: (created) => {
-          this.subAgencies = [...this.subAgencies, created];
+        next: () => {
           this.newSubName = '';
           this.newSubEmail = '';
           this.creatingSub = false;
           this.notif.success(this.i18n.instant('settings.subAgencies.created'));
+          this.loadSubAgencies();
         },
         error: () => {
           this.creatingSub = false;
           this.notif.error(this.i18n.instant('settings.subAgencies.createError'));
         },
       });
+  }
+
+  deactivateSub(row: AgencyApiDto): void {
+    if (row.status === 'SUSPENDED') {
+      return;
+    }
+    if (!window.confirm(this.i18n.instant('settings.subAgencies.deactivateConfirm'))) {
+      return;
+    }
+    const parentId = this.auth.agency()?.id;
+    if (!parentId) {
+      return;
+    }
+    this.deactivatingSubId = row.id;
+    this.http.post<AgencyApiDto>(this.api.agencies.deactivateSubAgency(parentId, row.id), {}).subscribe({
+      next: () => {
+        this.deactivatingSubId = null;
+        this.notif.success(this.i18n.instant('settings.subAgencies.deactivated'));
+        this.loadSubAgencies();
+      },
+      error: () => {
+        this.deactivatingSubId = null;
+        this.notif.error(this.i18n.instant('settings.subAgencies.deactivateError'));
+      },
+    });
   }
 
   loadSubscriptionData(): void {

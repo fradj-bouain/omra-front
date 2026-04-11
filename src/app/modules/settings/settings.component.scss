@@ -119,6 +119,19 @@
     width: 18px;
     height: 18px;
   }
+
+  .sub-agencies-quota {
+    margin-bottom: var(--app-space-md);
+  }
+
+  .sub-agencies-quota__warn {
+    color: var(--app-warn, #b45309);
+  }
+
+  .sub-agencies-table__actions {
+    white-space: nowrap;
+    width: 1%;
+  }
 }
 
 .settings-card {
