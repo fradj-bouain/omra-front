@@ -10,6 +10,7 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import {
   BLUE_SAAS_THEME,
@@ -133,6 +134,7 @@ function stripFromPreset(p: AgencyTheme | undefined): string[] {
     MatIconModule,
     MatDividerModule,
     MatButtonToggleModule,
+    MatTooltipModule,
     TranslatePipe,
   ],
   templateUrl: './settings.component.html',
