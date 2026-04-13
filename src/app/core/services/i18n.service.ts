@@ -441,6 +441,8 @@ const FALLBACK_FR: Record<string, string> = {
   'subAgenciesPage.colCountry': 'Pays',
   'subAgenciesPage.fieldPhone': 'Téléphone',
   'subAgenciesPage.fieldCountry': 'Pays',
+  'subAgenciesPage.countryFilterPlaceholder': 'Rechercher un pays…',
+  'subAgenciesPage.countryHint': 'Tapez pour filtrer, puis choisissez une ligne dans la liste.',
   'subAgenciesPage.fieldCity': 'Ville',
   'subAgenciesPage.fieldCurrency': 'Devise (ISO, ex. MAD)',
   'subAgenciesPage.fieldAddress': 'Adresse',

@@ -100,7 +100,7 @@
                   <td class="sub-agencies-table__email">{{ s.email }}</td>
                   <td>{{ s.phone || ('common.emDash' | translate) }}</td>
                   <td>{{ s.city || ('common.emDash' | translate) }}</td>
-                  <td>{{ s.country || ('common.emDash' | translate) }}</td>
+                  <td>{{ countryLabel(s.country) || ('common.emDash' | translate) }}</td>
                   <td>
                     <span class="sub-agencies-badge" [class.sub-agencies-badge--off]="s.status === 'SUSPENDED'">
                       {{

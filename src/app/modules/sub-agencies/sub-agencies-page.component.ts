@@ -12,6 +12,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { forkJoin } from 'rxjs';
+import { agencyCountryLabel } from '../../shared/data/agency-countries';
 import type { AgencySubDto, SubAgencyQuotaDto } from './agency-sub.dto';
 import {
   SubAgencyFormDialogComponent,
@@ -33,6 +34,9 @@ import {
   styleUrl: './sub-agencies-page.component.scss',
 })
 export class SubAgenciesPageComponent implements OnInit {
+  /** Affichage liste : libellé si code ISO connu, sinon valeur brute. */
+  countryLabel = agencyCountryLabel;
+
   private readonly http = inject(HttpClient);
   private readonly api = inject(ApiService);
   readonly auth = inject(AuthService);

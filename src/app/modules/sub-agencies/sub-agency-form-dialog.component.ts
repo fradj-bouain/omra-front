@@ -1,7 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
+  FormControl,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -9,7 +11,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -17,6 +20,7 @@ import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { AGENCY_COUNTRIES, type AgencyCountry, agencyCountryLabel } from '../../shared/data/agency-countries';
 import type { AgencySubDto } from './agency-sub.dto';
 
 export interface SubAgencyFormDialogData {
@@ -36,7 +40,8 @@ export interface SubAgencyFormDialogData {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
+    MatAutocompleteModule,
+    MatOptionModule,
     MatIconModule,
     MatExpansionModule,
     MatButtonToggleModule,
@@ -50,9 +55,15 @@ export class SubAgencyFormDialogComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly notif = inject(NotificationService);
   private readonly i18n = inject(I18nService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly dialogRef = inject(MatDialogRef<SubAgencyFormDialogComponent, boolean>);
   readonly data = inject<SubAgencyFormDialogData>(MAT_DIALOG_DATA);
   private readonly fb = inject(FormBuilder);
+
+  /** Saisie + filtre pour le pays (affichage) ; `form.country` = code ISO. */
+  readonly countrySearch = new FormControl('');
+  filteredCountries: AgencyCountry[] = [...AGENCY_COUNTRIES];
+  private syncingCountryUi = false;
 
   loading = false;
   saving = false;
@@ -74,6 +85,26 @@ export class SubAgencyFormDialogComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.countrySearch.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((raw) => {
+      const q = (raw ?? '').trim().toLowerCase();
+      this.filteredCountries = !q
+        ? [...AGENCY_COUNTRIES]
+        : AGENCY_COUNTRIES.filter(
+            (c) => c.nameFr.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
+          );
+      if (this.syncingCountryUi) {
+        return;
+      }
+      if ((raw ?? '').trim() === '') {
+        this.form.patchValue({ country: '' });
+        return;
+      }
+      const expected = agencyCountryLabel(this.form.controls.country.value);
+      if (raw !== expected) {
+        this.form.patchValue({ country: '' });
+      }
+    });
+
     if (this.data.mode === 'edit' && this.data.agencyId != null) {
       this.loading = true;
       this.http.get<AgencySubDto>(this.api.agencies.byId(this.data.agencyId)).subscribe({
@@ -83,7 +114,7 @@ export class SubAgencyFormDialogComponent implements OnInit {
             name: dto.name ?? '',
             email: dto.email ?? '',
             phone: dto.phone ?? '',
-            country: dto.country ?? '',
+            country: this.normalizeCountryCode(dto.country),
             currency: dto.currency ?? '',
             city: dto.city ?? '',
             address: dto.address ?? '',
@@ -93,6 +124,7 @@ export class SubAgencyFormDialogComponent implements OnInit {
             backgroundColor: dto.backgroundColor ?? '',
             textColor: dto.textColor ?? '',
           });
+          this.applyCountrySearchDisplay(this.form.controls.country.value);
           this.loading = false;
         },
         error: () => {
@@ -102,6 +134,43 @@ export class SubAgencyFormDialogComponent implements OnInit {
         },
       });
     }
+  }
+
+  onCountrySelected(ev: MatAutocompleteSelectedEvent): void {
+    const c = ev.option.value as AgencyCountry;
+    if (!c?.code) {
+      return;
+    }
+    this.syncingCountryUi = true;
+    this.form.patchValue({ country: c.code });
+    const label = `${c.nameFr} (${c.code})`;
+    this.countrySearch.setValue(label, { emitEvent: false });
+    this.syncingCountryUi = false;
+  }
+
+  private normalizeCountryCode(raw: string | null | undefined): string {
+    const t = raw?.trim();
+    if (!t) {
+      return '';
+    }
+    const upper = t.toUpperCase();
+    if (AGENCY_COUNTRIES.some((c) => c.code === upper)) {
+      return upper;
+    }
+    return t;
+  }
+
+  private applyCountrySearchDisplay(isoCode: string): void {
+    const code = isoCode?.trim() ?? '';
+    this.syncingCountryUi = true;
+    if (!code) {
+      this.countrySearch.setValue('', { emitEvent: false });
+      this.syncingCountryUi = false;
+      return;
+    }
+    const label = agencyCountryLabel(code);
+    this.countrySearch.setValue(label, { emitEvent: false });
+    this.syncingCountryUi = false;
   }
 
   cancel(): void {

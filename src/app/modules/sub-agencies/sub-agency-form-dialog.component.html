@@ -33,9 +33,21 @@
           <mat-label>{{ 'subAgenciesPage.fieldPhone' | translate }}</mat-label>
           <input matInput formControlName="phone" autocomplete="tel" />
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="sub-agency-dialog__country">
           <mat-label>{{ 'subAgenciesPage.fieldCountry' | translate }}</mat-label>
-          <input matInput formControlName="country" autocomplete="country-name" />
+          <input
+            matInput
+            [formControl]="countrySearch"
+            [matAutocomplete]="countryAuto"
+            [placeholder]="'subAgenciesPage.countryFilterPlaceholder' | translate"
+            autocomplete="off"
+          />
+          <mat-autocomplete #countryAuto="matAutocomplete" (optionSelected)="onCountrySelected($event)">
+            @for (c of filteredCountries; track c.code) {
+              <mat-option [value]="c">{{ c.nameFr }} ({{ c.code }})</mat-option>
+            }
+          </mat-autocomplete>
+          <mat-hint>{{ 'subAgenciesPage.countryHint' | translate }}</mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ 'subAgenciesPage.fieldCity' | translate }}</mat-label>
