@@ -10,7 +10,6 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import {
   BLUE_SAAS_THEME,
@@ -57,21 +56,6 @@ export interface SubscriptionPageResponse {
   totalPages: number;
   first: boolean;
   last: boolean;
-}
-
-/** Agency row as returned by GET /api/agencies/{id} or sub-agency list/create. */
-export interface AgencyApiDto {
-  id: number;
-  name: string;
-  email: string;
-  parentAgencyId?: number | null;
-  status?: string;
-}
-
-export interface SubAgencyQuotaDto {
-  activeSubAgencies: number;
-  maxSubAgencies: number | null;
-  canCreate: boolean;
 }
 
 type BrandingForm = {
@@ -134,7 +118,6 @@ function stripFromPreset(p: AgencyTheme | undefined): string[] {
     MatIconModule,
     MatDividerModule,
     MatButtonToggleModule,
-    MatTooltipModule,
     TranslatePipe,
   ],
   templateUrl: './settings.component.html',
@@ -171,16 +154,6 @@ export class SettingsComponent implements OnInit {
   subPageIndex = 0;
   readonly subPageSize = 12;
 
-  /** Loaded via API so {@link AgencyApiDto#parentAgencyId} is reliable for hierarchy. */
-  agencyProfile: AgencyApiDto | null = null;
-  subAgencies: AgencyApiDto[] = [];
-  subAgencyQuota: SubAgencyQuotaDto | null = null;
-  subsLoading = false;
-  newSubName = '';
-  newSubEmail = '';
-  creatingSub = false;
-  deactivatingSubId: number | null = null;
-
   selectedPreset = '';
 
   branding: BrandingForm = this.defaultBranding();
@@ -197,25 +170,6 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     const ag = this.auth.agency();
     if (!ag) return;
-    this.http.get<AgencyApiDto>(this.api.agencies.byId(ag.id)).subscribe({
-      next: (profile) => {
-        this.agencyProfile = profile;
-        if (this.canManageSubAgencies()) {
-          this.loadSubAgencies();
-        }
-      },
-      error: () => {
-        this.agencyProfile = {
-          id: ag.id,
-          name: ag.name,
-          email: ag.email,
-          parentAgencyId: ag.parentAgencyId ?? null,
-        };
-        if (this.canManageSubAgencies()) {
-          this.loadSubAgencies();
-        }
-      },
-    });
     this.http.get<AgencyTheme | null>(this.api.agencies.theme).subscribe({
       next: (t) => {
         if (!t) return;
@@ -224,91 +178,6 @@ export class SettingsComponent implements OnInit {
       },
     });
     this.loadSubscriptionData();
-  }
-
-  /** Main agency admins only; sub-agency accounts cannot create further subs. */
-  canManageSubAgencies(): boolean {
-    if (this.auth.user()?.role !== 'AGENCY_ADMIN') {
-      return false;
-    }
-    const parent = this.agencyProfile?.parentAgencyId ?? this.auth.agency()?.parentAgencyId ?? null;
-    return parent == null;
-  }
-
-  loadSubAgencies(): void {
-    const id = this.auth.agency()?.id;
-    if (!id) return;
-    this.subsLoading = true;
-    forkJoin({
-      list: this.http.get<AgencyApiDto[]>(this.api.agencies.subAgencies(id)),
-      quota: this.http.get<SubAgencyQuotaDto>(this.api.agencies.subAgencyQuota(id)),
-    }).subscribe({
-      next: ({ list, quota }) => {
-        this.subAgencies = list;
-        this.subAgencyQuota = quota;
-        this.subsLoading = false;
-      },
-      error: () => {
-        this.subsLoading = false;
-        this.notif.error(this.i18n.instant('settings.subAgencies.loadError'));
-      },
-    });
-  }
-
-  submitNewSubAgency(): void {
-    const name = this.newSubName.trim();
-    const email = this.newSubEmail.trim();
-    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      this.notif.error(this.i18n.instant('settings.subAgencies.validation'));
-      return;
-    }
-    const parentId = this.auth.agency()?.id;
-    if (!parentId) return;
-    this.creatingSub = true;
-    this.http
-      .post<AgencyApiDto>(this.api.agencies.subAgencies(parentId), {
-        name,
-        email,
-        status: 'ACTIVE',
-      })
-      .subscribe({
-        next: () => {
-          this.newSubName = '';
-          this.newSubEmail = '';
-          this.creatingSub = false;
-          this.notif.success(this.i18n.instant('settings.subAgencies.created'));
-          this.loadSubAgencies();
-        },
-        error: () => {
-          this.creatingSub = false;
-          this.notif.error(this.i18n.instant('settings.subAgencies.createError'));
-        },
-      });
-  }
-
-  deactivateSub(row: AgencyApiDto): void {
-    if (row.status === 'SUSPENDED') {
-      return;
-    }
-    if (!window.confirm(this.i18n.instant('settings.subAgencies.deactivateConfirm'))) {
-      return;
-    }
-    const parentId = this.auth.agency()?.id;
-    if (!parentId) {
-      return;
-    }
-    this.deactivatingSubId = row.id;
-    this.http.post<AgencyApiDto>(this.api.agencies.deactivateSubAgency(parentId, row.id), {}).subscribe({
-      next: () => {
-        this.deactivatingSubId = null;
-        this.notif.success(this.i18n.instant('settings.subAgencies.deactivated'));
-        this.loadSubAgencies();
-      },
-      error: () => {
-        this.deactivatingSubId = null;
-        this.notif.error(this.i18n.instant('settings.subAgencies.deactivateError'));
-      },
-    });
   }
 
   loadSubscriptionData(): void {

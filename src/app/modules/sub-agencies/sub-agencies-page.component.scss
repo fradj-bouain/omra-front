@@ -1,0 +1,212 @@
+.sub-agencies-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+}
+
+.sub-agencies-page__hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sub-agencies-page__hero-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--omra-primary, #2563eb) 12%, transparent);
+  color: var(--omra-primary, #2563eb);
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.sub-agencies-page__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.sub-agencies-page__subtitle {
+  margin: 0;
+  color: var(--omra-text-muted, #64748b);
+  font-size: 0.95rem;
+}
+
+.sub-agencies-page__card-avatar {
+  background: color-mix(in srgb, var(--omra-primary, #2563eb) 14%, transparent);
+  color: var(--omra-primary, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sub-agencies-page__card-head {
+  margin-bottom: 0.5rem;
+}
+
+.sub-agencies-tip {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--omra-primary, #2563eb) 6%, transparent);
+  margin-bottom: 1rem;
+}
+
+.sub-agencies-tip__icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
+.sub-agencies-tip__text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.sub-agencies-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.sub-agencies-toolbar__spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+.sub-agencies-toolbar__warn {
+  font-size: 0.85rem;
+  color: var(--mat-warn-text-color, #b45309);
+}
+
+.sub-agencies-quota-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--omra-primary, #2563eb) 10%, transparent);
+  font-size: 0.875rem;
+}
+
+.sub-agencies-quota-pill--blocked {
+  opacity: 0.85;
+  background: color-mix(in srgb, var(--mat-warn-text-color, #b45309) 12%, transparent);
+}
+
+.sub-agencies-quota-pill__nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sub-agencies-quota-pill__sep {
+  opacity: 0.5;
+  margin: 0 0.1rem;
+}
+
+.sub-agencies-divider {
+  margin: 1rem 0;
+}
+
+.sub-agencies-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--omra-text-muted, #64748b);
+}
+
+.sub-agencies-state--loading mat-icon {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sub-agencies-state__icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.sub-agencies-state__title {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+  color: var(--omra-text, #0f172a);
+}
+
+.sub-agencies-state__hint {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.sub-agencies-table-wrap {
+  overflow-x: auto;
+}
+
+.sub-agencies-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.65rem 0.75rem;
+    text-align: start;
+    border-bottom: 1px solid color-mix(in srgb, var(--omra-text, #0f172a) 8%, transparent);
+  }
+
+  th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--omra-text-muted, #64748b);
+  }
+}
+
+.sub-agencies-table__name {
+  font-weight: 500;
+}
+
+.sub-agencies-table__email {
+  word-break: break-all;
+}
+
+.sub-agencies-table__actions {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.sub-agencies-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  background: color-mix(in srgb, #16a34a 15%, transparent);
+  color: #166534;
+}
+
+.sub-agencies-badge--off {
+  background: color-mix(in srgb, #64748b 18%, transparent);
+  color: #475569;
+}
+
+.sub-agencies-table__dash {
+  opacity: 0.4;
+}

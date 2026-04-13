@@ -27,6 +27,10 @@ export const routes: Routes = [
       { path: 'notifications', loadChildren: () => import('./modules/notifications/notifications.routes').then(m => m.NOTIFICATIONS_ROUTES) },
       { path: 'users', loadChildren: () => import('./modules/users/users.routes').then(m => m.USERS_ROUTES) },
       { path: 'referral', loadChildren: () => import('./modules/referral/referral.routes').then(m => m.REFERRAL_ROUTES) },
+      {
+        path: 'agency/subs',
+        loadChildren: () => import('./modules/sub-agencies/sub-agencies.routes').then((m) => m.SUB_AGENCIES_ROUTES),
+      },
       { path: 'settings', loadChildren: () => import('./modules/settings/settings.routes').then(m => m.SETTINGS_ROUTES) },
     ],
   },

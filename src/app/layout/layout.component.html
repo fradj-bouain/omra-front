@@ -39,9 +39,10 @@
           @if (showNavLabels()) {
             <div class="sidenav__nav-blocks">
               @for (group of menuGroups; track group.id) {
+                @if (navGroupVisible(group)) {
                 @if (!group.labelKey) {
                   <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--hero">
-                    @for (item of group.items; track item.path) {
+                    @for (item of visibleNavItems(group); track item.path) {
                       <a
                       mat-list-item
                       [routerLink]="item.path"
@@ -57,13 +58,13 @@
                       </a>
                     }
                   </mat-nav-list>
-                } @else if (group.items.length === 1) {
+                } @else if (visibleNavItems(group).length === 1) {
                   <div class="sidenav__static-group">
                     <div class="sidenav__static-group-label" role="presentation">
                       {{ group.labelKey | translate }}
                     </div>
                     <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--static-single">
-                      @for (item of group.items; track item.path) {
+                      @for (item of visibleNavItems(group); track item.path) {
                         <a
                           mat-list-item
                           [routerLink]="item.path"
@@ -92,7 +93,7 @@
                       </mat-panel-title>
                     </mat-expansion-panel-header>
                     <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--in-panel">
-                      @for (item of group.items; track item.path) {
+                      @for (item of visibleNavItems(group); track item.path) {
                         <a
                           mat-list-item
                           [routerLink]="item.path"
@@ -110,16 +111,18 @@
                     </mat-nav-list>
                   </mat-expansion-panel>
                 }
+                }
               }
             </div>
           } @else {
             <mat-nav-list class="sidenav__nav-chunk">
               @for (group of menuGroups; track group.id) {
+                @if (navGroupVisible(group)) {
                 <div
                   class="sidenav__group"
                   [class.sidenav__group--rail-divider]="group.labelKey"
                 >
-                  @for (item of group.items; track item.path) {
+                  @for (item of visibleNavItems(group); track item.path) {
                     <a
                       mat-list-item
                       [routerLink]="item.path"
@@ -135,6 +138,7 @@
                     </a>
                   }
                 </div>
+                }
               }
             </mat-nav-list>
           }

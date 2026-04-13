@@ -1,0 +1,38 @@
+.sub-agency-dialog__loading {
+  margin: 0;
+  padding: 1rem 0;
+}
+
+.sub-agency-dialog__form {
+  display: block;
+}
+
+.sub-agency-dialog__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sub-agency-dialog__full {
+  grid-column: 1 / -1;
+}
+
+.sub-agency-dialog__theme-panel {
+  margin-top: 0.5rem;
+}
+
+.sub-agency-dialog__mode {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sub-agency-dialog__mode-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

@@ -1,0 +1,147 @@
+<div class="sub-agencies-page">
+  <header class="sub-agencies-page__hero">
+    <div class="sub-agencies-page__hero-icon" aria-hidden="true">
+      <mat-icon>hub</mat-icon>
+    </div>
+    <div class="sub-agencies-page__hero-text">
+      <h1 class="sub-agencies-page__title">{{ 'subAgenciesPage.title' | translate }}</h1>
+      <p class="sub-agencies-page__subtitle">{{ 'subAgenciesPage.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <mat-card class="sub-agencies-page__card" appearance="outlined">
+    <mat-card-header class="sub-agencies-page__card-head">
+      <div mat-card-avatar class="sub-agencies-page__card-avatar">
+        <mat-icon>account_tree</mat-icon>
+      </div>
+      <mat-card-title>{{ 'settings.subAgencies.title' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'settings.subAgencies.subtitleShort' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="sub-agencies-tip" role="note">
+        <mat-icon class="sub-agencies-tip__icon" aria-hidden="true">vpn_key</mat-icon>
+        <p class="sub-agencies-tip__text">{{ 'settings.subAgencies.tipCompact' | translate }}</p>
+      </div>
+
+      @if (subAgencyQuota && !loading) {
+        <div class="sub-agencies-toolbar">
+          <div
+            class="sub-agencies-quota-pill"
+            [class.sub-agencies-quota-pill--blocked]="!subAgencyQuota.canCreate"
+            [matTooltip]="'settings.subAgencies.quotaFull' | translate"
+            [matTooltipDisabled]="subAgencyQuota.canCreate"
+            matTooltipPosition="below"
+          >
+            <span class="sub-agencies-quota-pill__label">{{ 'settings.subAgencies.quotaShort' | translate }}</span>
+            <span class="sub-agencies-quota-pill__nums">
+              <strong>{{ subAgencyQuota.activeSubAgencies }}</strong>
+              <span class="sub-agencies-quota-pill__sep" aria-hidden="true">/</span>
+              @if (subAgencyQuota.maxSubAgencies == null) {
+                <span class="sub-agencies-quota-pill__inf" title="∞">∞</span>
+              } @else {
+                {{ subAgencyQuota.maxSubAgencies }}
+              }
+            </span>
+          </div>
+          @if (!subAgencyQuota.canCreate) {
+            <span class="sub-agencies-toolbar__warn">{{ 'settings.subAgencies.quotaFullShort' | translate }}</span>
+          }
+          <span class="sub-agencies-toolbar__spacer"></span>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="openCreate()"
+            [disabled]="!subAgencyQuota.canCreate"
+          >
+            <mat-icon>add_business</mat-icon>
+            {{ 'subAgenciesPage.add' | translate }}
+          </button>
+        </div>
+      }
+
+      <mat-divider class="sub-agencies-divider"></mat-divider>
+
+      @if (loading) {
+        <div class="sub-agencies-state sub-agencies-state--loading">
+          <mat-icon class="sub-agencies-state__icon" aria-hidden="true">hourglass_empty</mat-icon>
+          <p>{{ 'settings.subAgencies.loading' | translate }}</p>
+        </div>
+      } @else if (subAgencies.length === 0) {
+        <div class="sub-agencies-state sub-agencies-state--empty">
+          <mat-icon class="sub-agencies-state__icon" aria-hidden="true">domain_add</mat-icon>
+          <p class="sub-agencies-state__title">{{ 'settings.subAgencies.empty' | translate }}</p>
+          <p class="sub-agencies-state__hint">{{ 'subAgenciesPage.emptyHint' | translate }}</p>
+          @if (subAgencyQuota?.canCreate) {
+            <button mat-stroked-button color="primary" type="button" (click)="openCreate()">
+              <mat-icon>add_business</mat-icon>
+              {{ 'subAgenciesPage.add' | translate }}
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="sub-agencies-table-wrap">
+          <table class="sub-agencies-table">
+            <thead>
+              <tr>
+                <th>{{ 'settings.subAgencies.colName' | translate }}</th>
+                <th>{{ 'settings.subAgencies.colEmail' | translate }}</th>
+                <th>{{ 'subAgenciesPage.colPhone' | translate }}</th>
+                <th>{{ 'subAgenciesPage.colCity' | translate }}</th>
+                <th>{{ 'subAgenciesPage.colCountry' | translate }}</th>
+                <th>{{ 'settings.subAgencies.colStatus' | translate }}</th>
+                <th class="sub-agencies-table__actions">{{ 'settings.subAgencies.colActions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of subAgencies; track s.id) {
+                <tr>
+                  <td class="sub-agencies-table__name">{{ s.name }}</td>
+                  <td class="sub-agencies-table__email">{{ s.email }}</td>
+                  <td>{{ s.phone || ('common.emDash' | translate) }}</td>
+                  <td>{{ s.city || ('common.emDash' | translate) }}</td>
+                  <td>{{ s.country || ('common.emDash' | translate) }}</td>
+                  <td>
+                    <span class="sub-agencies-badge" [class.sub-agencies-badge--off]="s.status === 'SUSPENDED'">
+                      {{
+                        s.status === 'SUSPENDED'
+                          ? ('settings.subAgencies.statusSuspended' | translate)
+                          : ('settings.subAgencies.statusActive' | translate)
+                      }}
+                    </span>
+                  </td>
+                  <td class="sub-agencies-table__actions">
+                    @if (s.id != null) {
+                      <button
+                        mat-icon-button
+                        type="button"
+                        [matTooltip]="'common.edit' | translate"
+                        (click)="openEdit(s)"
+                      >
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
+                    @if (s.status !== 'SUSPENDED') {
+                      <button
+                        mat-icon-button
+                        type="button"
+                        color="warn"
+                        [disabled]="deactivatingSubId === s.id"
+                        [matTooltip]="'settings.subAgencies.deactivate' | translate"
+                        (click)="deactivateSub(s)"
+                      >
+                        <mat-icon>block</mat-icon>
+                      </button>
+                    } @else {
+                      <span class="sub-agencies-table__dash" aria-hidden="true">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

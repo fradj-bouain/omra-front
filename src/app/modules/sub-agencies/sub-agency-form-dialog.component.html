@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>
+  @if (data.mode === 'create') {
+    {{ 'settings.subAgencies.newTitle' | translate }}
+  } @else {
+    {{ 'subAgenciesPage.editTitle' | translate }}
+  }
+</h2>
+
+<mat-dialog-content class="sub-agency-dialog">
+  @if (loading) {
+    <p class="sub-agency-dialog__loading">{{ 'settings.subAgencies.loading' | translate }}</p>
+  } @else {
+    <form [formGroup]="form" class="sub-agency-dialog__form">
+      <div class="sub-agency-dialog__grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'settings.subAgencies.formName' | translate }}</mat-label>
+          <input matInput formControlName="name" autocomplete="organization" />
+          @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+            <mat-error>{{ 'common.required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'settings.subAgencies.formEmail' | translate }}</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="off" />
+          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+            <mat-error>{{ 'common.required' | translate }}</mat-error>
+          }
+          @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+            <mat-error>{{ 'login.emailInvalid' | translate }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'subAgenciesPage.fieldPhone' | translate }}</mat-label>
+          <input matInput formControlName="phone" autocomplete="tel" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'subAgenciesPage.fieldCountry' | translate }}</mat-label>
+          <input matInput formControlName="country" autocomplete="country-name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'subAgenciesPage.fieldCity' | translate }}</mat-label>
+          <input matInput formControlName="city" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'subAgenciesPage.fieldCurrency' | translate }}</mat-label>
+          <input matInput formControlName="currency" maxlength="8" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="sub-agency-dialog__full">
+          <mat-label>{{ 'subAgenciesPage.fieldAddress' | translate }}</mat-label>
+          <textarea matInput formControlName="address" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+
+      <mat-expansion-panel class="sub-agency-dialog__theme-panel" [expanded]="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ 'subAgenciesPage.themeSection' | translate }}</mat-panel-title>
+          <mat-panel-description>{{ 'subAgenciesPage.themeSectionHint' | translate }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="sub-agency-dialog__grid">
+          <div class="sub-agency-dialog__mode">
+            <span class="sub-agency-dialog__mode-label">{{ 'settings.themeMode' | translate }}</span>
+            <mat-button-toggle-group formControlName="themeMode" aria-label="Theme mode">
+              <mat-button-toggle value="LIGHT">
+                <mat-icon>light_mode</mat-icon>
+                {{ 'settings.themeModeLight' | translate }}
+              </mat-button-toggle>
+              <mat-button-toggle value="DARK">
+                <mat-icon>dark_mode</mat-icon>
+                {{ 'settings.themeModeDark' | translate }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.primaryColor' | translate }}</mat-label>
+            <input matInput formControlName="primaryColor" placeholder="#2563EB" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.secondaryColor' | translate }}</mat-label>
+            <input matInput formControlName="secondaryColor" placeholder="#1E293B" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.backgroundColor' | translate }}</mat-label>
+            <input matInput formControlName="backgroundColor" placeholder="#F8FAFC" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.textColor' | translate }}</mat-label>
+            <input matInput formControlName="textColor" placeholder="#111827" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+    </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()" [disabled]="saving">
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="submit()"
+    [disabled]="loading || saving || form.invalid"
+  >
+    @if (saving) {
+      {{ data.mode === 'create' ? ('settings.subAgencies.creating' | translate) : ('subAgenciesPage.saving' | translate) }}
+    } @else {
+      {{ data.mode === 'create' ? ('settings.subAgencies.create' | translate) : ('common.save' | translate) }}
+    }
+  </button>
+</mat-dialog-actions>

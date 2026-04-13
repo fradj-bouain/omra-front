@@ -19,6 +19,8 @@ export interface NavItem {
   labelKey: string;
   /** true pour la racine seule (ex. /dashboard). */
   linkExact?: boolean;
+  /** Réservé aux administrateurs d’une agence principale (pas une sous-agence). */
+  requireMainAgencyAdmin?: boolean;
 }
 
 export interface NavGroup {
@@ -97,6 +99,7 @@ export class LayoutComponent {
       id: 'agency',
       labelKey: 'nav.group.agency',
       items: [
+        { path: '/agency/subs', icon: 'hub', labelKey: 'nav.subAgencies', requireMainAgencyAdmin: true },
         { path: '/users', icon: 'people', labelKey: 'nav.users' },
         { path: '/task-templates', icon: 'account_tree', labelKey: 'nav.taskTemplates' },
         { path: '/referral', icon: 'card_giftcard', labelKey: 'nav.referral' },
@@ -147,9 +150,26 @@ export class LayoutComponent {
     return null;
   }
 
+  visibleNavItems(group: NavGroup): NavItem[] {
+    return group.items.filter((item) => this.navItemVisible(item));
+  }
+
+  navItemVisible(item: NavItem): boolean {
+    if (item.requireMainAgencyAdmin) {
+      const u = this.auth.user();
+      const a = this.auth.agency();
+      return u?.role === 'AGENCY_ADMIN' && a != null && a.parentAgencyId == null;
+    }
+    return true;
+  }
+
+  navGroupVisible(group: NavGroup): boolean {
+    return this.visibleNavItems(group).length > 0;
+  }
+
   groupContainsPath(group: NavGroup, path: string): boolean {
-    return group.items.some(
-      (item) => path === item.path || (item.path !== '/' && path.startsWith(item.path + '/'))
+    return this.visibleNavItems(group).some(
+      (item) => path === item.path || (item.path !== '/' && path.startsWith(item.path + '/')),
     );
   }
 
