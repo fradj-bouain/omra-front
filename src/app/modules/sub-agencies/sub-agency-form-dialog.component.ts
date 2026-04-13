@@ -21,6 +21,11 @@ import { NotificationService } from '../../core/services/notification.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { AGENCY_COUNTRIES, type AgencyCountry, agencyCountryLabel } from '../../shared/data/agency-countries';
+import {
+  AGENCY_CURRENCIES,
+  type AgencyCurrency,
+  agencyCurrencyLabel,
+} from '../../shared/data/agency-currencies';
 import type { AgencySubDto } from './agency-sub.dto';
 
 export interface SubAgencyFormDialogData {
@@ -65,6 +70,11 @@ export class SubAgencyFormDialogComponent implements OnInit {
   filteredCountries: AgencyCountry[] = [...AGENCY_COUNTRIES];
   private syncingCountryUi = false;
 
+  /** Saisie + filtre pour la devise ; `form.currency` = code ISO 4217. */
+  readonly currencySearch = new FormControl('');
+  filteredCurrencies: AgencyCurrency[] = [...AGENCY_CURRENCIES];
+  private syncingCurrencyUi = false;
+
   loading = false;
   saving = false;
   private loaded: AgencySubDto | null = null;
@@ -105,6 +115,27 @@ export class SubAgencyFormDialogComponent implements OnInit {
       }
     });
 
+    this.currencySearch.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((raw) => {
+      const q = (raw ?? '').trim().toLowerCase();
+      this.filteredCurrencies = !q
+        ? [...AGENCY_CURRENCIES]
+        : AGENCY_CURRENCIES.filter(
+            (c) =>
+              c.labelFr.toLowerCase().includes(q) || c.code.toLowerCase().includes(q),
+          );
+      if (this.syncingCurrencyUi) {
+        return;
+      }
+      if ((raw ?? '').trim() === '') {
+        this.form.patchValue({ currency: '' });
+        return;
+      }
+      const expected = agencyCurrencyLabel(this.form.controls.currency.value);
+      if (raw !== expected) {
+        this.form.patchValue({ currency: '' });
+      }
+    });
+
     if (this.data.mode === 'edit' && this.data.agencyId != null) {
       this.loading = true;
       this.http.get<AgencySubDto>(this.api.agencies.byId(this.data.agencyId)).subscribe({
@@ -115,7 +146,7 @@ export class SubAgencyFormDialogComponent implements OnInit {
             email: dto.email ?? '',
             phone: dto.phone ?? '',
             country: this.normalizeCountryCode(dto.country),
-            currency: dto.currency ?? '',
+            currency: this.normalizeCurrencyCode(dto.currency),
             city: dto.city ?? '',
             address: dto.address ?? '',
             themeMode: dto.themeMode === 'DARK' ? 'DARK' : 'LIGHT',
@@ -125,6 +156,7 @@ export class SubAgencyFormDialogComponent implements OnInit {
             textColor: dto.textColor ?? '',
           });
           this.applyCountrySearchDisplay(this.form.controls.country.value);
+          this.applyCurrencySearchDisplay(this.form.controls.currency.value);
           this.loading = false;
         },
         error: () => {
@@ -171,6 +203,42 @@ export class SubAgencyFormDialogComponent implements OnInit {
     const label = agencyCountryLabel(code);
     this.countrySearch.setValue(label, { emitEvent: false });
     this.syncingCountryUi = false;
+  }
+
+  onCurrencySelected(ev: MatAutocompleteSelectedEvent): void {
+    const c = ev.option.value as AgencyCurrency;
+    if (!c?.code) {
+      return;
+    }
+    this.syncingCurrencyUi = true;
+    this.form.patchValue({ currency: c.code });
+    this.currencySearch.setValue(c.labelFr, { emitEvent: false });
+    this.syncingCurrencyUi = false;
+  }
+
+  private normalizeCurrencyCode(raw: string | null | undefined): string {
+    const t = raw?.trim();
+    if (!t) {
+      return '';
+    }
+    const upper = t.toUpperCase();
+    if (AGENCY_CURRENCIES.some((c) => c.code === upper)) {
+      return upper;
+    }
+    return t;
+  }
+
+  private applyCurrencySearchDisplay(isoCode: string): void {
+    const code = isoCode?.trim() ?? '';
+    this.syncingCurrencyUi = true;
+    if (!code) {
+      this.currencySearch.setValue('', { emitEvent: false });
+      this.syncingCurrencyUi = false;
+      return;
+    }
+    const label = agencyCurrencyLabel(code);
+    this.currencySearch.setValue(label, { emitEvent: false });
+    this.syncingCurrencyUi = false;
   }
 
   cancel(): void {

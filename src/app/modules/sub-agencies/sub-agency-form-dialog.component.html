@@ -53,9 +53,21 @@
           <mat-label>{{ 'subAgenciesPage.fieldCity' | translate }}</mat-label>
           <input matInput formControlName="city" />
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="sub-agency-dialog__currency">
           <mat-label>{{ 'subAgenciesPage.fieldCurrency' | translate }}</mat-label>
-          <input matInput formControlName="currency" maxlength="8" />
+          <input
+            matInput
+            [formControl]="currencySearch"
+            [matAutocomplete]="currencyAuto"
+            [placeholder]="'subAgenciesPage.currencyFilterPlaceholder' | translate"
+            autocomplete="off"
+          />
+          <mat-autocomplete #currencyAuto="matAutocomplete" (optionSelected)="onCurrencySelected($event)">
+            @for (c of filteredCurrencies; track c.code) {
+              <mat-option [value]="c">{{ c.labelFr }}</mat-option>
+            }
+          </mat-autocomplete>
+          <mat-hint>{{ 'subAgenciesPage.currencyHint' | translate }}</mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline" class="sub-agency-dialog__full">
           <mat-label>{{ 'subAgenciesPage.fieldAddress' | translate }}</mat-label>

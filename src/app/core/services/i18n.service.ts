@@ -443,6 +443,8 @@ const FALLBACK_FR: Record<string, string> = {
   'subAgenciesPage.fieldCountry': 'Pays',
   'subAgenciesPage.countryFilterPlaceholder': 'Rechercher un pays…',
   'subAgenciesPage.countryHint': 'Tapez pour filtrer, puis choisissez une ligne dans la liste.',
+  'subAgenciesPage.currencyFilterPlaceholder': 'Rechercher une devise…',
+  'subAgenciesPage.currencyHint': 'Tapez pour filtrer (code ou nom), puis choisissez une ligne.',
   'subAgenciesPage.fieldCity': 'Ville',
   'subAgenciesPage.fieldCurrency': 'Devise (ISO, ex. MAD)',
   'subAgenciesPage.fieldAddress': 'Adresse',
