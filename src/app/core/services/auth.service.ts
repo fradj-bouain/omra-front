@@ -108,6 +108,18 @@ export class AuthService {
   }
 
   /**
+   * Session invalide (token expiré / accès refusé) : nettoie la session et redirige vers login
+   * sans appeler l'API logout (qui peut échouer si le token est déjà invalide).
+   */
+  sessionInvalid(reason?: string): void {
+    this.clearLocalSession();
+    void this.router.navigate(['/login'], {
+      queryParams: reason ? { reason } : undefined,
+      replaceUrl: true,
+    });
+  }
+
+  /**
    * Abonnement expiré / agence suspendue : coupe la session sans appeler l’API logout
    * (le filtre peut encore refuser), puis redirige vers la connexion avec un message.
    */

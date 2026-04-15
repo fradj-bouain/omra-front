@@ -19,6 +19,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           auth.sessionTerminatedByServer(msg, code);
           return throwError(() => err);
         }
+        // Toute autre réponse 403: on considère la session invalide et on force un retour login.
+        auth.sessionInvalid('forbidden');
+        return throwError(() => err);
       }
       if (err.status === 401) {
         return auth.refreshToken().pipe(
