@@ -63,8 +63,15 @@
                 @if (!p.items?.length) {
                   <div class="empty-preview">Aucune tâche</div>
                 } @else {
-                  <ol class="step-list">
-                    @for (it of previewItems(p); track $index; let i = $index) {
+                  @if (remainingCount(p) > 0 || isExpanded(p.id)) {
+                    <div class="preview-actions">
+                      <button mat-stroked-button type="button" (click)="toggleExpanded(p.id)">
+                        {{ isExpanded(p.id) ? 'Réduire' : ('Voir plus (+' + remainingCount(p) + ')') }}
+                      </button>
+                    </div>
+                  }
+                  <ol class="step-list" [class.is-expanded]="isExpanded(p.id)">
+                    @for (it of (isExpanded(p.id) ? itemsForDisplay(p) : previewItems(p)); track $index; let i = $index) {
                       <li class="step">
                         <span class="dot">{{ i + 1 }}</span>
                         <span class="label">{{ it.taskTemplateName }}</span>
@@ -74,7 +81,7 @@
                       </li>
                     }
                   </ol>
-                  @if (remainingCount(p) > 0) {
+                  @if (!isExpanded(p.id) && remainingCount(p) > 0) {
                     <div class="more">+{{ remainingCount(p) }} autres tâches</div>
                   }
                 }

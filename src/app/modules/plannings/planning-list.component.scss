@@ -60,6 +60,12 @@
   background: linear-gradient(180deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0));
 }
 
+.preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
 .empty-preview {
   color: var(--app-text-soft, #666);
 }
@@ -71,6 +77,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+}
+
+.step-list.is-expanded {
+  max-height: 300px;
+  overflow: auto;
+  padding-right: 0.25rem;
 }
 
 .step {

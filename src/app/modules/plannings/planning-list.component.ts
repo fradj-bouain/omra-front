@@ -43,6 +43,7 @@ interface Planning {
 export class PlanningListComponent implements OnInit {
   dataSource: Planning[] = [];
   loading = false;
+  private expanded = new Set<number>();
 
   constructor(private http: HttpClient, private api: ApiService) {}
 
@@ -67,6 +68,15 @@ export class PlanningListComponent implements OnInit {
       next: () => this.load(),
       error: (e) => alert(e.error?.message || 'Erreur'),
     });
+  }
+
+  isExpanded(id: number): boolean {
+    return this.expanded.has(id);
+  }
+
+  toggleExpanded(id: number): void {
+    if (this.expanded.has(id)) this.expanded.delete(id);
+    else this.expanded.add(id);
   }
 
   itemsPreview(p: Planning): string {
