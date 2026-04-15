@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { ApiService } from '../../core/services/api.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -28,19 +29,19 @@ interface Planning {
   standalone: true,
   imports: [
     MatCardModule,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatChipsModule,
     RouterLink,
     PageHeaderComponent,
     TranslatePipe,
   ],
   templateUrl: './planning-list.component.html',
+  styleUrl: './planning-list.component.scss',
 })
 export class PlanningListComponent implements OnInit {
   dataSource: Planning[] = [];
-  displayedColumns = ['name', 'itemsPreview', 'actions'];
   loading = false;
 
   constructor(private http: HttpClient, private api: ApiService) {}
@@ -71,5 +72,23 @@ export class PlanningListComponent implements OnInit {
   itemsPreview(p: Planning): string {
     if (!p.items?.length) return 'Aucune tâche';
     return p.items.map((i) => i.taskTemplateName).join(' → ');
+  }
+
+  itemsForDisplay(p: Planning): PlanningItemDto[] {
+    const items = (p.items || []).slice().sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+    return items;
+  }
+
+  previewItems(p: Planning, max = 6): PlanningItemDto[] {
+    return this.itemsForDisplay(p).slice(0, max);
+  }
+
+  remainingCount(p: Planning, max = 6): number {
+    const n = this.itemsForDisplay(p).length;
+    return n > max ? n - max : 0;
+  }
+
+  totalDurationMinutes(p: Planning): number {
+    return this.itemsForDisplay(p).reduce((sum, it) => sum + (it.durationMinutes ?? 0), 0);
   }
 }

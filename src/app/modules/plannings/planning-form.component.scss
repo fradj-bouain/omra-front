@@ -49,6 +49,139 @@
     .item-actions { margin-left: auto; }
   }
 }
+
+.program-summary {
+  margin: 0 0 0.75rem;
+  .summary-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+.planning-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.task-row {
+  --indent: 0px;
+  display: grid;
+  grid-template-columns: 36px 36px 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--app-border, #e8e8e8);
+  border-radius: 12px;
+  background: var(--app-surface, #fff);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+  position: relative;
+}
+
+.task-row.is-subtask {
+  background: linear-gradient(0deg, rgba(2, 132, 199, 0.04), rgba(2, 132, 199, 0.04));
+}
+
+.drag-handle {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--app-text-soft, #777);
+  cursor: grab;
+}
+
+.step {
+  position: relative;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-index {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #3730a3;
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-line {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 32px;
+  transform: translateX(-50%);
+  width: 2px;
+  height: calc(100% - 32px);
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.task-main {
+  padding-left: var(--indent);
+  min-width: 0;
+}
+
+.task-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.item-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-meta {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  color: var(--app-text-soft, #666);
+}
+
+.task-actions {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Drag preview polish */
+.cdk-drag-preview {
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+@media (max-width: 640px) {
+  .task-row {
+    grid-template-columns: 36px 36px 1fr;
+    grid-template-areas:
+      "drag step main"
+      ". . actions";
+    align-items: start;
+  }
+  .drag-handle { grid-area: drag; }
+  .step { grid-area: step; }
+  .task-main { grid-area: main; }
+  .task-actions { grid-area: actions; justify-content: flex-end; }
+}
 .form-actions {
   margin-top: 1rem;
   display: flex;

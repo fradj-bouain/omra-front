@@ -9,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatChipsModule } from '@angular/material/chips';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -39,6 +41,8 @@ interface PlanningItemDto {
     MatIconModule,
     MatSelectModule,
     MatListModule,
+    MatChipsModule,
+    DragDropModule,
     PageHeaderComponent,
     TranslatePipe,
   ],
@@ -53,6 +57,7 @@ export class PlanningFormComponent implements OnInit {
   /** Racines seules — le sélecteur n’affiche pas les sous-tâches. */
   taskTemplateTree: TaskTemplateNode[] = [];
   selectedItems: PlanningItemDto[] = [];
+  private parentById = new Map<number, number | null>();
 
   constructor(
     private fb: FormBuilder,
@@ -72,7 +77,11 @@ export class PlanningFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get<TaskTemplateNode[]>(this.api.taskTemplates.tree).subscribe({
-      next: (list) => (this.taskTemplateTree = Array.isArray(list) ? list.map((n) => this.normalizeTreeNode(n)) : []),
+      next: (list) => {
+        this.taskTemplateTree = Array.isArray(list) ? list.map((n) => this.normalizeTreeNode(n)) : [];
+        this.buildParentMap();
+        this.applyDepthToSelectedItems();
+      },
       error: () => (this.taskTemplateTree = []),
     });
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -88,6 +97,7 @@ export class PlanningFormComponent implements OnInit {
             durationMinutes: it.durationMinutes,
             sortOrder: it.sortOrder ?? i,
           }));
+          this.applyDepthToSelectedItems();
         },
         error: () => this.notif.error(this.i18n.instant('plannings.notFound')),
       });
@@ -147,6 +157,12 @@ export class PlanningFormComponent implements OnInit {
     this.selectedItems.forEach((it, i) => (it.sortOrder = i));
   }
 
+  onDrop(event: CdkDragDrop<PlanningItemDto[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    moveItemInArray(this.selectedItems, event.previousIndex, event.currentIndex);
+    this.selectedItems.forEach((it, i) => (it.sortOrder = i));
+  }
+
   moveUp(index: number): void {
     if (index <= 0) return;
     [this.selectedItems[index - 1], this.selectedItems[index]] = [this.selectedItems[index], this.selectedItems[index - 1]];
@@ -190,6 +206,37 @@ export class PlanningFormComponent implements OnInit {
           this.notif.error(err.error?.message || this.i18n.instant('plannings.err'));
         },
       });
+    }
+  }
+
+  totalDurationMinutes(): number {
+    return (this.selectedItems || []).reduce((sum, it) => sum + (it.durationMinutes ?? 0), 0);
+  }
+
+  private buildParentMap(): void {
+    this.parentById.clear();
+    const walk = (node: TaskTemplateNode, parentId: number | null) => {
+      this.parentById.set(node.id, parentId);
+      for (const c of node.children ?? []) walk(c, node.id);
+    };
+    for (const root of this.taskTemplateTree) walk(root, null);
+  }
+
+  private applyDepthToSelectedItems(): void {
+    if (!this.selectedItems?.length || this.parentById.size === 0) return;
+    for (const it of this.selectedItems) {
+      // Si depth déjà présent (ajout via flatten), on le garde.
+      if (typeof it.treeDepth === 'number') continue;
+      let depth = 0;
+      let cur: number | null | undefined = it.taskTemplateId;
+      // Safety pour éviter boucles (données incohérentes)
+      for (let guard = 0; guard < 20; guard++) {
+        const parent = this.parentById.get(cur);
+        if (parent == null) break;
+        depth += 1;
+        cur = parent;
+      }
+      it.treeDepth = depth;
     }
   }
 }

@@ -1,0 +1,125 @@
+.list-page {
+  padding-bottom: 1rem;
+}
+
+.planning-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.planning-card {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.title-col {
+  min-width: 0;
+}
+
+.planning-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.planning-desc {
+  margin-top: 0.25rem;
+  color: var(--app-text-soft, #666);
+  font-size: 0.92rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-actions {
+  display: inline-flex;
+  align-items: center;
+}
+
+.meta-row {
+  margin: 0.65rem 0 0.25rem;
+}
+
+.program-preview {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  border: 1px solid var(--app-border, #eee);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0));
+}
+
+.empty-preview {
+  color: var(--app-text-soft, #666);
+}
+
+.step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #3730a3;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.dur {
+  color: var(--app-text-soft, #666);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.more {
+  margin-top: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--app-text-soft, #666);
+}
+
+.muted {
+  color: var(--app-text-soft, #666);
+}
+
+@media (max-width: 960px) {
+  .planning-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

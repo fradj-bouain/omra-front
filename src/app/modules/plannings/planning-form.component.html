@@ -35,18 +35,51 @@
             {{ 'plannings.form.add' | translate }}
           </button>
         </div>
-        <ul class="planning-items-list">
+        @if (selectedItems.length > 0) {
+          <div class="program-summary">
+            <mat-chip-set class="summary-chips" aria-label="Programme summary">
+              <mat-chip>{{ selectedItems.length }}</mat-chip>
+              <mat-chip>{{ totalDurationMinutes() }} {{ 'task.minutes' | translate }}</mat-chip>
+            </mat-chip-set>
+          </div>
+        }
+
+        <div
+          class="planning-items"
+          cdkDropList
+          [cdkDropListData]="selectedItems"
+          (cdkDropListDropped)="onDrop($event)"
+        >
           @for (item of selectedItems; track $index; let i = $index) {
-            <li [style.paddingLeft.px]="12 + (item.treeDepth ?? 0) * 18">
-              <span class="item-order">{{ i + 1 }}.</span>
-              @if ((item.treeDepth ?? 0) > 0) {
-                <mat-icon class="item-sub-icon">subdirectory_arrow_right</mat-icon>
-              }
-              <span class="item-name">{{ item.taskTemplateName }}</span>
-              @if (item.durationMinutes != null && item.durationMinutes > 0) {
-                <span class="item-duration">{{ item.durationMinutes }} {{ 'task.minutes' | translate }}</span>
-              }
-              <span class="item-actions">
+            <div
+              class="task-row"
+              cdkDrag
+              [class.is-subtask]="(item.treeDepth ?? 0) > 0"
+              [style.--indent.px]="(item.treeDepth ?? 0) * 18"
+            >
+              <button class="drag-handle" type="button" cdkDragHandle [attr.aria-label]="'Drag to reorder'">
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+              <div class="step">
+                <span class="step-index">{{ i + 1 }}</span>
+                <span class="step-line" aria-hidden="true"></span>
+              </div>
+
+              <div class="task-main">
+                <div class="task-title">
+                  @if ((item.treeDepth ?? 0) > 0) {
+                    <mat-icon class="item-sub-icon">subdirectory_arrow_right</mat-icon>
+                  }
+                  <span class="item-name">{{ item.taskTemplateName }}</span>
+                </div>
+                @if (item.durationMinutes != null && item.durationMinutes > 0) {
+                  <div class="task-meta">
+                    <span class="item-duration">{{ item.durationMinutes }} {{ 'task.minutes' | translate }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="task-actions">
                 <button mat-icon-button type="button" (click)="moveUp(i)" [disabled]="i === 0">
                   <mat-icon>arrow_upward</mat-icon>
                 </button>
@@ -56,10 +89,10 @@
                 <button mat-icon-button type="button" (click)="removeItem(i)">
                   <mat-icon>remove_circle_outline</mat-icon>
                 </button>
-              </span>
-            </li>
+              </div>
+            </div>
           }
-        </ul>
+        </div>
         @if (selectedItems.length === 0) {
           <p class="muted">{{ 'plannings.form.empty' | translate }}</p>
         }
