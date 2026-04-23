@@ -27,12 +27,16 @@ interface PilgrimDetail {
   visaStatus?: string;
   travelerType?: string;
   createdAt?: string;
+  familyId?: number | null;
+  familyRole?: string | null;
   sponsorType?: string;
   sponsorLabel?: string;
   referrerDisplayName?: string;
   referralPoints?: number;
   nextRewardThreshold?: number;
   nextRewardTitle?: string;
+  /** Présent sur GET détail si dossier famille (tous les membres). */
+  familyMembers?: PilgrimDetail[];
 }
 
 @Component({
@@ -44,6 +48,8 @@ interface PilgrimDetail {
 })
 export class PilgrimDetailComponent implements OnInit {
   pilgrim: PilgrimDetail | null = null;
+  /** Membres du même dossier famille (exclut les dossiers individuels). */
+  familyMembers: PilgrimDetail[] = [];
   loading = true;
   error = '';
 
@@ -72,6 +78,8 @@ export class PilgrimDetailComponent implements OnInit {
     this.http.get<PilgrimDetail>(this.api.pilgrims.byId(numId)).subscribe({
       next: (res) => {
         this.pilgrim = res;
+        const fm = res.familyMembers;
+        this.familyMembers = Array.isArray(fm) && fm.length > 1 ? fm : [];
         this.loading = false;
       },
       error: () => {
@@ -102,6 +110,18 @@ export class PilgrimDetailComponent implements OnInit {
     if (code === 'PILGRIM') return this.i18n.instant('pilgrims.sponsorship.typePilgrim');
     if (code === 'AGENT') return this.i18n.instant('pilgrims.sponsorship.typeAgent');
     return code;
+  }
+
+  familyRoleLabel(role: string | null | undefined): string {
+    if (!role) return '—';
+    const map: Record<string, string> = {
+      PERE: 'pilgrims.mo3tamir.rolePere',
+      MERE: 'pilgrims.mo3tamir.roleMere',
+      ENFANT: 'pilgrims.mo3tamir.roleEnfant',
+      AUTRE: 'pilgrims.mo3tamir.roleAutre',
+    };
+    const k = map[role.toUpperCase()];
+    return k ? this.i18n.instant(k) : role;
   }
 
   deletePilgrim(): void {

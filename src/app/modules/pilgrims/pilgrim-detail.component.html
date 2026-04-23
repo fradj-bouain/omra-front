@@ -49,6 +49,35 @@
       </mat-card-content>
     </mat-card>
 
+    @if (familyMembers.length) {
+      <mat-card class="detail-card detail-card--family">
+        <mat-card-header>
+          <mat-card-title>{{ 'pilgrims.detail.familySection' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="family-members-detail">
+            @for (m of familyMembers; track m.id) {
+              <li class="family-members-detail__row" [class.family-members-detail__row--current]="m.id === pilgrim.id">
+                <div class="family-members-detail__main">
+                  <span class="family-members-detail__name">{{ m.firstName }} {{ m.lastName }}</span>
+                  <span class="family-members-detail__meta">
+                    {{ familyRoleLabel(m.familyRole) }} · {{ m.passportNumber || '—' }} · {{ m.phone || '—' }}
+                  </span>
+                </div>
+                @if (m.id === pilgrim.id) {
+                  <span class="family-members-detail__badge">{{ 'pilgrims.detail.currentMember' | translate }}</span>
+                } @else {
+                  <a mat-stroked-button color="primary" [routerLink]="['/pilgrims', m.id]">{{
+                    'pilgrims.detail.viewMember' | translate
+                  }}</a>
+                }
+              </li>
+            }
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    }
+
     <mat-card class="detail-card">
       <mat-card-header>
         <mat-card-title>Document & nationalité</mat-card-title>

@@ -94,7 +94,6 @@ export class PilgrimListComponent implements OnInit {
   size = 20;
   loading = false;
   search = '';
-  expandedFamilyIds = new Set<number>();
 
   constructor(
     private http: HttpClient,
@@ -152,16 +151,6 @@ export class PilgrimListComponent implements OnInit {
       autoFocus: 'first-tabbable',
       panelClass: 'pilgrim-documents-dialog',
     });
-  }
-
-  toggleFamily(row: PilgrimRegistrationRow): void {
-    if (row.registrationType !== 'FAMILY' || !row.familyId) return;
-    if (this.expandedFamilyIds.has(row.familyId)) this.expandedFamilyIds.delete(row.familyId);
-    else this.expandedFamilyIds.add(row.familyId);
-  }
-
-  isFamilyExpanded(row: PilgrimRegistrationRow): boolean {
-    return row.registrationType === 'FAMILY' && !!row.familyId && this.expandedFamilyIds.has(row.familyId);
   }
 
   deleteRow(row: PilgrimRegistrationRow): void {

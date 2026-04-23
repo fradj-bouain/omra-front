@@ -29,6 +29,7 @@ import { parseIsoDateString, toIsoDateString } from '../../shared/utils/date-for
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
 import { PilgrimDocumentsPanelComponent } from '../../shared/components/pilgrim-documents-panel/pilgrim-documents-panel.component';
+import { PilgrimMemberEditRowComponent } from './pilgrim-member-edit-row.component';
 import { fileUrlFromUploadResponse } from '../../shared/utils/upload-response';
 import {
   Observable,
@@ -36,6 +37,7 @@ import {
   concatMap,
   debounceTime,
   distinctUntilChanged,
+  forkJoin,
   from,
   map,
   of,
@@ -93,6 +95,7 @@ export type FamilyRole = 'PERE' | 'MERE' | 'ENFANT' | 'AUTRE';
     PageHeaderComponent,
     TranslatePipe,
     PilgrimDocumentsPanelComponent,
+    PilgrimMemberEditRowComponent,
   ],
   templateUrl: './pilgrim-form.component.html',
   styleUrl: './pilgrim-form.component.scss',
@@ -134,8 +137,11 @@ export class PilgrimFormComponent implements OnInit {
 
   loading = false;
   isEdit = false;
+  /** Édition d’un dossier famille : une fiche par membre, enregistrement groupé. */
+  isFamilyEdit = false;
   pilgrimId: number | null = null;
   form: FormGroup;
+  editFamilyMembers!: FormArray<FormGroup>;
 
   /** Affichage seul en modification (parrainage figé après création). */
   sponsorshipView: {
@@ -201,6 +207,7 @@ export class PilgrimFormComponent implements OnInit {
       sponsorLabel: [''],
       referrerPilgrim: [null as PilgrimSearchResult | string | null, this.validateReferrerPilgrim],
     });
+    this.editFamilyMembers = this.fb.array<FormGroup>([]);
   }
 
   get members(): FormArray<FormGroup> {
@@ -283,6 +290,29 @@ export class PilgrimFormComponent implements OnInit {
     });
   }
 
+  /** Fiche membre en modification (dossier famille). */
+  createMemberEditForm(m: Record<string, unknown>): FormGroup {
+    return this.fb.group({
+      id: [Number(m['id']), Validators.required],
+      firstName: [String(m['firstName'] ?? ''), Validators.required],
+      lastName: [String(m['lastName'] ?? ''), Validators.required],
+      gender: [String(m['gender'] ?? '')],
+      dateOfBirth: [parseIsoDateString(String(m['dateOfBirth'] ?? ''))],
+      passportNumber: [String(m['passportNumber'] ?? '')],
+      nationality: [String(m['nationality'] ?? '')],
+      phone: [String(m['phone'] ?? '')],
+      email: [String(m['email'] ?? '')],
+      address: [String(m['address'] ?? '')],
+      visaStatus: [String(m['visaStatus'] ?? 'PENDING')],
+      travelerType: [String(m['travelerType'] ?? 'PILGRIM')],
+    });
+  }
+
+  trackMemberFormId(_i: number, ctrl: AbstractControl): number {
+    const id = (ctrl as FormGroup).get('id')?.value;
+    return typeof id === 'number' ? id : _i;
+  }
+
   rebuildMembersArray(count: number): void {
     const n = Math.max(2, Math.floor(count));
     const arr = this.members;
@@ -337,6 +367,9 @@ export class PilgrimFormComponent implements OnInit {
 
   createSubmitDisabled(): boolean {
     if (this.loading) return true;
+    if (this.isEdit && this.isFamilyEdit) {
+      return this.editFamilyMembers.invalid || this.editFamilyMembers.length === 0;
+    }
     if (this.isEdit) return this.form.invalid;
     if (this.isFamilleCreate) {
       return this.members.length < 2 || this.members.invalid || !!this.form.get('membersCount')?.invalid;
@@ -346,6 +379,7 @@ export class PilgrimFormComponent implements OnInit {
 
   submitLabel(): string {
     if (this.loading) return this.i18n.instant('pilgrims.mo3tamir.saving');
+    if (this.isEdit && this.isFamilyEdit) return this.i18n.instant('pilgrims.mo3tamir.saveFamily');
     if (this.isEdit) return this.i18n.instant('pilgrims.mo3tamir.savePilgrim');
     if (this.isFamilleCreate) {
       return this.i18n.instant('pilgrims.mo3tamir.createFamily', { n: this.members.length });
@@ -383,21 +417,34 @@ export class PilgrimFormComponent implements OnInit {
   loadPilgrim(): void {
     if (this.pilgrimId == null) return;
     this.loading = true;
+    this.isFamilyEdit = false;
+    this.editFamilyMembers.clear();
     this.http.get<Record<string, unknown>>(this.api.pilgrims.byId(this.pilgrimId)).subscribe({
       next: (res) => {
-        this.form.patchValue({
-          firstName: res['firstName'] ?? '',
-          lastName: res['lastName'] ?? '',
-          gender: res['gender'] ?? '',
-          dateOfBirth: parseIsoDateString(String(res['dateOfBirth'] ?? '')),
-          passportNumber: res['passportNumber'] ?? '',
-          nationality: res['nationality'] ?? '',
-          phone: res['phone'] ?? '',
-          email: res['email'] ?? '',
-          address: res['address'] ?? '',
-          visaStatus: res['visaStatus'] ?? 'PENDING',
-          travelerType: (res['travelerType'] as string) ?? 'PILGRIM',
-        });
+        const rawFamily = res['familyMembers'];
+        const familyList = Array.isArray(rawFamily) ? (rawFamily as Record<string, unknown>[]) : [];
+        if (familyList.length > 1) {
+          this.isFamilyEdit = true;
+          familyList
+            .slice()
+            .sort((a, b) => Number(a['id']) - Number(b['id']))
+            .forEach((m) => this.editFamilyMembers.push(this.createMemberEditForm(m)));
+        } else {
+          this.isFamilyEdit = false;
+          this.form.patchValue({
+            firstName: res['firstName'] ?? '',
+            lastName: res['lastName'] ?? '',
+            gender: res['gender'] ?? '',
+            dateOfBirth: parseIsoDateString(String(res['dateOfBirth'] ?? '')),
+            passportNumber: res['passportNumber'] ?? '',
+            nationality: res['nationality'] ?? '',
+            phone: res['phone'] ?? '',
+            email: res['email'] ?? '',
+            address: res['address'] ?? '',
+            visaStatus: res['visaStatus'] ?? 'PENDING',
+            travelerType: (res['travelerType'] as string) ?? 'PILGRIM',
+          });
+        }
         this.sponsorshipView = {
           sponsorType: res['sponsorType'] != null ? String(res['sponsorType']) : undefined,
           sponsorLabel: res['sponsorLabel'] != null ? String(res['sponsorLabel']) : undefined,
@@ -474,12 +521,45 @@ export class PilgrimFormComponent implements OnInit {
     if (this.createSubmitDisabled()) {
       this.form.markAllAsTouched();
       this.members.controls.forEach((c) => c.markAllAsTouched());
+      this.editFamilyMembers.controls.forEach((c) => c.markAllAsTouched());
       return;
     }
     this.loading = true;
     const v = this.form.getRawValue();
 
     if (this.isEdit && this.pilgrimId != null) {
+      if (this.isFamilyEdit && this.editFamilyMembers.length > 0) {
+        const puts = this.editFamilyMembers.controls.map((grp) => {
+          const mv = (grp as FormGroup).getRawValue() as Record<string, unknown>;
+          const body: Record<string, unknown> = {
+            firstName: mv['firstName'],
+            lastName: mv['lastName'],
+            gender: mv['gender'] || undefined,
+            dateOfBirth: toIsoDateString(mv['dateOfBirth'] as Date | null),
+            passportNumber: mv['passportNumber'] || undefined,
+            nationality: mv['nationality'] || undefined,
+            phone: mv['phone'] || undefined,
+            email: mv['email'] || undefined,
+            address: mv['address'] || undefined,
+            visaStatus: mv['visaStatus'] || 'PENDING',
+            travelerType: mv['travelerType'] || 'PILGRIM',
+          };
+          return this.http.put(this.api.pilgrims.byId(Number(mv['id'])), body);
+        });
+        forkJoin(puts).subscribe({
+          next: () => {
+            this.loading = false;
+            this.notif.success(this.i18n.instant('pilgrims.notif.familyUpdated'));
+            this.router.navigate(['/pilgrims', this.pilgrimId]);
+          },
+          error: (err) => {
+            this.loading = false;
+            this.notif.error(err.error?.message || this.i18n.instant('pilgrims.notif.partialUpdate'));
+          },
+        });
+        return;
+      }
+
       const body: Record<string, unknown> = {
         firstName: v.firstName,
         lastName: v.lastName,

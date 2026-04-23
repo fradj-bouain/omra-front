@@ -54,35 +54,15 @@
           <th mat-header-cell *matHeaderCellDef>{{ 'pilgrims.col.name' | translate }}</th>
           <td mat-cell *matCellDef="let row">
             <div class="cell-name">
-              @if (row.registrationType === 'FAMILY') {
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="toggleFamily(row)"
-                  [attr.aria-label]="'pilgrims.documents.toggleExpand' | translate"
-                  class="family-toggle"
-                >
-                  <mat-icon>{{ isFamilyExpanded(row) ? 'expand_less' : 'expand_more' }}</mat-icon>
-                </button>
-              }
               <span class="cell-name__text">{{ row.representative.firstName }} {{ row.representative.lastName }}</span>
+              @if (row.registrationType === 'FAMILY' && row.membersCount > 1) {
+                <span class="cell-name__family-hint">{{ 'pilgrims.list.familyBadge' | translate: { n: row.membersCount } }}</span>
+              }
             </div>
-            @if (row.registrationType === 'FAMILY' && isFamilyExpanded(row)) {
-              <div class="family-members">
-                @for (m of row.members || []; track m.id) {
-                  <div class="family-member">
-                    <span class="family-member__name">{{ m.firstName }} {{ m.lastName }}</span>
-                    <span class="family-member__meta">
-                      {{ m.familyRole || ('common.emDash' | translate) }} · {{ m.passportNumber || ('common.emDash' | translate) }}
-                    </span>
-                  </div>
-                }
-              </div>
-            }
           </td>
         </ng-container>
         <ng-container matColumnDef="registrationType">
-          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'pilgrims.col.registrationMode' | translate }}</th>
           <td mat-cell *matCellDef="let row">
             @if (row.registrationType === 'FAMILY') {
               {{ 'pilgrims.mo3tamir.modeFamille' | translate }}
@@ -92,7 +72,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="membersCount">
-          <th mat-header-cell *matHeaderCellDef>Nbr personnes</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'pilgrims.col.membersCount' | translate }}</th>
           <td mat-cell *matCellDef="let row">
             @if (row.registrationType === 'FAMILY') {
               {{ row.membersCount }}

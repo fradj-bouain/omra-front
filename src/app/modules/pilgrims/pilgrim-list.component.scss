@@ -215,8 +215,22 @@
 }
 
 .cell-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
   font-weight: 600;
   color: var(--app-text);
+}
+
+.cell-name__text {
+  min-width: 0;
+}
+
+.cell-name__family-hint {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--app-text-soft);
 }
 
 .visa-badge {

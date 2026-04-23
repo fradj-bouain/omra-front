@@ -25,7 +25,17 @@
           </div>
         }
 
-        @if (isEdit) {
+        @if (isEdit && isFamilyEdit) {
+          <div class="form-section">
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionFamilyEdit' | translate }}</h2>
+            <p class="form-section-lead">{{ 'pilgrims.form.familyEditLead' | translate }}</p>
+            @for (grp of editFamilyMembers.controls; track trackMemberFormId($index, grp)) {
+              <div @famillePanel>
+                <app-pilgrim-member-edit-row [group]="$any(grp)" [index]="$index" [pilgrimId]="pilgrimId" />
+              </div>
+            }
+          </div>
+        } @else if (isEdit) {
           <div class="form-section">
             <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionIdentity' | translate }}</h2>
             <div class="form-grid form-grid--2">
@@ -252,7 +262,7 @@
               </mat-form-field>
             </div>
           </div>
-        } @else {
+        } @else if (!isFamilyEdit) {
           <div class="form-section">
             <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionContact' | translate }}</h2>
             <div class="form-grid form-grid--2">
@@ -362,19 +372,21 @@
           </div>
         }
 
-        <div class="form-section">
-          <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionTravel' | translate }}</h2>
-          <div class="form-grid form-grid--1">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ 'pilgrims.mo3tamir.visaStatus' | translate }}</mat-label>
-              <mat-select formControlName="visaStatus">
-                <mat-option value="PENDING">{{ 'pilgrims.mo3tamir.visaPending' | translate }}</mat-option>
-                <mat-option value="APPROVED">{{ 'pilgrims.mo3tamir.visaApproved' | translate }}</mat-option>
-                <mat-option value="REJECTED">{{ 'pilgrims.mo3tamir.visaRejected' | translate }}</mat-option>
-              </mat-select>
-            </mat-form-field>
+        @if (!(isEdit && isFamilyEdit)) {
+          <div class="form-section">
+            <h2 class="form-section-title">{{ 'pilgrims.mo3tamir.sectionTravel' | translate }}</h2>
+            <div class="form-grid form-grid--1">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'pilgrims.mo3tamir.visaStatus' | translate }}</mat-label>
+                <mat-select formControlName="visaStatus">
+                  <mat-option value="PENDING">{{ 'pilgrims.mo3tamir.visaPending' | translate }}</mat-option>
+                  <mat-option value="APPROVED">{{ 'pilgrims.mo3tamir.visaApproved' | translate }}</mat-option>
+                  <mat-option value="REJECTED">{{ 'pilgrims.mo3tamir.visaRejected' | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
           </div>
-        </div>
+        }
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/pilgrims" class="btn-cancel">
