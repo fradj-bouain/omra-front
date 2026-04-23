@@ -32,6 +32,8 @@ interface Pilgrim {
   visaStatus?: string;
   referralPoints?: number;
   travelerType?: string;
+  familyId?: number | null;
+  familyRole?: string | null;
 }
 
 interface PageResponse<T> {
@@ -40,6 +42,16 @@ interface PageResponse<T> {
   size: number;
   totalElements: number;
   totalPages: number;
+}
+
+type RegistrationType = 'INDIVIDUAL' | 'FAMILY';
+
+interface PilgrimRegistrationRow {
+  registrationType: RegistrationType;
+  familyId?: number | null;
+  membersCount: number;
+  representative: Pilgrim;
+  members?: Pilgrim[];
 }
 
 @Component({
@@ -63,10 +75,12 @@ interface PageResponse<T> {
   styleUrl: './pilgrim-list.component.scss',
 })
 export class PilgrimListComponent implements OnInit {
-  dataSource = new MatTableDataSource<Pilgrim>([]);
+  dataSource = new MatTableDataSource<PilgrimRegistrationRow>([]);
   displayedColumns = [
     'documents',
     'name',
+    'registrationType',
+    'membersCount',
     'travelerType',
     'referralPoints',
     'passportNumber',
@@ -80,6 +94,7 @@ export class PilgrimListComponent implements OnInit {
   size = 20;
   loading = false;
   search = '';
+  expandedFamilyIds = new Set<number>();
 
   constructor(
     private http: HttpClient,
@@ -95,9 +110,13 @@ export class PilgrimListComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.http.get<PageResponse<Pilgrim>>(this.api.pilgrims.list, { params: { page: String(this.page), size: String(this.size) } }).subscribe({
+    const params: Record<string, string> = { page: String(this.page), size: String(this.size) };
+    const q = this.search.trim();
+    if (q) params['q'] = q;
+
+    this.http.get<PageResponse<PilgrimRegistrationRow>>(this.api.pilgrims.registrations, { params }).subscribe({
       next: (res) => {
-        this.dataSource.data = res.content;
+        this.dataSource.data = Array.isArray(res.content) ? res.content : [];
         this.totalElements = res.totalElements;
         this.loading = false;
       },
@@ -119,11 +138,12 @@ export class PilgrimListComponent implements OnInit {
     return `visa.${status.toLowerCase()}`;
   }
 
-  openDocumentsDialog(row: Pilgrim, ev: Event): void {
+  openDocumentsDialog(row: PilgrimRegistrationRow, ev: Event): void {
     ev.stopPropagation();
+    const rep = row.representative;
     const data: PilgrimDocumentsDialogData = {
-      pilgrimId: row.id,
-      pilgrimLabel: `${row.firstName} ${row.lastName}`.trim(),
+      pilgrimId: rep.id,
+      pilgrimLabel: `${rep.firstName} ${rep.lastName}`.trim(),
     };
     this.dialog.open(PilgrimDocumentsDialogComponent, {
       data,
@@ -134,9 +154,30 @@ export class PilgrimListComponent implements OnInit {
     });
   }
 
-  delete(id: number): void {
+  toggleFamily(row: PilgrimRegistrationRow): void {
+    if (row.registrationType !== 'FAMILY' || !row.familyId) return;
+    if (this.expandedFamilyIds.has(row.familyId)) this.expandedFamilyIds.delete(row.familyId);
+    else this.expandedFamilyIds.add(row.familyId);
+  }
+
+  isFamilyExpanded(row: PilgrimRegistrationRow): boolean {
+    return row.registrationType === 'FAMILY' && !!row.familyId && this.expandedFamilyIds.has(row.familyId);
+  }
+
+  deleteRow(row: PilgrimRegistrationRow): void {
     if (!confirm(this.i18n.instant('pilgrims.deleteConfirm'))) return;
-    this.http.delete(this.api.pilgrims.byId(id)).subscribe({
+    if (row.registrationType === 'FAMILY' && row.familyId) {
+      this.http.delete(this.api.pilgrims.deleteFamily(row.familyId)).subscribe({
+        next: () => {
+          this.notif.success(this.i18n.instant('pilgrims.deleted'));
+          this.load();
+        },
+        error: () => this.notif.error(this.i18n.instant('err.delete')),
+      });
+      return;
+    }
+
+    this.http.delete(this.api.pilgrims.byId(row.representative.id)).subscribe({
       next: () => {
         this.notif.success(this.i18n.instant('pilgrims.deleted'));
         this.load();

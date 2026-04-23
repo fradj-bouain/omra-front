@@ -3,3 +3,4 @@ export const environment = {
   apiUrl: 'https://omra-spring-production.up.railway.app',
   googleMapsApiKey: '',
 };
+

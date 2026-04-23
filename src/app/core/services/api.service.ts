@@ -38,6 +38,8 @@ export class ApiService {
     byId: (id: number) => `${this.base}/api/pilgrims/${id}`,
     autocomplete: `${this.base}/api/pilgrims/autocomplete`,
     familyBatch: `${this.base}/api/pilgrims/family-batch`,
+    registrations: `${this.base}/api/pilgrims/registrations`,
+    deleteFamily: (familyId: number) => `${this.base}/api/pilgrims/families/${familyId}`,
   };
   pilgrimSponsorship = {
     config: `${this.base}/api/pilgrim-sponsorship/config`,
