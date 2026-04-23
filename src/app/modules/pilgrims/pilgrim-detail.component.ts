@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { catchError, map, of, switchMap } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -47,6 +49,8 @@ interface PilgrimDetail {
   styleUrl: './pilgrim-detail.component.scss',
 })
 export class PilgrimDetailComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   pilgrim: PilgrimDetail | null = null;
   /** Membres du même dossier famille (exclut les dossiers individuels). */
   familyMembers: PilgrimDetail[] = [];
@@ -63,31 +67,52 @@ export class PilgrimDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
-      this.error = 'ID manquant';
-      this.loading = false;
-      return;
-    }
-    const numId = Number(id);
-    if (isNaN(numId)) {
-      this.error = 'ID invalide';
-      this.loading = false;
-      return;
-    }
-    this.http.get<PilgrimDetail>(this.api.pilgrims.byId(numId)).subscribe({
-      next: (res) => {
-        this.pilgrim = res;
-        const fm = res.familyMembers;
-        this.familyMembers = Array.isArray(fm) && fm.length > 1 ? fm : [];
-        this.loading = false;
-      },
-      error: () => {
-        this.notif.error(this.i18n.instant('pilgrims.notif.notFound'));
-        this.loading = false;
-        this.router.navigate(['/pilgrims']);
-      },
-    });
+    this.route.paramMap
+      .pipe(
+        map((params) => {
+          const id = params.get('id');
+          if (!id) {
+            this.error = 'ID manquant';
+            return null;
+          }
+          const numId = Number(id);
+          if (isNaN(numId)) {
+            this.error = 'ID invalide';
+            return null;
+          }
+          return numId;
+        }),
+        switchMap((numId) => {
+          if (numId == null) {
+            this.pilgrim = null;
+            this.familyMembers = [];
+            this.loading = false;
+            return of(null);
+          }
+          this.error = '';
+          this.loading = true;
+          this.pilgrim = null;
+          this.familyMembers = [];
+          return this.http.get<PilgrimDetail>(this.api.pilgrims.byId(numId)).pipe(
+            catchError(() => {
+              this.notif.error(this.i18n.instant('pilgrims.notif.notFound'));
+              this.loading = false;
+              this.router.navigate(['/pilgrims']);
+              return of(null);
+            }),
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (res) => {
+          if (res == null) return;
+          this.pilgrim = res;
+          const fm = res.familyMembers;
+          this.familyMembers = Array.isArray(fm) && fm.length > 1 ? fm : [];
+          this.loading = false;
+        },
+      });
   }
 
   getVisaLabel(status: string | undefined): string {

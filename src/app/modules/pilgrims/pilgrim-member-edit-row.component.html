@@ -7,30 +7,30 @@
   </div>
   <h3 class="form-section-title form-section-title--nested">{{ 'pilgrims.mo3tamir.sectionIdentity' | translate }}</h3>
   <div class="form-grid form-grid--2 member-card__grid">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.firstName' | translate }}</mat-label>
       <input matInput formControlName="firstName" />
       <mat-error>{{ 'pilgrims.mo3tamir.firstNameRequired' | translate }}</mat-error>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.lastName' | translate }}</mat-label>
       <input matInput formControlName="lastName" />
       <mat-error>{{ 'pilgrims.mo3tamir.lastNameRequired' | translate }}</mat-error>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.gender' | translate }}</mat-label>
       <mat-select formControlName="gender">
         <mat-option value="M">{{ 'pilgrims.mo3tamir.genderM' | translate }}</mat-option>
         <mat-option value="F">{{ 'pilgrims.mo3tamir.genderF' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.birthDate' | translate }}</mat-label>
       <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
       <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
       <mat-datepicker #dobPicker />
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.travelerType' | translate }}</mat-label>
       <mat-select formControlName="travelerType">
         @for (tt of travelerTypes; track tt) {
@@ -41,33 +41,33 @@
   </div>
   <h3 class="form-section-title form-section-title--nested">{{ 'pilgrims.mo3tamir.sectionDoc' | translate }}</h3>
   <div class="form-grid form-grid--2 member-card__grid">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.passport' | translate }}</mat-label>
       <input matInput formControlName="passportNumber" />
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.nationality' | translate }}</mat-label>
       <input matInput formControlName="nationality" />
     </mat-form-field>
   </div>
   <h3 class="form-section-title form-section-title--nested">{{ 'pilgrims.mo3tamir.sectionContact' | translate }}</h3>
   <div class="form-grid form-grid--2 member-card__grid">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.phone' | translate }}</mat-label>
       <input matInput formControlName="phone" />
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.email' | translate }}</mat-label>
       <input matInput type="email" formControlName="email" />
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width form-field--span-2">
+    <mat-form-field appearance="outline" class="full-width form-field--span-2" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.address' | translate }}</mat-label>
       <input matInput formControlName="address" />
     </mat-form-field>
   </div>
   <h3 class="form-section-title form-section-title--nested">{{ 'pilgrims.mo3tamir.sectionTravel' | translate }}</h3>
   <div class="form-grid form-grid--1 member-card__grid">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'pilgrims.mo3tamir.visaStatus' | translate }}</mat-label>
       <mat-select formControlName="visaStatus">
         <mat-option value="PENDING">{{ 'pilgrims.mo3tamir.visaPending' | translate }}</mat-option>

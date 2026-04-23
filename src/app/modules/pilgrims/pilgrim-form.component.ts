@@ -245,12 +245,33 @@ export class PilgrimFormComponent implements OnInit {
       this.form.get('referrerPilgrim')?.updateValueAndValidity({ emitEvent: false });
     });
 
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.pilgrimId = Number(id);
-      this.isEdit = !isNaN(this.pilgrimId);
-      if (this.isEdit) this.loadPilgrim();
-    }
+    this.route.paramMap
+      .pipe(
+        map((params) => params.get('id')),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((id) => {
+        if (!id) {
+          this.pilgrimId = null;
+          this.isEdit = false;
+          this.isFamilyEdit = false;
+          this.sponsorshipView = null;
+          this.editFamilyMembers.clear();
+          return;
+        }
+        const n = Number(id);
+        if (isNaN(n)) {
+          this.pilgrimId = null;
+          this.isEdit = false;
+          this.isFamilyEdit = false;
+          this.editFamilyMembers.clear();
+          return;
+        }
+        this.pilgrimId = n;
+        this.isEdit = true;
+        this.loadPilgrim();
+      });
 
     this.applyCreationTypeValidators();
 

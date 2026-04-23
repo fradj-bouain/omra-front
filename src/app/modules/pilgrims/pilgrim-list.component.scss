@@ -188,7 +188,54 @@
 }
 
 .pilgrim-table {
+  table-layout: fixed;
+  width: 100%;
   font-family: var(--app-font);
+
+  th.col-name,
+  td.col-name {
+    width: 22%;
+    min-width: 10.5rem;
+    max-width: 18rem;
+  }
+
+  th.col-mode,
+  td.col-mode {
+    width: 6.5rem;
+  }
+
+  th.col-motif,
+  td.col-motif {
+    width: 5.5rem;
+    min-width: 4.5rem;
+    max-width: 6.5rem;
+    line-height: 1.3;
+    font-size: 0.8125rem;
+  }
+
+  th.col-narrow,
+  td.col-narrow {
+    width: 3.25rem;
+    min-width: 3rem;
+    text-align: center;
+  }
+
+  th.col-narrow.col-points,
+  td.col-narrow.col-points {
+    width: 3.25rem;
+  }
+
+  td.col-name,
+  td.col-mode,
+  td.col-motif {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  th.col-documents,
+  td.col-documents {
+    width: 4.5rem;
+  }
 
   th.mat-mdc-header-cell {
     font-family: var(--app-display);

@@ -1,6 +1,6 @@
 <app-page-header [title]="isEdit ? ('pilgrims.mo3tamir.pageTitleEdit' | translate) : ('pilgrims.mo3tamir.pageTitleNew' | translate)"></app-page-header>
 
-<section class="pilgrim-form-page">
+<section class="pilgrim-form-page" [class.pilgrim-form-page--family-edit]="isEdit && isFamilyEdit">
   <mat-card class="form-card">
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="pilgrim-form" novalidate>
