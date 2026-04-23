@@ -200,11 +200,31 @@
 
 .pilgrim-table {
   /* min-width : toutes les colonnes gardent de l’air; .table-wrap fait défiler sur les petits écrans. */
-  width: max(100%, 60rem);
-  min-width: 60rem;
+  width: max(100%, 72rem);
+  min-width: 72rem;
   table-layout: auto;
   font-family: var(--app-font);
   box-sizing: border-box;
+
+  th.col-name,
+  td.col-name {
+    min-width: 18rem;
+  }
+
+  th.col-name {
+    white-space: normal;
+  }
+
+  /* Motif de voyage : texte des libellés entièrement visible. */
+  th.col-motif,
+  td.col-motif {
+    min-width: 13.5rem;
+    line-height: 1.4;
+  }
+
+  td.col-motif {
+    white-space: normal;
+  }
 
   th.col-narrow,
   td.col-narrow {
