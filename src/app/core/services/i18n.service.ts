@@ -525,6 +525,8 @@ const FALLBACK_FR: Record<string, string> = {
   'groups.col.return': 'Retour',
   'groups.col.capacity': 'Capacité',
   'groups.col.status': 'Statut',
+  'groups.col.companions': 'Accompagnateurs',
+  'groups.companionsUnassigned': 'Non assigné',
   'list.count.groups.one': '{{count}} groupe',
   'list.count.groups.many': '{{count}} groupes',
   'group.status.OPEN': 'Ouvert',

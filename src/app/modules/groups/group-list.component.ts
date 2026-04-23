@@ -20,6 +20,9 @@ interface Group {
   returnDate?: string;
   maxCapacity?: number;
   status: string;
+  companionIds?: number[];
+  /** Noms des accompagnateurs (API), même ordre que companionIds */
+  companionNames?: string[];
 }
 
 interface PageResponse<T> {
@@ -48,7 +51,7 @@ interface PageResponse<T> {
 })
 export class GroupListComponent implements OnInit {
   dataSource: Group[] = [];
-  displayedColumns = ['name', 'departureDate', 'returnDate', 'maxCapacity', 'status', 'actions'];
+  displayedColumns = ['name', 'departureDate', 'returnDate', 'maxCapacity', 'companions', 'status', 'actions'];
   totalElements = 0;
   page = 1;
   size = 20;

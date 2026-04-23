@@ -1,6 +1,8 @@
 /* Groupes — design system (--app-*) */
 .group-list-page {
   max-width: 1200px;
+  min-width: 0;
+  width: 100%;
 }
 
 .list-card {
@@ -28,12 +30,19 @@
 }
 
 .table-wrap {
+  min-width: 0;
   min-height: 12rem;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .group-table {
+  width: max(100%, 56rem);
+  min-width: 56rem;
+  table-layout: auto;
   font-family: var(--app-font);
+  box-sizing: border-box;
 
   th.mat-mdc-header-cell {
     font-family: var(--app-display);
@@ -62,6 +71,28 @@
 .cell-name {
   font-weight: 600;
   color: var(--app-text);
+}
+
+.col-companions {
+  min-width: 11rem;
+  max-width: 22rem;
+  line-height: 1.4;
+}
+
+.cell-companions {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.cell-companions--empty {
+  color: var(--app-muted);
+  font-style: italic;
+  font-size: 0.875rem;
+  display: inline;
+  -webkit-line-clamp: unset;
 }
 
 .status-badge {
