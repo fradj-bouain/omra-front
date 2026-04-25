@@ -184,7 +184,7 @@ export class GroupDetailComponent implements OnInit {
   loadingPilgrims = false;
   showAddPilgrim = false;
   selectedPilgrimId: number | null = null;
-  pilgrimSearchInput = '';
+  pilgrimSearchInput: string | Pilgrim = '';
   addingPilgrim = false;
 
   // Pilgrims table
@@ -538,16 +538,28 @@ export class GroupDetailComponent implements OnInit {
   }
 
   get filteredPilgrims(): Pilgrim[] {
-    const q = this.pilgrimSearchInput.trim().toLowerCase();
+    const q =
+      (typeof this.pilgrimSearchInput === 'string'
+        ? this.pilgrimSearchInput
+        : `${this.pilgrimSearchInput.firstName} ${this.pilgrimSearchInput.lastName}`
+      )
+        .trim()
+        .toLowerCase();
     if (!q) return this.allPilgrims;
     return this.allPilgrims.filter((p) =>
       `${p.firstName} ${p.lastName}`.toLowerCase().includes(q)
     );
   }
 
+  pilgrimDisplay = (p: Pilgrim | string | null): string => {
+    if (!p) return '';
+    if (typeof p === 'string') return p;
+    return `${p.firstName} ${p.lastName}`.trim();
+  };
+
   selectPilgrim(p: Pilgrim): void {
     this.selectedPilgrimId = p.id;
-    this.pilgrimSearchInput = `${p.firstName} ${p.lastName}`;
+    this.pilgrimSearchInput = p;
   }
 
   addPilgrim(): void {

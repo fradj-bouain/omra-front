@@ -140,7 +140,11 @@
                     (input)="pilgrimTrigger.openPanel()"
                     [placeholder]="'groups.pilgrims.typeSearch' | translate"
                   />
-                  <mat-autocomplete #pilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
+                  <mat-autocomplete
+                    #pilgrimAuto="matAutocomplete"
+                    [displayWith]="pilgrimDisplay"
+                    (optionSelected)="selectPilgrim($event.option.value)"
+                  >
                     @if (loadingPilgrims) {
                       <mat-option disabled>{{ 'groups.pilgrims.loadingP' | translate }}</mat-option>
                     } @else if (filteredPilgrims.length === 0) {
