@@ -305,6 +305,21 @@ export class GroupDetailComponent implements OnInit {
     };
   }
 
+  /**
+   * Avoid duplicating "steps" (planning roots) inside other steps' children.
+   * This happens when task templates are chained: a root can appear as a descendant of another root.
+   */
+  private pruneNestedRoots(
+    node: TaskTemplateNode,
+    rootIds: ReadonlySet<number>,
+    keepId: number
+  ): TaskTemplateNode {
+    const children = (node.children || [])
+      .filter((c) => c.id === keepId || !rootIds.has(c.id))
+      .map((c) => this.pruneNestedRoots(c, rootIds, keepId));
+    return { ...node, children };
+  }
+
   loadPlanningTrees(): void {
     const items = this.planning?.items;
     if (!items?.length) {
@@ -333,10 +348,11 @@ export class GroupDetailComponent implements OnInit {
     );
     forkJoin(reqs).subscribe({
       next: (trees) => {
+        const rootIds = new Set<number>(valid.map((it) => it.taskTemplateId!).filter((x) => x != null));
         this.planningRoots = valid.map((it, i) => ({
           sortOrder: it.sortOrder,
           planItemId: it.id,
-          task: this.normalizeTaskTree(trees[i]),
+          task: this.pruneNestedRoots(this.normalizeTaskTree(trees[i]), rootIds, it.taskTemplateId!),
         }));
         this.planningTreesLoading = false;
         this.selectedPlanningTask = this.planningRoots[0]?.task ?? null;
