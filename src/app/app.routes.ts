@@ -28,6 +28,11 @@ export const routes: Routes = [
       { path: 'users', loadChildren: () => import('./modules/users/users.routes').then(m => m.USERS_ROUTES) },
       { path: 'referral', loadChildren: () => import('./modules/referral/referral.routes').then(m => m.REFERRAL_ROUTES) },
       {
+        path: 'marketplaces',
+        loadChildren: () =>
+          import('./modules/marketplaces/marketplaces.routes').then((m) => m.MARKETPLACES_ROUTES),
+      },
+      {
         path: 'agency/subs',
         loadChildren: () => import('./modules/sub-agencies/sub-agencies.routes').then((m) => m.SUB_AGENCIES_ROUTES),
       },

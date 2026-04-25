@@ -1,0 +1,19 @@
+<app-page-header
+  [title]="'marketplace.products.title' | translate: { id: marketplaceId ?? '' }"
+  [subtitle]="'marketplace.products.subtitle' | translate"
+></app-page-header>
+
+<section class="mp-products-page">
+  <mat-card class="list-card">
+    <mat-card-content class="mp-products-card__content">
+      <div class="coming-soon">
+        <mat-icon class="coming-soon__icon" aria-hidden="true">construction</mat-icon>
+        <p class="coming-soon__text">{{ 'marketplace.products.placeholder' | translate }}</p>
+      </div>
+      <a mat-stroked-button routerLink="/marketplaces" type="button" class="mp-products-back">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'marketplace.products.back' | translate }}
+      </a>
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -1,0 +1,43 @@
+.mp-orders-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.list-card {
+  border-radius: var(--app-radius-lg) !important;
+  box-shadow: var(--app-shadow) !important;
+  border: 1px solid var(--app-border);
+}
+
+.mp-orders-card__content {
+  padding-block: var(--app-space-sm);
+}
+
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--app-space-xl) var(--app-space-lg);
+  border-radius: var(--app-radius-md);
+  background: var(--app-bg-soft);
+  border: 1px dashed var(--app-border);
+}
+
+.coming-soon__icon {
+  font-size: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  color: var(--app-accent);
+  margin-bottom: var(--app-space-md);
+  opacity: 0.85;
+}
+
+.coming-soon__text {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--app-text-soft);
+}
+

@@ -103,6 +103,8 @@ export class LayoutComponent {
         { path: '/users', icon: 'people', labelKey: 'nav.users' },
         { path: '/task-templates', icon: 'account_tree', labelKey: 'nav.taskTemplates' },
         { path: '/referral', icon: 'card_giftcard', labelKey: 'nav.referral' },
+        { path: '/marketplaces', icon: 'storefront', labelKey: 'nav.marketplaces' },
+        { path: '/marketplaces/orders', icon: 'shopping_bag', labelKey: 'nav.marketplaceOrders' },
       ],
     },
   ];

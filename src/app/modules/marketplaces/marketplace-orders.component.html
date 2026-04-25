@@ -1,0 +1,15 @@
+<app-page-header
+  [title]="'marketplace.orders.title' | translate"
+  [subtitle]="'marketplace.orders.subtitle' | translate"
+></app-page-header>
+
+<section class="mp-orders-page">
+  <mat-card class="list-card">
+    <mat-card-content class="mp-orders-card__content">
+      <div class="coming-soon">
+        <mat-icon class="coming-soon__icon" aria-hidden="true">receipt_long</mat-icon>
+        <p class="coming-soon__text">{{ 'marketplace.orders.placeholder' | translate }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -141,6 +141,13 @@ export class ApiService {
     activate: (id: number) => `${this.base}/api/referral-campaigns/${id}/activate`,
     close: (id: number) => `${this.base}/api/referral-campaigns/${id}/close`,
   };
+  marketplaces = {
+    list: `${this.base}/api/marketplaces`,
+    byId: (id: number) => `${this.base}/api/marketplaces/${id}`,
+    products: (marketplaceId: number) => `${this.base}/api/marketplaces/${marketplaceId}/products`,
+    orders: `${this.base}/api/marketplace-orders`,
+    orderById: (id: number) => `${this.base}/api/marketplace-orders/${id}`,
+  };
   files = { upload: `${this.base}/api/files/upload` };
   /** Abonnement de l’agence connectée (lecture seule, portail agence). */
   meSubscriptions = {
