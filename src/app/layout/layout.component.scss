@@ -605,3 +605,23 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   font-family: var(--app-font);
   color: var(--app-muted);
 }
+
+/* ─── Responsive: tighter padding on small screens ─── */
+@media (max-width: 900px) {
+  .main {
+    padding: var(--app-space-lg);
+  }
+  .footer {
+    padding: var(--app-space-md) var(--app-space-lg);
+  }
+}
+
+@media (max-width: 600px) {
+  .main {
+    padding: var(--app-space-md);
+  }
+  .layout__drawer-trigger {
+    inset-inline-start: 8px;
+    top: 8px;
+  }
+}
