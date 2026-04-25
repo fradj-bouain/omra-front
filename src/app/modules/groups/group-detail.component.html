@@ -108,62 +108,87 @@
       </div>
 
       <div tab-pilgrims class="tab-section">
-        <div class="tab-toolbar">
-          <mat-form-field appearance="outline" class="tab-toolbar__search">
-            <mat-label>{{ 'groups.pilgrims.search' | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="pilgrimSearch"
-              (ngModelChange)="onPilgrimSearchChange()"
-              [placeholder]="'groups.pilgrims.searchPh' | translate"
-            />
-            <mat-icon matPrefix>search</mat-icon>
-          </mat-form-field>
-          <button mat-flat-button color="primary" (click)="toggleAddPilgrim()">
-            <mat-icon>person_add</mat-icon>
-            {{ 'groups.pilgrims.add' | translate }}
-          </button>
+        <div class="tab-toolbar tab-toolbar--pilgrims">
+          <div class="tab-toolbar__actions">
+            <button mat-flat-button color="primary" (click)="toggleAddPilgrim()">
+              <mat-icon>person_add</mat-icon>
+              {{ 'groups.pilgrims.add' | translate }}
+            </button>
+          </div>
+
+          <div class="tab-toolbar__filter">
+            <div class="tab-toolbar__hint">{{ 'groups.pilgrims.search' | translate }}</div>
+            <mat-form-field appearance="outline" class="tab-toolbar__search">
+              <mat-label>{{ 'groups.pilgrims.search' | translate }}</mat-label>
+              <input
+                matInput
+                [(ngModel)]="pilgrimSearch"
+                (ngModelChange)="onPilgrimSearchChange()"
+                [placeholder]="'groups.pilgrims.searchPh' | translate"
+              />
+              <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+          </div>
         </div>
 
         @if (showAddPilgrim) {
-          <mat-card class="inline-card">
+          <mat-card class="inline-card add-pilgrim-card">
             <mat-card-content>
-              <div class="inline-form">
-                <mat-form-field appearance="outline" class="pilgrim-autocomplete">
-                  <mat-label>{{ 'groups.pilgrims.pilgrim' | translate }}</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="pilgrimSearchInput"
-                    [matAutocomplete]="pilgrimAuto"
-                    #pilgrimTrigger="matAutocompleteTrigger"
-                    (focus)="pilgrimTrigger.openPanel()"
-                    (input)="pilgrimTrigger.openPanel()"
-                    [placeholder]="'groups.pilgrims.typeSearch' | translate"
-                  />
-                  <mat-autocomplete
-                    #pilgrimAuto="matAutocomplete"
-                    [displayWith]="pilgrimDisplay"
-                    (optionSelected)="selectPilgrim($event.option.value)"
+              <div class="add-pilgrim">
+                <div class="add-pilgrim__head">
+                  <div class="add-pilgrim__title">
+                    <mat-icon aria-hidden="true">person_add</mat-icon>
+                    <span>{{ 'groups.pilgrims.add' | translate }}</span>
+                  </div>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="toggleAddPilgrim()"
+                    [attr.aria-label]="'common.close' | translate"
                   >
-                    @if (loadingPilgrims) {
-                      <mat-option disabled>{{ 'groups.pilgrims.loadingP' | translate }}</mat-option>
-                    } @else if (filteredPilgrims.length === 0) {
-                      <mat-option disabled>{{ 'groups.pilgrims.noneFound' | translate }}</mat-option>
-                    } @else {
-                      @for (p of filteredPilgrims; track p.id) {
-                        <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="add-pilgrim__body">
+                  <mat-form-field appearance="outline" class="pilgrim-autocomplete">
+                    <mat-label>{{ 'groups.pilgrims.pilgrim' | translate }}</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="pilgrimSearchInput"
+                      [matAutocomplete]="pilgrimAuto"
+                      #pilgrimTrigger="matAutocompleteTrigger"
+                      (focus)="pilgrimTrigger.openPanel()"
+                      (input)="pilgrimTrigger.openPanel()"
+                      [placeholder]="'groups.pilgrims.typeSearch' | translate"
+                    />
+                    <mat-autocomplete
+                      #pilgrimAuto="matAutocomplete"
+                      [displayWith]="pilgrimDisplay"
+                      (optionSelected)="selectPilgrim($event.option.value)"
+                    >
+                      @if (loadingPilgrims) {
+                        <mat-option disabled>{{ 'groups.pilgrims.loadingP' | translate }}</mat-option>
+                      } @else if (filteredPilgrims.length === 0) {
+                        <mat-option disabled>{{ 'groups.pilgrims.noneFound' | translate }}</mat-option>
+                      } @else {
+                        @for (p of filteredPilgrims; track p.id) {
+                          <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>
+                        }
                       }
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-                <button
-                  mat-flat-button
-                  color="primary"
-                  (click)="addPilgrim()"
-                  [disabled]="!selectedPilgrimId || addingPilgrim"
-                >
-                  {{ 'groups.pilgrims.addToGroup' | translate }}
-                </button>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <button
+                    class="add-pilgrim__submit"
+                    mat-flat-button
+                    color="primary"
+                    (click)="addPilgrim()"
+                    [disabled]="!selectedPilgrimId || addingPilgrim"
+                  >
+                    {{ addingPilgrim ? ('groups.pilgrims.loadingP' | translate) : ('groups.pilgrims.addToGroup' | translate) }}
+                  </button>
+                </div>
               </div>
             </mat-card-content>
           </mat-card>
