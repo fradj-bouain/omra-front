@@ -96,6 +96,13 @@ interface Hotel {
   id: number;
   name: string;
   city?: string;
+  address?: string;
+  country?: string;
+  stars?: number;
+  contactImportant?: string;
+  contactPhone?: string;
+  receptionPhone?: string;
+  email?: string;
 }
 
 interface Bus {
@@ -201,6 +208,7 @@ export class GroupDetailComponent implements OnInit {
 
   // Assign hotel
   allHotels: Hotel[] = [];
+  hotelById: Record<number, Hotel> = {};
   showAssignHotel = false;
   assignHotelForm = {
     hotelId: null as number | null,
@@ -451,6 +459,7 @@ export class GroupDetailComponent implements OnInit {
       flights: this.http.get<Flight[]>(this.api.groups.flights(id)).pipe(catchError(() => of([]))),
       buses: this.http.get<Bus[]>(this.api.groups.buses(id)).pipe(catchError(() => of([]))),
       hotels: this.http.get<GroupHotel[]>(this.api.hotels.byGroup(id)).pipe(catchError(() => of([]))),
+      hotelCatalog: this.http.get<Hotel[]>(this.api.hotels.list).pipe(catchError(() => of([]))),
       tripCosts: this.http.get<TripCostItem[]>(this.api.tripCosts.list(id)).pipe(catchError(() => of([]))),
       payments: this.http
         .get<PageResponse<Payment>>(`${this.api.payments.list}?page=1&size=500`)
@@ -465,6 +474,11 @@ export class GroupDetailComponent implements OnInit {
         this.flights = r.flights || [];
         this.groupBuses = r.buses || [];
         this.groupHotels = r.hotels || [];
+        this.allHotels = Array.isArray(r.hotelCatalog) ? r.hotelCatalog : [];
+        this.hotelById = {};
+        for (const h of this.allHotels) {
+          if (h?.id != null) this.hotelById[Number(h.id)] = h;
+        }
         this.tripCosts = r.tripCosts || [];
         this.groupPayments = (r.payments.content || []).filter((p) => p.groupId === id);
         this.groupDocuments = (r.documents.content || []).filter(
@@ -848,7 +862,8 @@ export class GroupDetailComponent implements OnInit {
   }
 
   hotelMainLine(h: GroupHotel): string {
-    // We only have hotelId on this screen; keep it clean & consistent.
+    const det = this.hotelById?.[Number(h.hotelId)];
+    if (det?.name) return det.name;
     return `Hôtel #${h.hotelId}`;
   }
 
@@ -857,7 +872,25 @@ export class GroupDetailComponent implements OnInit {
     const unk = this.i18n.instant('common.unknown');
     const inn = h.checkIn ? formatDate(h.checkIn, 'dd/MM/yyyy', loc) : unk;
     const out = h.checkOut ? formatDate(h.checkOut, 'dd/MM/yyyy', loc) : unk;
-    return [`Check-in: ${inn}`, `Check-out: ${out}`];
+    const det = this.hotelById?.[Number(h.hotelId)];
+    const lines: string[] = [];
+    if (det?.city || det?.country) {
+      const city = (det.city || '').trim();
+      const country = (det.country || '').trim();
+      lines.push([city, country].filter(Boolean).join(', '));
+    }
+    const addr = (det?.address || '').trim();
+    if (addr) lines.push(addr);
+    const contact = (det?.contactImportant || '').trim();
+    if (contact) lines.push(`Contact: ${contact}`);
+    const phone = (det?.contactPhone || '').trim();
+    const recv = (det?.receptionPhone || '').trim();
+    if (phone || recv) lines.push(`Tél: ${recv || phone}${recv && phone ? ` · Alt: ${phone}` : ''}`);
+    const email = (det?.email || '').trim();
+    if (email) lines.push(`Email: ${email}`);
+    lines.push(`Check-in: ${inn}`);
+    lines.push(`Check-out: ${out}`);
+    return lines;
   }
 
   documentTypeLabel(t?: string): string {
