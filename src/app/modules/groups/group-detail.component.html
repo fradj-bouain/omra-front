@@ -293,11 +293,13 @@
               </div>
             }
             @if (flights.length) {
-              <ul class="compact-list">
+              <ul class="compact-list compact-list--stack">
                 @for (f of flights; track f.id) {
                   <li>
-                    {{ f.airline || ('cost.FLIGHT' | translate) }} {{ f.flightNumber || '' }} —
-                    {{ f.departureCity || ('common.unknown' | translate) }} → {{ f.arrivalCity || ('common.unknown' | translate) }}
+                    <div class="compact-item__main">{{ flightMainLine(f) }}</div>
+                    @for (ln of flightMetaLines(f); track $index) {
+                      <div class="compact-item__meta">{{ ln }}</div>
+                    }
                   </li>
                 }
               </ul>
@@ -335,9 +337,16 @@
               </div>
             }
             @if (groupBuses.length) {
-              <ul class="compact-list">
+              <ul class="compact-list compact-list--stack">
                 @for (b of groupBuses; track b.id) {
-                  <li>{{ busIdPart(b) }} — {{ busSeatPart(b) }}</li>
+                  <li>
+                    <div class="compact-item__main">{{ busIdPart(b) }} — {{ busSeatPart(b) }}</div>
+                    @if (busDriverNamePart(b) || busDriverContactPart(b)) {
+                      <div class="compact-item__meta">
+                        Chauffeur: {{ busDriverNamePart(b) || '—' }} · Contact: {{ busDriverContactPart(b) || '—' }}
+                      </div>
+                    }
+                  </li>
                 }
               </ul>
               <a mat-button [routerLink]="['/buses']" class="link-more">{{ 'groups.bus.seeAll' | translate }}</a>

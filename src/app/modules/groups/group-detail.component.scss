@@ -353,6 +353,25 @@
   }
 }
 
+.compact-list--stack li {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-card);
+}
+
+.compact-item__main {
+  font-weight: 700;
+}
+
+.compact-item__meta {
+  font-size: 0.8125rem;
+  color: var(--app-muted);
+}
+
 .pay-amount {
   font-weight: 700;
   font-variant-numeric: tabular-nums;

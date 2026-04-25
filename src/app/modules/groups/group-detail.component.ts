@@ -72,6 +72,10 @@ interface Flight {
   flightNumber?: string;
   departureCity?: string;
   arrivalCity?: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  terminal?: string;
+  gate?: string;
 }
 
 interface GroupHotel {
@@ -98,6 +102,8 @@ interface Bus {
   id: number;
   plate?: string;
   capacity?: number;
+  driverName?: string | null;
+  driverContact?: string | null;
 }
 
 interface CompanionOption {
@@ -788,6 +794,49 @@ export class GroupDetailComponent implements OnInit {
 
   busSeatPart(b: Bus): string {
     return this.i18n.instant('groups.bus.seatsCount', { n: String(b.capacity ?? '?') });
+  }
+
+  busDriverNamePart(b: Bus): string | null {
+    const n = (b.driverName || '').toString().trim();
+    return n ? n : null;
+  }
+
+  busDriverContactPart(b: Bus): string | null {
+    const c = (b.driverContact || '').toString().trim();
+    return c ? c : null;
+  }
+
+  flightMainLine(f: Flight): string {
+    const airline = f.airline || this.i18n.instant('cost.FLIGHT');
+    const num = (f.flightNumber || '').trim();
+    const from = f.departureCity || this.i18n.instant('common.unknown');
+    const to = f.arrivalCity || this.i18n.instant('common.unknown');
+    return `${airline}${num ? ' ' + num : ''} — ${from} → ${to}`;
+  }
+
+  flightMetaLines(f: Flight): string[] {
+    const loc = this.i18n.currentLang() === 'ar' ? 'ar' : 'fr-FR';
+    const lines: string[] = [];
+    if (f.departureTime) {
+      try {
+        lines.push(`Départ: ${formatDate(f.departureTime, 'dd/MM/yyyy HH:mm', loc)}`);
+      } catch {
+        lines.push(`Départ: ${f.departureTime}`);
+      }
+    }
+    if (f.arrivalTime) {
+      try {
+        lines.push(`Arrivée: ${formatDate(f.arrivalTime, 'dd/MM/yyyy HH:mm', loc)}`);
+      } catch {
+        lines.push(`Arrivée: ${f.arrivalTime}`);
+      }
+    }
+    const terminal = (f.terminal || '').trim();
+    const gate = (f.gate || '').trim();
+    if (terminal || gate) {
+      lines.push(`Terminal: ${terminal || '—'} · Porte: ${gate || '—'}`);
+    }
+    return lines;
   }
 
   hotelAssignLine(h: GroupHotel): string {
