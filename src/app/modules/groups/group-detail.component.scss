@@ -372,6 +372,78 @@
   color: var(--app-muted);
 }
 
+/* ─── Info cards (Flights / Buses / Hotels) ─── */
+.info-cards {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.info-card {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  padding: 12px 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: var(--app-card);
+  box-shadow: var(--app-shadow-sm);
+}
+
+.info-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+
+  mat-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 20px !important;
+  }
+}
+
+.info-card__body {
+  min-width: 0;
+}
+
+.info-card__title {
+  font-weight: 800;
+  color: var(--app-text);
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+.info-card__meta {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--app-border);
+  background: rgba(0, 0, 0, 0.02);
+  font-size: 0.8125rem;
+  color: var(--app-text-soft, var(--app-muted));
+  font-weight: 600;
+}
+
+.info-pill--muted {
+  opacity: 0.85;
+}
+
 .pay-amount {
   font-weight: 700;
   font-variant-numeric: tabular-nums;

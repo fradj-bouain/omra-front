@@ -847,6 +847,19 @@ export class GroupDetailComponent implements OnInit {
     return this.i18n.instant('groups.hotels.assignedLine', { id: String(h.hotelId), in: inn, out });
   }
 
+  hotelMainLine(h: GroupHotel): string {
+    // We only have hotelId on this screen; keep it clean & consistent.
+    return `Hôtel #${h.hotelId}`;
+  }
+
+  hotelMetaLines(h: GroupHotel): string[] {
+    const loc = this.i18n.currentLang() === 'ar' ? 'ar' : 'fr-FR';
+    const unk = this.i18n.instant('common.unknown');
+    const inn = h.checkIn ? formatDate(h.checkIn, 'dd/MM/yyyy', loc) : unk;
+    const out = h.checkOut ? formatDate(h.checkOut, 'dd/MM/yyyy', loc) : unk;
+    return [`Check-in: ${inn}`, `Check-out: ${out}`];
+  }
+
   documentTypeLabel(t?: string): string {
     return t || '—';
   }

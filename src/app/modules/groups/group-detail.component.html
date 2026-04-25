@@ -293,13 +293,18 @@
               </div>
             }
             @if (flights.length) {
-              <ul class="compact-list compact-list--stack">
+              <ul class="info-cards">
                 @for (f of flights; track f.id) {
-                  <li>
-                    <div class="compact-item__main">{{ flightMainLine(f) }}</div>
-                    @for (ln of flightMetaLines(f); track $index) {
-                      <div class="compact-item__meta">{{ ln }}</div>
-                    }
+                  <li class="info-card">
+                    <div class="info-card__icon"><mat-icon aria-hidden="true">flight</mat-icon></div>
+                    <div class="info-card__body">
+                      <div class="info-card__title">{{ flightMainLine(f) }}</div>
+                      <div class="info-card__meta">
+                        @for (ln of flightMetaLines(f); track $index) {
+                          <span class="info-pill">{{ ln }}</span>
+                        }
+                      </div>
+                    </div>
                   </li>
                 }
               </ul>
@@ -337,15 +342,24 @@
               </div>
             }
             @if (groupBuses.length) {
-              <ul class="compact-list compact-list--stack">
+              <ul class="info-cards">
                 @for (b of groupBuses; track b.id) {
-                  <li>
-                    <div class="compact-item__main">{{ busIdPart(b) }} — {{ busSeatPart(b) }}</div>
-                    @if (busDriverNamePart(b) || busDriverContactPart(b)) {
-                      <div class="compact-item__meta">
-                        Chauffeur: {{ busDriverNamePart(b) || '—' }} · Contact: {{ busDriverContactPart(b) || '—' }}
+                  <li class="info-card">
+                    <div class="info-card__icon"><mat-icon aria-hidden="true">directions_bus</mat-icon></div>
+                    <div class="info-card__body">
+                      <div class="info-card__title">{{ busIdPart(b) }} — {{ busSeatPart(b) }}</div>
+                      <div class="info-card__meta">
+                        @if (busDriverNamePart(b)) {
+                          <span class="info-pill">Chauffeur: {{ busDriverNamePart(b) }}</span>
+                        }
+                        @if (busDriverContactPart(b)) {
+                          <span class="info-pill">Contact: {{ busDriverContactPart(b) }}</span>
+                        }
+                        @if (!busDriverNamePart(b) && !busDriverContactPart(b)) {
+                          <span class="info-pill info-pill--muted">Chauffeur/Contact: —</span>
+                        }
                       </div>
-                    }
+                    </div>
                   </li>
                 }
               </ul>
@@ -418,9 +432,19 @@
               </div>
             }
             @if (groupHotels.length) {
-              <ul class="compact-list">
+              <ul class="info-cards">
                 @for (h of groupHotels; track h.id) {
-                  <li>{{ hotelAssignLine(h) }}</li>
+                  <li class="info-card">
+                    <div class="info-card__icon"><mat-icon aria-hidden="true">hotel</mat-icon></div>
+                    <div class="info-card__body">
+                      <div class="info-card__title">{{ hotelMainLine(h) }}</div>
+                      <div class="info-card__meta">
+                        @for (ln of hotelMetaLines(h); track $index) {
+                          <span class="info-pill">{{ ln }}</span>
+                        }
+                      </div>
+                    </div>
+                  </li>
                 }
               </ul>
               <a mat-button [routerLink]="['/hotels']" class="link-more">{{ 'groups.hotels.seeAll' | translate }}</a>
