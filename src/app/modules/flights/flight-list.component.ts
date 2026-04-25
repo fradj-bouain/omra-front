@@ -5,6 +5,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -29,13 +31,30 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-flight-list',
   standalone: true,
-  imports: [DatePipe, MatCardModule, MatTableModule, MatPaginatorModule, MatIconModule, PageHeaderComponent],
+  imports: [
+    RouterLink,
+    MatTooltipModule,
+    DatePipe,
+    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatIconModule,
+    PageHeaderComponent,
+  ],
   templateUrl: './flight-list.component.html',
   styleUrl: './flight-list.component.scss',
 })
 export class FlightListComponent implements OnInit {
   dataSource: Flight[] = [];
-  displayedColumns = ['airline', 'flightNumber', 'departureCity', 'arrivalCity', 'departureTime', 'arrivalTime'];
+  displayedColumns = [
+    'airline',
+    'flightNumber',
+    'departureCity',
+    'arrivalCity',
+    'departureTime',
+    'arrivalTime',
+    'actions',
+  ];
   totalElements = 0;
   page = 1;
   size = 20;
@@ -59,5 +78,19 @@ export class FlightListComponent implements OnInit {
     this.page = e.pageIndex + 1;
     this.size = e.pageSize;
     this.load();
+  }
+
+  deleteRow(row: Flight): void {
+    if (!row?.id) return;
+    const label = `${row.airline ?? ''} ${row.flightNumber ?? ''}`.trim() || `#${row.id}`;
+    const ok = confirm(`Supprimer le vol "${label}" ?`);
+    if (!ok) return;
+    this.http.delete(this.api.flights.byId(row.id)).subscribe({
+      next: () => {
+        this.notif.success('Vol supprimé');
+        this.load();
+      },
+      error: (err) => this.notif.error(err.error?.message || 'Suppression impossible'),
+    });
   }
 }

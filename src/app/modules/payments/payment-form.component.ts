@@ -56,6 +56,7 @@ export class PaymentFormComponent implements OnInit {
   groupDisplay = new FormControl('', { validators: Validators.required });
   groups: GroupOption[] = [];
   pilgrims: PilgrimOption[] = [];
+  editingId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -85,6 +86,38 @@ export class PaymentFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const idRaw = this.route.snapshot.paramMap.get('id');
+    if (idRaw) {
+      const id = Number(idRaw);
+      if (!isNaN(id)) {
+        this.editingId = id;
+        this.loading = true;
+        this.http.get<any>(this.api.payments.byId(id)).subscribe({
+          next: (p) => {
+            this.form.patchValue({
+              pilgrimId: p?.pilgrimId ?? null,
+              groupId: p?.groupId ?? null,
+              amount: p?.amount ?? null,
+              currency: p?.currency ?? this.auth.agencyCurrency(),
+              paymentMethod: p?.paymentMethod ?? 'CASH',
+              status: p?.status ?? 'PENDING',
+              reference: p?.reference ?? '',
+            });
+            // Dates: keep as null if not parseable
+            if (p?.paymentDate) this.form.patchValue({ paymentDate: new Date(p.paymentDate) });
+            if (p?.firstDueDate) this.form.patchValue({ firstDueDate: new Date(p.firstDueDate) });
+            if (p?.duePeriodDays != null) this.form.patchValue({ duePeriodDays: Number(p.duePeriodDays) });
+            if (p?.numberOfInstallments != null) this.form.patchValue({ numberOfInstallments: Number(p.numberOfInstallments) });
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+            this.notif.error('Impossible de charger le paiement');
+          },
+        });
+      }
+    }
+
     this.http.get<{ content: GroupOption[] }>(`${this.api.groups.list}?page=1&size=500`).subscribe({
       next: (res) => {
         this.groups = res.content || [];
@@ -168,9 +201,12 @@ export class PaymentFormComponent implements OnInit {
       body['duePeriodDays'] = v['duePeriodDays'] != null ? Number(v['duePeriodDays']) : undefined;
       body['numberOfInstallments'] = v['numberOfInstallments'] != null ? Number(v['numberOfInstallments']) : undefined;
     }
-    this.http.post(this.api.payments.list, body).subscribe({
+    const req$ = this.editingId
+      ? this.http.put(this.api.payments.byId(this.editingId), body)
+      : this.http.post(this.api.payments.list, body);
+    req$.subscribe({
       next: () => {
-        this.notif.success('Paiement créé');
+        this.notif.success(this.editingId ? 'Paiement modifié' : 'Paiement créé');
         this.router.navigate(['/payments']);
       },
       error: (err) => {

@@ -80,20 +80,28 @@
           <mat-panel-title>{{ 'subAgenciesPage.themeSection' | translate }}</mat-panel-title>
           <mat-panel-description>{{ 'subAgenciesPage.themeSectionHint' | translate }}</mat-panel-description>
         </mat-expansion-panel-header>
-        <div class="sub-agency-dialog__grid">
-          <div class="sub-agency-dialog__mode">
-            <span class="sub-agency-dialog__mode-label">{{ 'settings.themeMode' | translate }}</span>
-            <mat-button-toggle-group formControlName="themeMode" aria-label="Theme mode">
-              <mat-button-toggle value="LIGHT">
-                <mat-icon>light_mode</mat-icon>
-                {{ 'settings.themeModeLight' | translate }}
-              </mat-button-toggle>
-              <mat-button-toggle value="DARK">
-                <mat-icon>dark_mode</mat-icon>
-                {{ 'settings.themeModeDark' | translate }}
-              </mat-button-toggle>
-            </mat-button-toggle-group>
+        <div class="sub-agency-dialog__preset">
+          <h3 class="sub-agency-dialog__preset-title">{{ 'settings.palettePreset' | translate }}</h3>
+          <p class="sub-agency-dialog__preset-hint">{{ 'settings.paletteHint' | translate }}</p>
+          <div class="preset-grid" role="group" [attr.aria-label]="'settings.palettePreset' | translate">
+            @for (card of presetCards; track card.id) {
+              <button
+                type="button"
+                class="preset-card"
+                [class.preset-card--active]="selectedPreset === card.id"
+                (click)="applyPresetId(card.id)"
+              >
+                <span class="preset-card__strip">
+                  @for (c of card.strip; track $index) {
+                    <span class="preset-card__swatch" [style.background]="c"></span>
+                  }
+                </span>
+                <span class="preset-card__name">{{ card.labelKey | translate }}</span>
+              </button>
+            }
           </div>
+        </div>
+        <div class="sub-agency-dialog__grid">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'settings.primaryColor' | translate }}</mat-label>
             <input matInput formControlName="primaryColor" placeholder="#2563EB" />

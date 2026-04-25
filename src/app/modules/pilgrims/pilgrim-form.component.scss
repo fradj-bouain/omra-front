@@ -251,7 +251,7 @@
 .form-grid {
   display: grid;
   gap: 0 var(--app-space-lg);
-  row-gap: 0.5rem;
+  row-gap: var(--app-space-md);
 }
 
 .form-grid--2 {

@@ -1,4 +1,4 @@
-<app-page-header title="Nouveau vol"></app-page-header>
+<app-page-header [title]="editingId ? 'Modifier vol' : 'Nouveau vol'"></app-page-header>
 
 <section class="flight-form-page">
   <mat-card class="form-card">

@@ -1,4 +1,4 @@
-<app-page-header title="Nouveau bus"></app-page-header>
+<app-page-header [title]="editingId ? 'Modifier bus' : 'Nouveau bus'"></app-page-header>
 
 <section class="bus-form-page">
   <mat-card class="form-card">

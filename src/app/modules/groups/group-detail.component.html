@@ -195,30 +195,32 @@
         }
 
         <div class="table-card">
-          <table mat-table [dataSource]="pilgrimTableRows" class="pilgrim-table">
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.name' | translate }}</th>
-              <td mat-cell *matCellDef="let p">
-                <a [routerLink]="['/pilgrims', p.id]" class="cell-link">{{ p.firstName }} {{ p.lastName }}</a>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="passport">
-              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.passport' | translate }}</th>
-              <td mat-cell *matCellDef="let p">{{ p.passportNumber || ('common.emDash' | translate) }}</td>
-            </ng-container>
-            <ng-container matColumnDef="phone">
-              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.phone' | translate }}</th>
-              <td mat-cell *matCellDef="let p">{{ p.phone || ('common.emDash' | translate) }}</td>
-            </ng-container>
-            <ng-container matColumnDef="visa">
-              <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.visa' | translate }}</th>
-              <td mat-cell *matCellDef="let p">
-                <span class="visa-pill" [ngClass]="visaClass(p.visaStatus)">{{ visaKey(p.visaStatus) | translate }}</span>
-              </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="pilgrimColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: pilgrimColumns"></tr>
-          </table>
+          <div class="table-wrap">
+            <table mat-table [dataSource]="pilgrimTableRows" class="pilgrim-table">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.name' | translate }}</th>
+                <td mat-cell *matCellDef="let p">
+                  <a [routerLink]="['/pilgrims', p.id]" class="cell-link">{{ p.firstName }} {{ p.lastName }}</a>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="passport">
+                <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.passport' | translate }}</th>
+                <td mat-cell *matCellDef="let p">{{ p.passportNumber || ('common.emDash' | translate) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.phone' | translate }}</th>
+                <td mat-cell *matCellDef="let p">{{ p.phone || ('common.emDash' | translate) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="visa">
+                <th mat-header-cell *matHeaderCellDef>{{ 'groups.pilgrims.col.visa' | translate }}</th>
+                <td mat-cell *matCellDef="let p">
+                  <span class="visa-pill" [ngClass]="visaClass(p.visaStatus)">{{ visaKey(p.visaStatus) | translate }}</span>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="pilgrimColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: pilgrimColumns"></tr>
+            </table>
+          </div>
           @if (!pilgrimTableRows.length) {
             <p class="table-empty">{{ 'groups.pilgrims.tableEmpty' | translate }}</p>
           }

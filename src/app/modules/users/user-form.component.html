@@ -1,4 +1,4 @@
-<app-page-header title="Nouvel utilisateur"></app-page-header>
+<app-page-header [title]="editingId ? 'Modifier utilisateur' : 'Nouvel utilisateur'"></app-page-header>
 
 <section class="user-form-page">
   <mat-card class="form-card">
@@ -25,7 +25,9 @@
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Mot de passe</mat-label>
               <input matInput type="password" formControlName="password" />
-              <mat-error>Le mot de passe est requis</mat-error>
+              @if (!editingId) {
+                <mat-error>Le mot de passe est requis</mat-error>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Téléphone</mat-label>
@@ -65,7 +67,13 @@
         <div class="form-actions">
           <button mat-button type="button" routerLink="/users" class="btn-cancel">Annuler</button>
           <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
-            {{ loading ? 'Création...' : 'Créer l\'utilisateur' }}
+            {{
+              loading
+                ? (editingId ? 'Mise à jour...' : 'Création...')
+                : editingId
+                  ? 'Enregistrer'
+                  : 'Créer l\'utilisateur'
+            }}
           </button>
         </div>
       </form>

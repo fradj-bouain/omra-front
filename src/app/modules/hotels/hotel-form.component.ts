@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -34,16 +34,18 @@ import {
   templateUrl: './hotel-form.component.html',
   styleUrl: './hotel-form.component.scss',
 })
-export class HotelFormComponent {
+export class HotelFormComponent implements OnInit {
   loading = false;
   form: FormGroup;
+  editingId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private api: ApiService,
     private notif: NotificationService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -57,6 +59,37 @@ export class HotelFormComponent {
       email: [''],
       latitude: [null as number | null],
       longitude: [null as number | null],
+    });
+  }
+
+  ngOnInit(): void {
+    const idRaw = this.route.snapshot.paramMap.get('id');
+    if (!idRaw) return;
+    const id = Number(idRaw);
+    if (isNaN(id)) return;
+    this.editingId = id;
+    this.loading = true;
+    this.http.get<any>(this.api.hotels.byId(id)).subscribe({
+      next: (h) => {
+        this.form.patchValue({
+          name: h?.name ?? '',
+          city: h?.city ?? '',
+          address: h?.address ?? '',
+          country: h?.country ?? '',
+          stars: h?.stars ?? null,
+          contactImportant: h?.contactImportant ?? '',
+          contactPhone: h?.contactPhone ?? '',
+          receptionPhone: h?.receptionPhone ?? '',
+          email: h?.email ?? '',
+          latitude: h?.latitude ?? null,
+          longitude: h?.longitude ?? null,
+        });
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.notif.error('Impossible de charger l’hôtel');
+      },
     });
   }
 
@@ -90,9 +123,12 @@ export class HotelFormComponent {
       latitude: v.latitude != null ? Number(v.latitude) : undefined,
       longitude: v.longitude != null ? Number(v.longitude) : undefined,
     };
-    this.http.post(this.api.hotels.list, body).subscribe({
+    const req$ = this.editingId
+      ? this.http.put(this.api.hotels.byId(this.editingId), body)
+      : this.http.post(this.api.hotels.list, body);
+    req$.subscribe({
       next: () => {
-        this.notif.success('Hôtel créé');
+        this.notif.success(this.editingId ? 'Hôtel modifié' : 'Hôtel créé');
         this.router.navigate(['/hotels']);
       },
       error: (err) => {

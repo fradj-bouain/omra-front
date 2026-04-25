@@ -32,6 +32,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 export class UserFormComponent implements OnInit {
   loading = false;
   form: FormGroup;
+  editingId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -53,6 +54,33 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const idRaw = this.route.snapshot.paramMap.get('id');
+    if (idRaw) {
+      const id = Number(idRaw);
+      if (!isNaN(id)) {
+        this.editingId = id;
+        // Password optional when editing
+        this.form.get('password')?.clearValidators();
+        this.form.get('password')?.updateValueAndValidity();
+        this.loading = true;
+        this.http.get<any>(this.api.users.byId(id)).subscribe({
+          next: (u) => {
+            this.form.patchValue({
+              name: u?.name ?? '',
+              email: u?.email ?? '',
+              phone: u?.phone ?? '',
+              role: u?.role ?? 'AGENCY_AGENT',
+              status: u?.status ?? 'ACTIVE',
+            });
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+            this.notif.error('Impossible de charger l’utilisateur');
+          },
+        });
+      }
+    }
     this.route.queryParams.subscribe((params) => {
       const ref = params['ref'];
       if (ref && typeof ref === 'string' && ref.trim()) {
@@ -68,17 +96,24 @@ export class UserFormComponent implements OnInit {
     const body: Record<string, unknown> = {
       name: v.name,
       email: v.email,
-      password: v.password,
       phone: v.phone || undefined,
       role: v.role || 'AGENCY_AGENT',
       status: v.status || 'ACTIVE',
     };
+    if (!this.editingId) {
+      body['password'] = v.password;
+    } else if (v.password && String(v.password).trim()) {
+      body['password'] = String(v.password);
+    }
     if (v.referralCodeAtSignup && String(v.referralCodeAtSignup).trim()) {
       body['referralCodeAtSignup'] = String(v.referralCodeAtSignup).trim().toUpperCase();
     }
-    this.http.post(this.api.users.list, body).subscribe({
+    const req$ = this.editingId
+      ? this.http.put(this.api.users.byId(this.editingId), body)
+      : this.http.post(this.api.users.list, body);
+    req$.subscribe({
       next: () => {
-        this.notif.success('Utilisateur créé');
+        this.notif.success(this.editingId ? 'Utilisateur modifié' : 'Utilisateur créé');
         this.router.navigate(['/users']);
       },
       error: (err) => {

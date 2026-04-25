@@ -1,4 +1,4 @@
-<app-page-header title="Nouveau document"></app-page-header>
+<app-page-header [title]="editingId ? 'Modifier document' : 'Nouveau document'"></app-page-header>
 
 <section class="document-form-page">
   <mat-card class="form-card">

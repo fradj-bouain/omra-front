@@ -26,7 +26,34 @@ import {
   type AgencyCurrency,
   agencyCurrencyLabel,
 } from '../../shared/data/agency-currencies';
+import { THEME_PRESETS, type AgencyTheme } from '../../core/services/theme.service';
 import type { AgencySubDto } from './agency-sub.dto';
+
+const PRESET_ORDER = [
+  'blueSaas',
+  'greenIslamic',
+  'purpleModern',
+  'redBold',
+  'darkPro',
+  'orangeFriendly',
+] as const;
+
+const PRESET_LABEL_KEYS: Record<(typeof PRESET_ORDER)[number], string> = {
+  blueSaas: 'settings.palette.blueSaas',
+  greenIslamic: 'settings.palette.greenIslamic',
+  purpleModern: 'settings.palette.purpleModern',
+  redBold: 'settings.palette.redBold',
+  darkPro: 'settings.palette.darkPro',
+  orangeFriendly: 'settings.palette.orangeFriendly',
+};
+
+function stripFromPreset(p: AgencyTheme | undefined): string[] {
+  if (!p) return ['#ccc', '#999', '#eee'];
+  const a = p.primaryColor ?? '#888';
+  const b = p.sidebarColor ?? p.menuColor ?? '#666';
+  const c = p.backgroundColor ?? '#f5f5f5';
+  return [a, b, c];
+}
 
 export interface SubAgencyFormDialogData {
   mode: 'create' | 'edit';
@@ -78,6 +105,13 @@ export class SubAgencyFormDialogComponent implements OnInit {
   loading = false;
   saving = false;
   private loaded: AgencySubDto | null = null;
+
+  selectedPreset = 'blueSaas';
+  readonly presetCards = PRESET_ORDER.map((id) => ({
+    id,
+    labelKey: PRESET_LABEL_KEYS[id],
+    strip: stripFromPreset(THEME_PRESETS[id]),
+  }));
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -149,7 +183,7 @@ export class SubAgencyFormDialogComponent implements OnInit {
             currency: this.normalizeCurrencyCode(dto.currency),
             city: dto.city ?? '',
             address: dto.address ?? '',
-            themeMode: dto.themeMode === 'DARK' ? 'DARK' : 'LIGHT',
+            themeMode: 'LIGHT',
             primaryColor: dto.primaryColor ?? '',
             secondaryColor: dto.secondaryColor ?? '',
             backgroundColor: dto.backgroundColor ?? '',
@@ -165,7 +199,26 @@ export class SubAgencyFormDialogComponent implements OnInit {
           this.dialogRef.close(false);
         },
       });
+    } else {
+      // Create: start with a sensible default preset so sub-agency gets a nice theme immediately.
+      this.applyPresetId(this.selectedPreset);
     }
+  }
+
+  applyPresetId(id: string): void {
+    const preset = THEME_PRESETS[id];
+    if (!preset) {
+      this.selectedPreset = '';
+      return;
+    }
+    this.selectedPreset = id;
+    this.form.patchValue({
+      themeMode: 'LIGHT',
+      primaryColor: preset.primaryColor ?? '',
+      secondaryColor: preset.secondaryColor ?? '',
+      backgroundColor: preset.backgroundColor ?? '',
+      textColor: preset.textColor ?? '',
+    });
   }
 
   onCountrySelected(ev: MatAutocompleteSelectedEvent): void {

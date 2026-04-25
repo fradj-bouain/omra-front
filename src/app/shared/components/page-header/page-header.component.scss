@@ -5,8 +5,8 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--app-space-lg);
-  margin-bottom: var(--app-space-xl);
-  padding-bottom: var(--app-space-lg);
+  margin-bottom: var(--app-space-2xl, var(--app-space-xl, 1.5rem));
+  padding-bottom: var(--app-space-xl, var(--app-space-lg, 1.25rem));
   border-bottom: 1px solid var(--app-border);
 }
 

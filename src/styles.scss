@@ -366,3 +366,27 @@ h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title {
     max-width: none;
   }
 }
+
+/* ========== Layout hard responsive overrides (mobile/tablet) */
+@media (max-width: 1200px) {
+  /* Never reserve space for sidenav when using overlay mode. */
+  .sidenav-container.mat-drawer-container,
+  .sidenav-container {
+    display: block !important;
+  }
+
+  .sidenav-container .mat-drawer-content,
+  .sidenav-container mat-sidenav-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+  }
+}

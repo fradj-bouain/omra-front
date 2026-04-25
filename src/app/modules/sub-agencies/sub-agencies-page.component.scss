@@ -18,8 +18,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--omra-primary, #2563eb) 12%, transparent);
-  color: var(--omra-primary, #2563eb);
+  background: color-mix(in srgb, var(--app-accent) 12%, transparent);
+  color: var(--app-accent);
 
   mat-icon {
     font-size: 28px;
@@ -36,13 +36,13 @@
 
 .sub-agencies-page__subtitle {
   margin: 0;
-  color: var(--omra-text-muted, #64748b);
+  color: var(--app-muted);
   font-size: 0.95rem;
 }
 
 .sub-agencies-page__card-avatar {
-  background: color-mix(in srgb, var(--omra-primary, #2563eb) 14%, transparent);
-  color: var(--omra-primary, #2563eb);
+  background: color-mix(in srgb, var(--app-accent) 14%, transparent);
+  color: var(--app-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +58,7 @@
   align-items: flex-start;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  background: color-mix(in srgb, var(--omra-primary, #2563eb) 6%, transparent);
+  background: color-mix(in srgb, var(--app-accent) 6%, transparent);
   margin-bottom: 1rem;
 }
 
@@ -89,7 +89,7 @@
 
 .sub-agencies-toolbar__warn {
   font-size: 0.85rem;
-  color: var(--mat-warn-text-color, #b45309);
+  color: var(--app-warn-text);
 }
 
 .sub-agencies-quota-pill {
@@ -98,13 +98,13 @@
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--omra-primary, #2563eb) 10%, transparent);
+  background: color-mix(in srgb, var(--app-accent) 10%, transparent);
   font-size: 0.875rem;
 }
 
 .sub-agencies-quota-pill--blocked {
   opacity: 0.85;
-  background: color-mix(in srgb, var(--mat-warn-text-color, #b45309) 12%, transparent);
+  background: color-mix(in srgb, var(--app-warn-text) 12%, transparent);
 }
 
 .sub-agencies-quota-pill__nums {
@@ -123,7 +123,7 @@
 .sub-agencies-state {
   text-align: center;
   padding: 2rem 1rem;
-  color: var(--omra-text-muted, #64748b);
+  color: var(--app-muted);
 }
 
 .sub-agencies-state--loading mat-icon {
@@ -147,7 +147,7 @@
 .sub-agencies-state__title {
   margin: 0 0 0.35rem;
   font-weight: 600;
-  color: var(--omra-text, #0f172a);
+  color: var(--app-text);
 }
 
 .sub-agencies-state__hint {
@@ -168,7 +168,7 @@
   td {
     padding: 0.65rem 0.75rem;
     text-align: start;
-    border-bottom: 1px solid color-mix(in srgb, var(--omra-text, #0f172a) 8%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--app-text) 8%, transparent);
   }
 
   th {
@@ -176,7 +176,7 @@
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    color: var(--omra-text-muted, #64748b);
+    color: var(--app-muted);
   }
 }
 
@@ -198,15 +198,27 @@
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
   font-size: 0.8rem;
-  background: color-mix(in srgb, #16a34a 15%, transparent);
-  color: #166534;
+  background: var(--app-success-bg);
+  color: var(--app-success-text);
 }
 
 .sub-agencies-badge--off {
-  background: color-mix(in srgb, #64748b 18%, transparent);
-  color: #475569;
+  background: var(--app-bg-soft);
+  color: var(--app-muted);
 }
 
 .sub-agencies-table__dash {
   opacity: 0.4;
+}
+
+/* Ensure mat icons/buttons follow theme */
+:host ::ng-deep .sub-agencies-page mat-icon {
+  color: inherit;
+}
+:host ::ng-deep .sub-agencies-page .mat-mdc-icon-button {
+  color: var(--app-muted);
+}
+:host ::ng-deep .sub-agencies-page .mat-mdc-icon-button:hover {
+  color: var(--app-accent);
+  background: var(--app-accent-soft);
 }

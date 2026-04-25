@@ -1,12 +1,14 @@
 .dialog-body {
-  padding-top: 0.5rem;
+  /* Extra top padding so first field isn't visually clipped */
+  padding-top: var(--app-space-md, 1rem);
   min-width: min(100%, 400px);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  /* Ensure comfortable vertical spacing between stacked fields */
+  gap: var(--app-space-md, 1rem);
 }
 
 .full {

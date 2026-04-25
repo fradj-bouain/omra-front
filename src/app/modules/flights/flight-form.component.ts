@@ -42,6 +42,7 @@ export class FlightFormComponent implements OnInit {
   form: FormGroup;
   groupDisplay = new FormControl('');
   groups: GroupOption[] = [];
+  editingId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -67,6 +68,36 @@ export class FlightFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const idRaw = this.route.snapshot.paramMap.get('id');
+    if (idRaw) {
+      const id = Number(idRaw);
+      if (!isNaN(id)) {
+        this.editingId = id;
+        this.loading = true;
+        this.http.get<any>(this.api.flights.byId(id)).subscribe({
+          next: (f) => {
+            this.form.patchValue({
+              airline: f?.airline ?? '',
+              flightNumber: f?.flightNumber ?? '',
+              departureCity: f?.departureCity ?? '',
+              arrivalCity: f?.arrivalCity ?? '',
+              terminal: f?.terminal ?? '',
+              gate: f?.gate ?? '',
+              groupId: f?.groupId ?? null,
+            });
+            // departureTime / arrivalTime: keep raw value; user can adjust in form
+            if (f?.departureTime) this.form.patchValue({ departureTime: f.departureTime });
+            if (f?.arrivalTime) this.form.patchValue({ arrivalTime: f.arrivalTime });
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+            this.notif.error('Impossible de charger le vol');
+          },
+        });
+      }
+    }
+
     const gid = this.route.snapshot.queryParamMap.get('groupId');
     if (gid) {
       const id = Number(gid);
@@ -116,9 +147,12 @@ export class FlightFormComponent implements OnInit {
     const arr = combineDateAndTime(v['arrivalDate'] as Date | null, v['arrivalTime'] as string);
     if (dep) body['departureTime'] = dep;
     if (arr) body['arrivalTime'] = arr;
-    this.http.post(this.api.flights.list, body).subscribe({
+    const req$ = this.editingId
+      ? this.http.put(this.api.flights.byId(this.editingId), body)
+      : this.http.post(this.api.flights.list, body);
+    req$.subscribe({
       next: () => {
-        this.notif.success('Vol créé');
+        this.notif.success(this.editingId ? 'Vol modifié' : 'Vol créé');
         this.router.navigate(['/flights']);
       },
       error: (err) => {

@@ -1,4 +1,4 @@
-<app-page-header title="Nouveau paiement"></app-page-header>
+<app-page-header [title]="editingId ? 'Modifier paiement' : 'Nouveau paiement'"></app-page-header>
 
 <section class="payment-form-page">
   <mat-card class="form-card">

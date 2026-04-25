@@ -4,8 +4,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { NotificationService } from '../../core/services/notification.service';
 
 interface Bus {
   id: number;
@@ -25,19 +28,27 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-bus-list',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatPaginatorModule, MatIconModule, PageHeaderComponent],
+  imports: [
+    RouterLink,
+    MatTooltipModule,
+    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatIconModule,
+    PageHeaderComponent,
+  ],
   templateUrl: './bus-list.component.html',
   styleUrl: './bus-list.component.scss',
 })
 export class BusListComponent implements OnInit {
   dataSource: Bus[] = [];
-  displayedColumns = ['plate', 'capacity', 'driverName', 'driverContact'];
+  displayedColumns = ['plate', 'capacity', 'driverName', 'driverContact', 'actions'];
   totalElements = 0;
   page = 0;
   size = 20;
   loading = false;
 
-  constructor(private http: HttpClient, private api: ApiService) {}
+  constructor(private http: HttpClient, private api: ApiService, private notif: NotificationService) {}
 
   ngOnInit(): void {
     this.load();
@@ -60,5 +71,18 @@ export class BusListComponent implements OnInit {
     this.page = e.pageIndex;
     this.size = e.pageSize;
     this.load();
+  }
+
+  deleteRow(row: Bus): void {
+    if (!row?.id) return;
+    const ok = confirm(`Supprimer le bus "${row.plate}" ?`);
+    if (!ok) return;
+    this.http.delete(this.api.buses.byId(row.id)).subscribe({
+      next: () => {
+        this.notif.success('Bus supprimé');
+        this.load();
+      },
+      error: (err) => this.notif.error(err.error?.message || 'Suppression impossible'),
+    });
   }
 }

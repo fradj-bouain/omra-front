@@ -107,8 +107,11 @@ export class LayoutComponent {
     },
   ];
 
-  /** Only use overlay (drawer over content) on very small screens; otherwise side-by-side so content is always visible. */
-  private readonly overlayBreakpoint = '(max-width: 480px)';
+  /**
+   * Responsive rule: on small screens, the drawer must overlay the content (not push it),
+   * otherwise the main cards become cramped / shifted sideways.
+   */
+  private readonly overlayBreakpoint = '(max-width: 1024px)';
 
   constructor(
     private breakpoint: BreakpointObserver,

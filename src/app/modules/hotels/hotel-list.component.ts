@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NotificationService } from '../../core/services/notification.service';
 import { ApiService } from '../../core/services/api.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
@@ -22,22 +25,45 @@ interface Hotel {
 @Component({
   selector: 'app-hotel-list',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatIconModule, PageHeaderComponent],
+  imports: [RouterLink, MatTooltipModule, MatCardModule, MatTableModule, MatIconModule, PageHeaderComponent],
   templateUrl: './hotel-list.component.html',
   styleUrl: './hotel-list.component.scss',
 })
 export class HotelListComponent implements OnInit {
   dataSource: Hotel[] = [];
-  displayedColumns = ['name', 'city', 'country', 'stars', 'receptionPhone', 'contactImportant'];
+  displayedColumns = ['name', 'city', 'country', 'stars', 'receptionPhone', 'contactImportant', 'actions'];
   loading = false;
 
-  constructor(private http: HttpClient, private api: ApiService) {}
+  constructor(private http: HttpClient, private api: ApiService, private notif: NotificationService) {}
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
     this.loading = true;
     this.http.get<Hotel[]>(this.api.hotels.list).subscribe({
-      next: (data) => { this.dataSource = Array.isArray(data) ? data : []; this.loading = false; },
-      error: () => this.loading = false,
+      next: (data) => {
+        this.dataSource = Array.isArray(data) ? data : [];
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.notif.error('Erreur chargement hôtels');
+      },
+    });
+  }
+
+  deleteRow(row: Hotel): void {
+    if (!row?.id) return;
+    const ok = confirm(`Supprimer l'hôtel "${row.name}" ?`);
+    if (!ok) return;
+    this.http.delete(this.api.hotels.byId(row.id)).subscribe({
+      next: () => {
+        this.notif.success('Hôtel supprimé');
+        this.load();
+      },
+      error: (err) => this.notif.error(err.error?.message || 'Suppression impossible'),
     });
   }
 }

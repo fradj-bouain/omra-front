@@ -198,6 +198,24 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 1rem;
+  row-gap: var(--app-space-md, 1rem);
+}
+
+.campaign-form__grid,
+.history-filters,
+.tier-form-grid {
+  /* Keep a tiny breathing room, but don't push content down */
+  padding-top: 0.1rem;
+}
+
+.tier-form-card mat-card-header {
+  /* Less top space before "New tier" */
+  padding-bottom: 0.25rem;
+}
+
+.tier-form-card mat-card-content {
+  /* Ensure space between title and first input */
+  padding-top: 0.75rem;
 }
 
 .tier-form-grid__full {
@@ -378,9 +396,9 @@
 .campaign-card__heading {
   margin: 0;
   font-family: var(--app-display);
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--app-text);
 }
 

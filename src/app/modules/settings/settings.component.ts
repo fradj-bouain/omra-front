@@ -264,7 +264,7 @@ export class SettingsComponent implements OnInit {
       backgroundColor: b.backgroundColor ?? '#F8FAFC',
       cardColor: b.cardColor ?? '#FFFFFF',
       textColor: b.textColor ?? '#111827',
-      themeMode: b.themeMode === 'DARK' ? 'DARK' : 'LIGHT',
+      themeMode: 'LIGHT',
     };
   }
 
@@ -280,7 +280,8 @@ export class SettingsComponent implements OnInit {
     if (t.backgroundColor) d.backgroundColor = t.backgroundColor;
     if (t.cardColor) d.cardColor = t.cardColor;
     if (t.textColor) d.textColor = t.textColor;
-    if (t.themeMode === 'LIGHT' || t.themeMode === 'DARK') d.themeMode = t.themeMode;
+    // Force LIGHT mode (no UI toggle).
+    d.themeMode = 'LIGHT';
     return d;
   }
 
@@ -295,16 +296,16 @@ export class SettingsComponent implements OnInit {
         eq(b.cardColor, p.cardColor) &&
         eq(b.textColor, p.textColor) &&
         eq(b.buttonColor, p.buttonColor) &&
-        eq(b.menuColor, p.menuColor) &&
-        b.themeMode === (p.themeMode ?? 'LIGHT');
+        eq(b.menuColor, p.menuColor);
       if (same) return key;
     }
     return '';
   }
 
   onLangChange(ev: MatSelectChange): void {
-    const l = ev.value === 'ar' ? 'ar' : 'fr';
-    this.i18n.setLanguage(l as UiLang);
+    const raw = String(ev.value ?? '').toLowerCase();
+    const l: UiLang = raw === 'ar' ? 'ar' : raw === 'en' ? 'en' : 'fr';
+    this.i18n.setLanguage(l);
   }
 
   applyPresetId(id: string): void {
@@ -321,7 +322,7 @@ export class SettingsComponent implements OnInit {
     this.branding.backgroundColor = p.backgroundColor ?? this.branding.backgroundColor;
     this.branding.cardColor = p.cardColor ?? this.branding.cardColor;
     this.branding.textColor = p.textColor ?? this.branding.textColor;
-    this.branding.themeMode = (p.themeMode as 'LIGHT' | 'DARK') ?? this.branding.themeMode;
+    this.branding.themeMode = 'LIGHT';
   }
 
   onManualColor(): void {
@@ -371,7 +372,7 @@ export class SettingsComponent implements OnInit {
       backgroundColor: this.branding.backgroundColor,
       cardColor: this.branding.cardColor,
       textColor: this.branding.textColor,
-      themeMode: this.branding.themeMode,
+      themeMode: 'LIGHT',
     };
     this.http.put<AgencyTheme>(this.api.agencies.branding, payload).subscribe({
       next: (res) => {

@@ -5,6 +5,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -30,13 +32,22 @@ interface PageResponse<T> {
 @Component({
   selector: 'app-payment-list',
   standalone: true,
-  imports: [DatePipe, MatCardModule, MatTableModule, MatPaginatorModule, MatIconModule, PageHeaderComponent],
+  imports: [
+    RouterLink,
+    MatTooltipModule,
+    DatePipe,
+    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatIconModule,
+    PageHeaderComponent,
+  ],
   templateUrl: './payment-list.component.html',
   styleUrl: './payment-list.component.scss',
 })
 export class PaymentListComponent implements OnInit {
   dataSource: Payment[] = [];
-  displayedColumns = ['pilgrimId', 'groupId', 'amount', 'paymentMethod', 'status', 'paymentDate'];
+  displayedColumns = ['pilgrimId', 'groupId', 'amount', 'paymentMethod', 'status', 'paymentDate', 'actions'];
   totalElements = 0;
   page = 1;
   size = 20;

@@ -61,7 +61,7 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   width: var(--sidenav-width);
   min-width: var(--sidenav-width);
   max-width: var(--sidenav-width);
-  position: relative;
+  /* Keep default positioning for overlay drawer (mobile). */
   transition:
     width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -75,6 +75,13 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   border-right: 1px solid color-mix(in srgb, var(--sidebar-color) 65%, #000000 35%);
   overflow-x: hidden !important;
   overflow-y: hidden;
+}
+
+/* Desktop: allow decorative pseudo-elements to anchor inside sidenav */
+@media (min-width: 1025px) {
+  .sidenav {
+    position: relative;
+  }
 }
 
 .sidenav--rail {
@@ -583,6 +590,25 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
   padding-left: 0 !important;
 }
 
+/* Hard override: never reserve horizontal space for sidenav content */
+::host ::ng-deep .sidenav-container.mat-drawer-container,
+::host ::ng-deep .sidenav-container {
+  display: block !important;
+}
+
+::host ::ng-deep .sidenav-container .mat-drawer-content,
+::host ::ng-deep .sidenav-container mat-sidenav-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  transform: none !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
 .main {
   flex: 1;
   min-height: 0;
@@ -595,6 +621,9 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 .main ::ng-deep router-outlet + * {
   display: block;
   min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .footer {
@@ -607,7 +636,45 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 }
 
 /* ─── Responsive: tighter padding on small screens ─── */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
+  /*
+   * Mobile/tablet: drawer is overlay (mode="over").
+   * Do NOT keep the forced side-by-side flex layout, otherwise it reserves blank space.
+   */
+  ::host ::ng-deep .sidenav-container.mat-drawer-container,
+  ::host ::ng-deep .sidenav-container {
+    display: block !important;
+  }
+
+  ::host ::ng-deep .sidenav-container .mat-drawer-content,
+  ::host ::ng-deep .sidenav-container mat-sidenav-content {
+    flex: unset !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+  }
+
+  /* Extra safety: never reserve horizontal space for the drawer on small screens. */
+  ::host ::ng-deep .sidenav-container .mat-drawer-content {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Angular Material sometimes applies margins on the MDC content element directly. */
+  ::host ::ng-deep .sidenav-container .mat-drawer-content.mat-drawer-content {
+    margin: 0 !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+  }
+
   .main {
     padding: var(--app-space-lg);
   }

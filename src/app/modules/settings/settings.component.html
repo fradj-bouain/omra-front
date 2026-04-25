@@ -24,6 +24,7 @@
             <mat-label>{{ 'settings.language' | translate }}</mat-label>
             <mat-select [value]="i18n.currentLang()" (selectionChange)="onLangChange($event)">
               <mat-option value="fr">{{ 'login.langFr' | translate }}</mat-option>
+              <mat-option value="en">{{ 'login.langEn' | translate }}</mat-option>
               <mat-option value="ar">{{ 'login.langAr' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
@@ -101,24 +102,6 @@
                   </button>
                 }
               </div>
-
-              <h3 class="settings-section-label">{{ 'settings.themeMode' | translate }}</h3>
-              <mat-button-toggle-group
-                class="mode-toggle"
-                [(ngModel)]="branding.themeMode"
-                (ngModelChange)="onManualColor()"
-                name="themeMode"
-                aria-label="Theme mode"
-              >
-                <mat-button-toggle value="LIGHT">
-                  <mat-icon>light_mode</mat-icon>
-                  {{ 'settings.themeModeLight' | translate }}
-                </mat-button-toggle>
-                <mat-button-toggle value="DARK">
-                  <mat-icon>dark_mode</mat-icon>
-                  {{ 'settings.themeModeDark' | translate }}
-                </mat-button-toggle>
-              </mat-button-toggle-group>
 
               <mat-divider class="settings-divider"></mat-divider>
 

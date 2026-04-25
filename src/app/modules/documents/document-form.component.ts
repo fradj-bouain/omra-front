@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -51,13 +51,15 @@ export class DocumentFormComponent implements OnInit {
   groupDisplay = new FormControl('');
   groups: GroupOption[] = [];
   pilgrims: PilgrimOption[] = [];
+  editingId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private api: ApiService,
     private notif: NotificationService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       pilgrimId: [null as number | null],
@@ -69,6 +71,31 @@ export class DocumentFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const idRaw = this.route.snapshot.paramMap.get('id');
+    if (idRaw) {
+      const id = Number(idRaw);
+      if (!isNaN(id)) {
+        this.editingId = id;
+        this.loading = true;
+        this.http.get<any>(this.api.documents.byId(id)).subscribe({
+          next: (d) => {
+            this.form.patchValue({
+              pilgrimId: d?.pilgrimId ?? null,
+              groupId: d?.groupId ?? null,
+              type: d?.type ?? 'PASSPORT',
+              fileUrl: d?.fileUrl ?? '',
+              status: d?.status ?? 'UPLOADED',
+            });
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+            this.notif.error('Impossible de charger le document');
+          },
+        });
+      }
+    }
+
     this.http.get<{ content: GroupOption[] }>(`${this.api.groups.list}?page=1&size=500`).subscribe({
       next: (res) => (this.groups = res.content || []),
       error: () => {},
@@ -143,9 +170,12 @@ export class DocumentFormComponent implements OnInit {
       fileUrl: v.fileUrl,
       status: v.status || 'UPLOADED',
     };
-    this.http.post(this.api.documents.list, body).subscribe({
+    const req$ = this.editingId
+      ? this.http.patch(this.api.documents.patch(this.editingId), body)
+      : this.http.post(this.api.documents.list, body);
+    req$.subscribe({
       next: () => {
-        this.notif.success('Document enregistré');
+        this.notif.success(this.editingId ? 'Document modifié' : 'Document enregistré');
         this.router.navigate(['/documents']);
       },
       error: (err) => {
