@@ -1,0 +1,85 @@
+<app-page-header
+  [title]="(isNew ? 'hotel.offerNewTitle' : 'hotel.offerEditTitle') | translate"
+  [subtitle]="'hotel.offersSubtitle' | translate"
+></app-page-header>
+
+<section class="hotel-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hotel-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.property' | translate }}</mat-label>
+          <mat-select formControlName="propertyId">
+            @for (p of properties; track p.id) {
+              <mat-option [value]="p.id">{{ p.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.offerTitle' | translate }}</mat-label>
+          <input matInput formControlName="title" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.description' | translate }}</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.imageUrl' | translate }}</mat-label>
+          <input matInput formControlName="imageUrl" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.pricingUnit' | translate }}</mat-label>
+          <mat-select formControlName="pricingUnit">
+            <mat-option value="PER_PERSON">{{ 'hotel.pricing.PER_PERSON' | translate }}</mat-option>
+            <mat-option value="PER_ROOM">{{ 'hotel.pricing.PER_ROOM' | translate }}</mat-option>
+            <mat-option value="PER_GROUP">{{ 'hotel.pricing.PER_GROUP' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="grid-2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.price' | translate }}</mat-label>
+            <input matInput type="number" formControlName="price" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.currency' | translate }}</mat-label>
+            <input matInput formControlName="currency" />
+          </mat-form-field>
+        </div>
+
+        <div class="grid-2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.minUnits' | translate }}</mat-label>
+            <input matInput type="number" formControlName="minUnits" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.maxUnits' | translate }}</mat-label>
+            <input matInput type="number" formControlName="maxUnits" />
+          </mat-form-field>
+        </div>
+
+        <div class="grid-2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.validFrom' | translate }}</mat-label>
+            <input matInput type="date" formControlName="validFrom" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.validTo' | translate }}</mat-label>
+            <input matInput type="date" formControlName="validTo" />
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <a mat-button routerLink="/hotel-operator/offers" type="button">{{ 'common.cancel' | translate }}</a>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            {{ 'common.save' | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

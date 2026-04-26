@@ -27,5 +27,7 @@ export interface AgencySubDto {
   textColor?: string | null;
   themeMode?: 'LIGHT' | 'DARK' | null;
   status?: string | null;
+  /** Same as root agency; sub-agencies inherit parent kind. */
+  agencyKind?: 'TRAVEL' | 'MARKETPLACE' | 'HOTEL' | null;
   parentAgencyId?: number | null;
 }

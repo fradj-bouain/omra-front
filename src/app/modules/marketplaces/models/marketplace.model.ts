@@ -3,7 +3,7 @@ export type MarketplaceCatalogType = 'MANUAL' | 'EXTERNAL_API';
 
 export interface MarketplaceDto {
   id: number;
-  agencyId: number;
+  agencyId?: number;
   name: string;
   description?: string | null;
   status: MarketplaceStatus;

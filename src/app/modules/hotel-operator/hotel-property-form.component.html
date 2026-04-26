@@ -1,0 +1,45 @@
+<app-page-header
+  [title]="(isNew ? 'hotel.propertyNewTitle' : 'hotel.propertyEditTitle') | translate"
+  [subtitle]="'hotel.propertiesSubtitle' | translate"
+></app-page-header>
+
+<section class="hotel-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hotel-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.name' | translate }}</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+        <div class="grid-2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.city' | translate }}</mat-label>
+            <input matInput formControlName="city" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.country' | translate }}</mat-label>
+            <input matInput formControlName="country" maxlength="2" />
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.address' | translate }}</mat-label>
+          <textarea matInput formControlName="address" rows="2"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.description' | translate }}</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'hotel.field.imageUrl' | translate }}</mat-label>
+          <input matInput formControlName="imageUrl" />
+        </mat-form-field>
+        <div class="form-actions">
+          <a mat-button routerLink="/hotel-operator/properties" type="button">{{ 'common.cancel' | translate }}</a>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            {{ 'common.save' | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

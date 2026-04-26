@@ -1,5 +1,9 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { agencyKindGuard } from './core/guards/agency-kind.guard';
+import { MARKETPLACES_REDIRECT_ROUTES } from './modules/shop/marketplaces-redirect.routes';
+import { SHOP_ROUTES } from './modules/shop/shop.routes';
+import { HOTEL_OPERATOR_ROUTES } from './modules/hotel-operator/hotel-operator.routes';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -29,8 +33,17 @@ export const routes: Routes = [
       { path: 'referral', loadChildren: () => import('./modules/referral/referral.routes').then(m => m.REFERRAL_ROUTES) },
       {
         path: 'marketplaces',
-        loadChildren: () =>
-          import('./modules/marketplaces/marketplaces.routes').then((m) => m.MARKETPLACES_ROUTES),
+        children: MARKETPLACES_REDIRECT_ROUTES,
+      },
+      {
+        path: 'shop',
+        canActivate: [agencyKindGuard(['MARKETPLACE'])],
+        children: SHOP_ROUTES,
+      },
+      {
+        path: 'hotel-operator',
+        canActivate: [agencyKindGuard(['HOTEL'])],
+        children: HOTEL_OPERATOR_ROUTES,
       },
       {
         path: 'agency/subs',

@@ -1,0 +1,40 @@
+.hotel-form-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.form-card {
+  border-radius: var(--app-radius-lg) !important;
+  box-shadow: var(--app-shadow) !important;
+  border: 1px solid var(--app-border);
+}
+
+.hotel-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-md);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-md);
+}
+
+@media (max-width: 600px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--app-space-md);
+  padding-top: var(--app-space-lg);
+  border-top: 1px solid var(--app-border);
+}

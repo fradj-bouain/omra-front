@@ -1,0 +1,58 @@
+<app-page-header
+  [title]="(isNew ? 'shop.productNewTitle' : 'shop.productEditTitle') | translate"
+  [subtitle]="'shop.productSubtitle' | translate"
+></app-page-header>
+
+<section class="mp-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mp-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'shop.field.title' | translate }}</mat-label>
+          <input matInput formControlName="title" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'shop.field.description' | translate }}</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'shop.field.imageUrl' | translate }}</mat-label>
+          <input matInput formControlName="imageUrl" />
+        </mat-form-field>
+
+        <div class="form-grid form-grid--2">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'shop.field.price' | translate }}</mat-label>
+            <input matInput type="number" formControlName="price" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'shop.field.currency' | translate }}</mat-label>
+            <input matInput formControlName="currency" />
+          </mat-form-field>
+        </div>
+
+        <div class="row-toggle">
+          <mat-slide-toggle formControlName="inStock">{{ 'shop.field.inStock' | translate }}</mat-slide-toggle>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width narrow-qty">
+          <mat-label>{{ 'shop.field.stockQty' | translate }}</mat-label>
+          <input matInput type="number" formControlName="stockQuantity" />
+        </mat-form-field>
+
+        <div class="form-actions">
+          <a mat-button routerLink="/shop/articles" type="button">{{ 'common.cancel' | translate }}</a>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            @if (loading) {
+              {{ 'marketplace.form.saving' | translate }}
+            } @else {
+              {{ 'common.save' | translate }}
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

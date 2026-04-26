@@ -1,0 +1,55 @@
+<app-page-header
+  [title]="'shop.ordersTitle' | translate"
+  [subtitle]="'shop.ordersSubtitle' | translate"
+></app-page-header>
+
+<section class="shop-orders-page">
+  <mat-card class="list-card">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" class="shop-table full-width">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>{{ 'shop.col.orderId' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="pilgrimId">
+          <th mat-header-cell *matHeaderCellDef>{{ 'shop.col.pilgrim' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.pilgrimId }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'shop.col.status' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+        </ng-container>
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>{{ 'shop.col.total' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.total }}</td>
+        </ng-container>
+        <ng-container matColumnDef="currency">
+          <th mat-header-cell *matHeaderCellDef>{{ 'shop.col.currency' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.currency }}</td>
+        </ng-container>
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>{{ 'shop.col.date' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'short' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            @if (loading) {
+              <p class="muted">{{ 'common.loading' | translate }}</p>
+            } @else {
+              <p class="muted">{{ 'marketplace.empty.title' | translate }}</p>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="size"
+      [pageIndex]="page"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+    ></mat-paginator>
+  </mat-card>
+</section>

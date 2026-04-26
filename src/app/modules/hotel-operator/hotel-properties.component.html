@@ -1,0 +1,49 @@
+<app-page-header
+  [title]="'hotel.propertiesTitle' | translate"
+  [subtitle]="'hotel.propertiesSubtitle' | translate"
+  [actionLabel]="'hotel.addProperty' | translate"
+  actionLink="/hotel-operator/properties/new"
+></app-page-header>
+
+<section class="hotel-page">
+  <mat-card class="list-card">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" class="hotel-table full-width">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.name' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.city' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.city }}</td>
+        </ng-container>
+        <ng-container matColumnDef="country">
+          <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.country' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.country }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <a mat-icon-button [routerLink]="['/hotel-operator/properties', row.id, 'edit']">
+              <mat-icon>edit</mat-icon>
+            </a>
+            <button mat-icon-button color="warn" type="button" (click)="deleteRow(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            @if (loading) {
+              <p class="muted">{{ 'common.loading' | translate }}</p>
+            } @else {
+              <p class="muted">{{ 'hotel.emptyProperties' | translate }}</p>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+  </mat-card>
+</section>

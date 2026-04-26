@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { AuthService } from '../core/services/auth.service';
 import { ThemeService } from '../core/services/theme.service';
+import { type AgencyKindUi } from '../core/guards/agency-kind.guard';
 import { TranslatePipe } from '../shared/pipes/translate.pipe';
 import { resolveMediaUrl } from '../shared/utils/media-url';
 
@@ -21,6 +22,8 @@ export interface NavItem {
   linkExact?: boolean;
   /** Réservé aux administrateurs d’une agence principale (pas une sous-agence). */
   requireMainAgencyAdmin?: boolean;
+  /** Si défini, l’entrée n’est visible que pour ces types d’agence (sinon : tous). */
+  agencyKinds?: AgencyKindUi[];
 }
 
 export interface NavGroup {
@@ -73,38 +76,70 @@ export class LayoutComponent {
       id: 'participants',
       labelKey: 'nav.group.participants',
       items: [
-        { path: '/pilgrims', icon: 'groups', labelKey: 'nav.pilgrims' },
-        { path: '/groups', icon: 'folder_special', labelKey: 'nav.groups' },
+        { path: '/pilgrims', icon: 'groups', labelKey: 'nav.pilgrims', agencyKinds: ['TRAVEL'] },
+        { path: '/groups', icon: 'folder_special', labelKey: 'nav.groups', agencyKinds: ['TRAVEL'] },
       ],
     },
     {
       id: 'travel',
       labelKey: 'nav.group.travelStay',
       items: [
-        { path: '/flights', icon: 'flight', labelKey: 'nav.flights' },
-        { path: '/hotels', icon: 'hotel', labelKey: 'nav.hotels' },
-        { path: '/buses', icon: 'directions_bus', labelKey: 'nav.buses' },
-        { path: '/plannings', icon: 'calendar_view_week', labelKey: 'nav.plannings' },
+        { path: '/flights', icon: 'flight', labelKey: 'nav.flights', agencyKinds: ['TRAVEL'] },
+        { path: '/hotels', icon: 'hotel', labelKey: 'nav.hotels', agencyKinds: ['TRAVEL'] },
+        { path: '/buses', icon: 'directions_bus', labelKey: 'nav.buses', agencyKinds: ['TRAVEL'] },
+        { path: '/plannings', icon: 'calendar_view_week', labelKey: 'nav.plannings', agencyKinds: ['TRAVEL'] },
       ],
     },
     {
       id: 'administrative',
       labelKey: 'nav.group.administrative',
       items: [
-        { path: '/documents', icon: 'description', labelKey: 'nav.documents' },
-        { path: '/payments', icon: 'payment', labelKey: 'nav.payments' },
+        { path: '/documents', icon: 'description', labelKey: 'nav.documents', agencyKinds: ['TRAVEL'] },
+        { path: '/payments', icon: 'payment', labelKey: 'nav.payments', agencyKinds: ['TRAVEL'] },
+      ],
+    },
+    {
+      id: 'shop',
+      labelKey: 'nav.group.shop',
+      items: [
+        { path: '/shop/articles', icon: 'inventory_2', labelKey: 'nav.shop.articles', agencyKinds: ['MARKETPLACE'] },
+        { path: '/shop/orders', icon: 'shopping_bag', labelKey: 'nav.shop.orders', agencyKinds: ['MARKETPLACE'] },
+        { path: '/shop/stock', icon: 'warehouse', labelKey: 'nav.shop.stock', agencyKinds: ['MARKETPLACE'] },
+        { path: '/shop/settings', icon: 'tune', labelKey: 'nav.shop.settings', agencyKinds: ['MARKETPLACE'] },
+      ],
+    },
+    {
+      id: 'hotelOp',
+      labelKey: 'nav.group.hotel',
+      items: [
+        {
+          path: '/hotel-operator/properties',
+          icon: 'apartment',
+          labelKey: 'nav.hotel.properties',
+          agencyKinds: ['HOTEL'],
+        },
+        {
+          path: '/hotel-operator/offers',
+          icon: 'local_offer',
+          labelKey: 'nav.hotel.offers',
+          agencyKinds: ['HOTEL'],
+        },
       ],
     },
     {
       id: 'agency',
       labelKey: 'nav.group.agency',
       items: [
-        { path: '/agency/subs', icon: 'hub', labelKey: 'nav.subAgencies', requireMainAgencyAdmin: true },
+        {
+          path: '/agency/subs',
+          icon: 'hub',
+          labelKey: 'nav.subAgencies',
+          requireMainAgencyAdmin: true,
+          agencyKinds: ['TRAVEL'],
+        },
         { path: '/users', icon: 'people', labelKey: 'nav.users' },
-        { path: '/task-templates', icon: 'account_tree', labelKey: 'nav.taskTemplates' },
-        { path: '/referral', icon: 'card_giftcard', labelKey: 'nav.referral' },
-        { path: '/marketplaces', icon: 'storefront', labelKey: 'nav.marketplaces' },
-        { path: '/marketplaces/orders', icon: 'shopping_bag', labelKey: 'nav.marketplaceOrders' },
+        { path: '/task-templates', icon: 'account_tree', labelKey: 'nav.taskTemplates', agencyKinds: ['TRAVEL'] },
+        { path: '/referral', icon: 'card_giftcard', labelKey: 'nav.referral', agencyKinds: ['TRAVEL'] },
       ],
     },
   ];
@@ -163,9 +198,25 @@ export class LayoutComponent {
     if (item.requireMainAgencyAdmin) {
       const u = this.auth.user();
       const a = this.auth.agency();
-      return u?.role === 'AGENCY_ADMIN' && a != null && a.parentAgencyId == null;
+      if (!(u?.role === 'AGENCY_ADMIN' && a != null && a.parentAgencyId == null)) {
+        return false;
+      }
+    }
+    if (item.agencyKinds?.length) {
+      const kind = this.effectiveAgencyKind();
+      if (!item.agencyKinds.includes(kind)) {
+        return false;
+      }
     }
     return true;
+  }
+
+  private effectiveAgencyKind(): AgencyKindUi {
+    const k = this.auth.agency()?.agencyKind;
+    if (k === 'MARKETPLACE' || k === 'HOTEL') {
+      return k;
+    }
+    return 'TRAVEL';
   }
 
   navGroupVisible(group: NavGroup): boolean {

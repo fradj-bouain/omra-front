@@ -1,0 +1,49 @@
+<app-page-header
+  [title]="'hotel.offersTitle' | translate"
+  [subtitle]="'hotel.offersSubtitle' | translate"
+  [actionLabel]="'hotel.addOffer' | translate"
+  actionLink="/hotel-operator/offers/new"
+></app-page-header>
+
+<section class="hotel-page">
+  <mat-card class="list-card">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" class="hotel-table full-width">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.offerTitle' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+        </ng-container>
+        <ng-container matColumnDef="pricing">
+          <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.pricing' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ pricingLabel(row) }} — {{ row.price }} {{ row.currency }}</td>
+        </ng-container>
+        <ng-container matColumnDef="validity">
+          <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.validity' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.validFrom }} → {{ row.validTo }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <a mat-icon-button [routerLink]="['/hotel-operator/offers', row.id, 'edit']">
+              <mat-icon>edit</mat-icon>
+            </a>
+            <button mat-icon-button color="warn" type="button" (click)="deleteRow(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            @if (loading) {
+              <p class="muted">{{ 'common.loading' | translate }}</p>
+            } @else {
+              <p class="muted">{{ 'hotel.emptyOffers' | translate }}</p>
+            }
+          </td>
+        </tr>
+      </table>
+    </div>
+  </mat-card>
+</section>

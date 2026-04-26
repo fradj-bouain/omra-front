@@ -19,6 +19,13 @@ export interface Agency {
   id: number;
   name: string;
   email: string;
+  /**
+   * Tenant business profile (from login / refresh). Absent or unknown → treat as TRAVEL.
+   * TRAVEL: Omra agency (pilgrims, groups, trip logistics).
+   * MARKETPLACE: storefront (articles, orders, stock).
+   * HOTEL: hotel operator (properties, offers).
+   */
+  agencyKind?: 'TRAVEL' | 'MARKETPLACE' | 'HOTEL' | null;
   /** Set when this tenant is a sub-agency of a main (root) agency. */
   parentAgencyId?: number | null;
   /** ISO 3166-1 alpha-2 (ex. MA). */

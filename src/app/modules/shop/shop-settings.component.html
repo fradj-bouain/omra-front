@@ -1,0 +1,81 @@
+<app-page-header
+  [title]="'shop.settingsTitle' | translate"
+  [subtitle]="'shop.settingsSubtitle' | translate"
+></app-page-header>
+
+<section class="mp-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mp-form">
+        <div class="form-grid form-grid--2">
+          <mat-form-field appearance="outline" class="full-width form-field--span-2">
+            <mat-label>{{ 'marketplace.form.name' | translate }}</mat-label>
+            <input matInput formControlName="name" [placeholder]="'marketplace.form.namePlaceholder' | translate" />
+            <mat-error>{{ 'marketplace.form.nameRequired' | translate }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width form-field--span-2">
+            <mat-label>{{ 'marketplace.form.description' | translate }}</mat-label>
+            <textarea matInput formControlName="description" rows="2"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'marketplace.form.status' | translate }}</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="ACTIVE">{{ 'marketplace.status.active' | translate }}</mat-option>
+              <mat-option value="INACTIVE">{{ 'marketplace.status.inactive' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'marketplace.form.catalogSource' | translate }}</mat-label>
+            <mat-select formControlName="catalogType">
+              <mat-option value="MANUAL">{{ 'marketplace.catalog.manual' | translate }}</mat-option>
+              <mat-option value="EXTERNAL_API">{{ 'marketplace.catalog.externalApi' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          @if (form.controls.catalogType.value === 'EXTERNAL_API') {
+            <mat-form-field appearance="outline" class="full-width form-field--span-2">
+              <mat-label>{{ 'marketplace.form.apiBaseUrl' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="apiBaseUrl"
+                [placeholder]="'marketplace.form.apiBaseUrlPlaceholder' | translate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'marketplace.form.apiAuthHeader' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="apiAuthHeader"
+                [placeholder]="'marketplace.form.apiAuthHeaderPlaceholder' | translate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'marketplace.form.apiAuthValue' | translate }}</mat-label>
+              <input
+                matInput
+                formControlName="apiAuthValue"
+                [placeholder]="'marketplace.form.apiAuthValuePlaceholder' | translate"
+              />
+            </mat-form-field>
+          }
+        </div>
+
+        <div class="form-actions">
+          <a mat-button routerLink="/shop/articles" type="button">{{ 'common.cancel' | translate }}</a>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            @if (loading) {
+              {{ 'marketplace.form.saving' | translate }}
+            } @else {
+              {{ 'common.save' | translate }}
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -148,6 +148,23 @@ export class ApiService {
     orders: `${this.base}/api/marketplace-orders`,
     orderById: (id: number) => `${this.base}/api/marketplace-orders/${id}`,
   };
+  /** Boutique agence (type MARKETPLACE) : une vitrine par agence. */
+  shop = {
+    marketplace: `${this.base}/api/shop/marketplace`,
+    products: `${this.base}/api/shop/products`,
+    productById: (id: number) => `${this.base}/api/shop/products/${id}`,
+    orders: (page: number, size: number) =>
+      `${this.base}/api/shop/orders?page=${page}&size=${size}`,
+  };
+  /** Opérateur hôtelier (type HOTEL). */
+  hotelOperator = {
+    properties: `${this.base}/api/hotel-operator/properties`,
+    propertyById: (id: number) => `${this.base}/api/hotel-operator/properties/${id}`,
+    offersList: (propertyId?: number | null) =>
+      `${this.base}/api/hotel-operator/offers` +
+      (propertyId != null ? `?propertyId=${propertyId}` : ''),
+    offerById: (id: number) => `${this.base}/api/hotel-operator/offers/${id}`,
+  };
   files = { upload: `${this.base}/api/files/upload` };
   /** Abonnement de l’agence connectée (lecture seule, portail agence). */
   meSubscriptions = {
