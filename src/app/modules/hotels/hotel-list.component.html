@@ -1,9 +1,11 @@
-<app-page-header
-  title="Hôtels"
-  subtitle="Gérez les hôtels de vos séjours"
-  actionLabel="Ajouter hôtel"
-  actionLink="/hotels/new"
-></app-page-header>
+@if (!embedded) {
+  <app-page-header
+    title="Hôtels"
+    subtitle="Gérez les hôtels de vos séjours"
+    actionLabel="Ajouter hôtel"
+    actionLink="/hotels/new"
+  ></app-page-header>
+}
 
 <section class="hotel-list-page">
   <mat-card class="list-card">

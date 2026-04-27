@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -30,13 +31,20 @@ interface Hotel {
   styleUrl: './hotel-list.component.scss',
 })
 export class HotelListComponent implements OnInit {
+  @Input() embedded = false;
   dataSource: Hotel[] = [];
   displayedColumns = ['name', 'city', 'country', 'stars', 'receptionPhone', 'contactImportant', 'actions'];
   loading = false;
 
+  private readonly route = inject(ActivatedRoute);
+
   constructor(private http: HttpClient, private api: ApiService, private notif: NotificationService) {}
 
   ngOnInit(): void {
+    const fromRoute = this.route.snapshot.data?.['embedded'];
+    if (typeof fromRoute === 'boolean') {
+      this.embedded = fromRoute;
+    }
     this.load();
   }
 

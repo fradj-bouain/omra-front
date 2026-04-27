@@ -29,4 +29,9 @@ export const HOTEL_OPERATOR_ROUTES: Routes = [
     path: 'offers',
     loadComponent: () => import('./hotel-offers.component').then((m) => m.HotelOffersComponent),
   },
+  {
+    path: 'reservations',
+    loadComponent: () =>
+      import('./hotel-reservations.component').then((m) => m.HotelReservationsComponent),
+  },
 ];

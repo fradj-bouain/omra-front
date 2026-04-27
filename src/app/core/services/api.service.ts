@@ -166,6 +166,9 @@ export class ApiService {
     offerById: (id: number) => `${this.base}/api/hotel-operator/offers/${id}`,
     setOfferStatus: (id: number, active: boolean) =>
       `${this.base}/api/hotel-operator/offers/${id}/status?active=${active ? 'true' : 'false'}`,
+    reservations: `${this.base}/api/hotel-operator/reservations`,
+    reservationStatus: (id: number, status: 'PENDING' | 'CONFIRMED' | 'REJECTED') =>
+      `${this.base}/api/hotel-operator/reservations/${id}/status?status=${status}`,
   };
   /** Offres hôtels publiées (visibles par agences TRAVEL). */
   hotelOffers = {

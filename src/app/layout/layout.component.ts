@@ -124,6 +124,12 @@ export class LayoutComponent {
           labelKey: 'nav.hotel.offers',
           agencyKinds: ['HOTEL'],
         },
+        {
+          path: '/hotel-operator/reservations',
+          icon: 'inbox',
+          labelKey: 'nav.hotel.reservations',
+          agencyKinds: ['HOTEL'],
+        },
       ],
     },
     {
