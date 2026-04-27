@@ -3,6 +3,9 @@
 <section class="form-page">
   <mat-card>
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'plannings.form.name' | translate }}</mat-label>
@@ -99,11 +102,12 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/plannings">{{ 'plannings.form.cancel' | translate }}</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
-            {{ loading ? ('plannings.form.saving' | translate) : (isEdit ? ('plannings.form.save' | translate) : ('plannings.form.create' | translate)) }}
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving">
+            {{ saving ? ('plannings.form.saving' | translate) : (isEdit ? ('plannings.form.save' | translate) : ('plannings.form.create' | translate)) }}
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

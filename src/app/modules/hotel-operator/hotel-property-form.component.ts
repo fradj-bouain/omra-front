@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
 import { HotelProperty } from './models/hotel.models';
@@ -24,6 +25,7 @@ import { HotelProperty } from './models/hotel.models';
     MatInputModule,
     MatButtonModule,
     PageHeaderComponent,
+    FormInitialLoadComponent,
     TranslatePipe,
   ],
   templateUrl: './hotel-property-form.component.html',
@@ -40,7 +42,8 @@ export class HotelPropertyFormComponent implements OnInit {
 
   isNew = false;
   propertyId: number | null = null;
-  loading = false;
+  initialLoading = false;
+  saving = false;
 
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(200)]],
@@ -64,11 +67,11 @@ export class HotelPropertyFormComponent implements OnInit {
   }
 
   private load(id: number): void {
-    this.loading = true;
+    this.initialLoading = true;
     this.http.get<HotelProperty[]>(this.api.hotelOperator.properties).subscribe({
       next: (rows) => {
         const p = (rows || []).find((r) => r.id === id);
-        this.loading = false;
+        this.initialLoading = false;
         if (!p) {
           this.notif.error(this.i18n.instant('common.errorGeneric'));
           void this.router.navigate(['/hotel-operator/properties']);
@@ -84,15 +87,15 @@ export class HotelPropertyFormComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.loading = false;
+        this.initialLoading = false;
         this.notif.error(err.error?.message || this.i18n.instant('common.errorGeneric'));
       },
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body = {
       name: v.name,
@@ -115,7 +118,7 @@ export class HotelPropertyFormComponent implements OnInit {
         void this.router.navigate(['/hotel-operator/properties']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || this.i18n.instant('marketplace.form.saveError'));
       },
     });

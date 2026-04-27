@@ -122,3 +122,72 @@
 .full-width {
   width: 100%;
 }
+
+/* Actions ligne — boutons lisibles, cohérents avec le thème (teal + rouge discret) */
+.cell-actions {
+  text-align: end;
+  vertical-align: middle;
+}
+
+.hotel-row-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.hotel-row-actions__btn {
+  min-width: auto !important;
+  padding: 0 0.7rem 0 0.55rem !important;
+  height: 2.25rem !important;
+  line-height: 1 !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  box-shadow: none !important;
+  border-width: 1px !important;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+
+  mat-icon {
+    font-size: 1.125rem !important;
+    width: 1.125rem !important;
+    height: 1.125rem !important;
+    margin: 0 !important;
+  }
+}
+
+.hotel-row-actions__label {
+  white-space: nowrap;
+}
+
+.hotel-row-actions__btn--edit {
+  color: var(--app-accent, #0d9488) !important;
+  border-color: rgba(13, 148, 136, 0.4) !important;
+  background: rgba(13, 148, 136, 0.07) !important;
+
+  &:hover {
+    background: rgba(13, 148, 136, 0.14) !important;
+    border-color: var(--app-accent, #0d9488) !important;
+  }
+}
+
+.hotel-row-actions__btn--delete {
+  color: #b91c1c !important;
+  border-color: rgba(185, 28, 28, 0.35) !important;
+  background: rgba(185, 28, 28, 0.05) !important;
+
+  &:hover {
+    background: rgba(185, 28, 28, 0.11) !important;
+    border-color: #b91c1c !important;
+  }
+}

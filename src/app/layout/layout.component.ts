@@ -30,6 +30,11 @@ export interface NavGroup {
   id: string;
   /** Titre de section ; absent = pas d’en-tête (ex. entrée tableau de bord en tête). */
   labelKey?: string;
+  /**
+   * Si true : section toujours visible (pas d’accordéon), style bloc avec libellé fixe.
+   * Utilisé pour le menu opérateur hôtelier (« Hôtels & offres »).
+   */
+  alwaysOpen?: boolean;
   items: NavItem[];
 }
 
@@ -64,7 +69,6 @@ export class LayoutComponent {
   sidebarExpanded = true;
   mode: MatDrawerMode = 'side';
   isMobile = false;
-  currentYear = new Date().getFullYear();
 
   /** Menu agence : sections + entrées (ordre métier). */
   readonly menuGroups: NavGroup[] = [
@@ -111,6 +115,7 @@ export class LayoutComponent {
     {
       id: 'hotelOp',
       labelKey: 'nav.group.hotel',
+      alwaysOpen: true,
       items: [
         {
           path: '/hotel-operator/properties',
@@ -129,6 +134,31 @@ export class LayoutComponent {
           icon: 'inbox',
           labelKey: 'nav.hotel.reservations',
           agencyKinds: ['HOTEL'],
+        },
+      ],
+    },
+    {
+      id: 'transportOp',
+      labelKey: 'nav.group.transport',
+      alwaysOpen: true,
+      items: [
+        {
+          path: '/transport-operator/vehicles',
+          icon: 'directions_bus',
+          labelKey: 'nav.transport.vehicles',
+          agencyKinds: ['TRANSPORT'],
+        },
+        {
+          path: '/transport-operator/offers',
+          icon: 'local_offer',
+          labelKey: 'nav.transport.offers',
+          agencyKinds: ['TRANSPORT'],
+        },
+        {
+          path: '/transport-operator/reservations',
+          icon: 'inbox',
+          labelKey: 'nav.transport.reservations',
+          agencyKinds: ['TRANSPORT'],
         },
       ],
     },
@@ -219,7 +249,7 @@ export class LayoutComponent {
 
   private effectiveAgencyKind(): AgencyKindUi {
     const k = this.auth.agency()?.agencyKind;
-    if (k === 'MARKETPLACE' || k === 'HOTEL') {
+    if (k === 'MARKETPLACE' || k === 'HOTEL' || k === 'TRANSPORT') {
       return k;
     }
     return 'TRAVEL';

@@ -3,6 +3,9 @@
 <section class="payment-form-page">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="payment-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">payments</mat-icon>
@@ -136,11 +139,12 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/payments" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading || pilgrimDisplay.invalid || groupDisplay.invalid" class="btn-submit">
-            {{ loading ? 'Création...' : 'Créer le paiement' }}
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving || pilgrimDisplay.invalid || groupDisplay.invalid" class="btn-submit">
+            {{ saving ? 'Enregistrement…' : (editingId ? 'Enregistrer' : 'Créer le paiement') }}
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

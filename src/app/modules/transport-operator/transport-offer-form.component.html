@@ -1,0 +1,156 @@
+<app-page-header
+  [title]="(isNew ? 'transport.offerNewTitle' : 'transport.offerEditTitle') | translate"
+  [subtitle]="'transport.offersSubtitle' | translate"
+></app-page-header>
+
+<section class="hotel-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="hotel-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'transport.field.vehicle' | translate }}</mat-label>
+            <mat-select formControlName="vehicleId">
+              @for (veh of vehicles; track veh.id) {
+                <mat-option [value]="veh.id">{{ vehicleLabel(veh) }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.offerTitle' | translate }}</mat-label>
+            <input matInput formControlName="title" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'hotel.field.description' | translate }}</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+          </mat-form-field>
+
+          <div class="offer-image-block">
+            <span class="offer-image-block__label">{{ 'hotel.field.offerImage' | translate }}</span>
+            <p class="offer-image-block__hint">{{ 'hotel.field.offerImageHint' | translate }}</p>
+            <div class="offer-image-block__row">
+              @if (form.get('imageUrl')?.value) {
+                <div class="offer-image-block__preview">
+                  <img
+                    [src]="resolveMediaUrl(form.get('imageUrl')?.value)"
+                    [attr.alt]="form.get('title')?.value || 'offer'"
+                    class="offer-image-block__img"
+                  />
+                  <button type="button" mat-stroked-button class="offer-image-block__clear" (click)="clearOfferImage()">
+                    <mat-icon>close</mat-icon>
+                    {{ 'hotel.field.removeImage' | translate }}
+                  </button>
+                </div>
+              }
+              <div class="offer-image-block__upload">
+                <input
+                  #offerImg
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  class="visually-hidden"
+                  tabindex="-1"
+                  (change)="onOfferImageSelected($event, offerImg)"
+                />
+                <button
+                  type="button"
+                  mat-stroked-button
+                  color="primary"
+                  (click)="offerImg.click()"
+                  [disabled]="uploadingImage || saving"
+                >
+                  <mat-icon>{{ uploadingImage ? 'hourglass_empty' : 'cloud_upload' }}</mat-icon>
+                  {{ uploadingImage ? ('hotel.field.imageUploading' | translate) : ('hotel.field.chooseImage' | translate) }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'transport.field.pricingUnit' | translate }}</mat-label>
+            <mat-select formControlName="pricingUnit">
+              <mat-option value="DAY">{{ 'transport.pricing.DAY' | translate }}</mat-option>
+              <mat-option value="HOUR">{{ 'transport.pricing.HOUR' | translate }}</mat-option>
+              <mat-option value="TRIP">{{ 'transport.pricing.TRIP' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'hotel.field.price' | translate }}</mat-label>
+              <input matInput type="number" formControlName="price" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'hotel.field.currency' | translate }}</mat-label>
+              <input matInput formControlName="currency" />
+            </mat-form-field>
+          </div>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'hotel.field.minUnits' | translate }}</mat-label>
+              <input matInput type="number" formControlName="minUnits" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'hotel.field.maxUnits' | translate }}</mat-label>
+              <input matInput type="number" formControlName="maxUnits" />
+            </mat-form-field>
+          </div>
+
+          <div class="grid-2 grid-2--dates">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'hotel.field.validFrom' | translate }}</mat-label>
+              <input
+                #validFromInp
+                matInput
+                type="date"
+                formControlName="validFrom"
+                autocomplete="off"
+                class="date-native"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                [attr.aria-label]="'common.openDatePicker' | translate"
+                (click)="openNativeDatePicker(validFromInp, $event)"
+              >
+                <mat-icon>calendar_today</mat-icon>
+              </button>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'hotel.field.validTo' | translate }}</mat-label>
+              <input
+                #validToInp
+                matInput
+                type="date"
+                formControlName="validTo"
+                autocomplete="off"
+                class="date-native"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                [attr.aria-label]="'common.openDatePicker' | translate"
+                (click)="openNativeDatePicker(validToInp, $event)"
+              >
+                <mat-icon>calendar_today</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <a mat-button routerLink="/transport-operator/offers" type="button">{{ 'common.cancel' | translate }}</a>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving || uploadingImage">
+              {{ 'common.save' | translate }}
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

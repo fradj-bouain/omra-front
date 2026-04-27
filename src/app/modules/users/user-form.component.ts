@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 
 @Component({
   selector: 'app-user-form',
@@ -25,12 +26,14 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
     MatSelectModule,
     MatIconModule,
     PageHeaderComponent,
+    FormInitialLoadComponent,
   ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
 })
 export class UserFormComponent implements OnInit {
-  loading = false;
+  initialLoading = false;
+  saving = false;
   form: FormGroup;
   editingId: number | null = null;
 
@@ -62,7 +65,7 @@ export class UserFormComponent implements OnInit {
         // Password optional when editing
         this.form.get('password')?.clearValidators();
         this.form.get('password')?.updateValueAndValidity();
-        this.loading = true;
+        this.initialLoading = true;
         this.http.get<any>(this.api.users.byId(id)).subscribe({
           next: (u) => {
             this.form.patchValue({
@@ -72,10 +75,10 @@ export class UserFormComponent implements OnInit {
               role: u?.role ?? 'AGENCY_AGENT',
               status: u?.status ?? 'ACTIVE',
             });
-            this.loading = false;
+            this.initialLoading = false;
           },
           error: () => {
-            this.loading = false;
+            this.initialLoading = false;
             this.notif.error('Impossible de charger l’utilisateur');
           },
         });
@@ -90,8 +93,8 @@ export class UserFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body: Record<string, unknown> = {
       name: v.name,
@@ -117,7 +120,7 @@ export class UserFormComponent implements OnInit {
         this.router.navigate(['/users']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || 'Erreur lors de la création');
       },
     });

@@ -3,6 +3,9 @@
 <section class="flight-form-page">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flight-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">flight_takeoff</mat-icon>
@@ -102,11 +105,12 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/flights" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
-            {{ loading ? 'Création en cours...' : 'Créer le vol' }}
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving" class="btn-submit">
+            {{ saving ? 'Enregistrement…' : (editingId ? 'Enregistrer' : 'Créer le vol') }}
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

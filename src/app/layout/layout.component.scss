@@ -628,11 +628,64 @@ $pattern-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 .footer {
   padding: var(--app-space-md) var(--app-space-xl);
-  background: var(--app-card);
+  background: linear-gradient(180deg, var(--app-bg) 0%, var(--app-card) 100%);
   border-top: 1px solid var(--app-border);
-  font-size: 0.8rem;
   font-family: var(--app-font);
   color: var(--app-muted);
+  flex-shrink: 0;
+}
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+  text-align: center;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+/* Marque : sobre, crédit « entreprise » (pas un simple « made by ») */
+.footer__wordmark {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--app-text-soft, #64748b);
+  line-height: 1.2;
+}
+
+.footer__sep {
+  display: inline-block;
+  width: 1px;
+  height: 0.75rem;
+  background: var(--app-border);
+  align-self: center;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.footer__tagline {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--app-muted);
+  line-height: 1.35;
+  max-width: 32rem;
+}
+
+@media (max-width: 600px) {
+  .footer__inner {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .footer__sep {
+    display: none;
+  }
+  .footer__tagline {
+    max-width: 20rem;
+  }
 }
 
 /* ─── Responsive: tighter padding on small screens ─── */

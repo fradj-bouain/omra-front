@@ -3,6 +3,9 @@
 <section class="document-form-page">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="document-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">upload_file</mat-icon>
@@ -98,11 +101,12 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/documents" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
-            {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving" class="btn-submit">
+            {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

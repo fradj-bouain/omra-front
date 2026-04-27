@@ -1,181 +1,533 @@
 <div class="dashboard">
-  <header class="dashboard-header">
-    <h1 class="page-title">{{ 'dashboard.title' | translate }}</h1>
-    <p class="page-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
-  </header>
+  @if (isHotelDashboard()) {
+    <header class="dashboard-header">
+      <h1 class="page-title">{{ 'hotel.dashboardTitle' | translate }}</h1>
+      <p class="page-subtitle">{{ 'hotel.dashboardSubtitle' | translate }}</p>
+    </header>
 
-  @if (loading) {
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>{{ 'dashboard.loadingStats' | translate }}</p>
-    </div>
-  } @else if (stats) {
-    <section class="stats-section">
-      <div class="stats-grid">
-        <mat-card class="stat-card stat-card--pilgrims">
-          <mat-card-content>
-            <div class="stat-icon-wrap">
-              <mat-icon class="stat-icon">groups</mat-icon>
-            </div>
-            <div class="stat-body">
-              <span class="stat-value">{{ stats.totalPilgrims }}</span>
-              <span class="stat-label">{{ 'dashboard.totalPilgrims' | translate }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="stat-card stat-card--groups">
-          <mat-card-content>
-            <div class="stat-icon-wrap">
-              <mat-icon class="stat-icon">folder_special</mat-icon>
-            </div>
-            <div class="stat-body">
-              <span class="stat-value">{{ stats.activeGroups }}</span>
-              <span class="stat-label">{{ 'dashboard.activeGroups' | translate }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="stat-card stat-card--visas">
-          <mat-card-content>
-            <div class="stat-icon-wrap">
-              <mat-icon class="stat-icon">pending_actions</mat-icon>
-            </div>
-            <div class="stat-body">
-              <span class="stat-value">{{ stats.pendingVisas }}</span>
-              <span class="stat-label">{{ 'dashboard.pendingVisas' | translate }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="stat-card stat-card--payments">
-          <mat-card-content>
-            <div class="stat-icon-wrap">
-              <mat-icon class="stat-icon">payment</mat-icon>
-            </div>
-            <div class="stat-body">
-              <span class="stat-value">{{ stats.paymentsReceived | number:'1.0-0' }}</span>
-              <span class="stat-label">{{ 'dashboard.paymentsReceived' | translate }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
+    @if (loading) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>{{ 'dashboard.loadingStats' | translate }}</p>
       </div>
-    </section>
-
-    <section class="summary-section">
-      <div class="summary-grid">
-        <mat-card class="summary-card summary-card--revenue">
-          <mat-card-header>
-            <mat-card-title>{{ 'dashboard.totalRevenue' | translate }}</mat-card-title>
-          </mat-card-header>
+    } @else if (hotelDashboard) {
+      <section class="hotel-intro-strip">
+        <mat-card class="hotel-intro-card">
           <mat-card-content>
-            <p class="summary-value">{{ stats.totalRevenue | number:'1.0-0' }} <span class="summary-unit">{{ auth.agencyCurrency() }}</span></p>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="summary-card">
-          <mat-card-header>
-            <mat-card-title>{{ 'dashboard.breakdown' | translate }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="summary-list">
-              <div class="summary-list-item">
-                <span class="summary-dot" style="background: var(--chart-1);"></span>
-                <span>{{ 'dashboard.groupsActiveCount' | translate }} <strong>{{ stats.activeGroups }}</strong></span>
+            <div class="hotel-intro-main">
+              <mat-icon class="hotel-intro-icon" aria-hidden="true">apartment</mat-icon>
+              <div>
+                <span class="hotel-intro-label">{{ 'hotel.dashboard.agencyProfile' | translate }}</span>
+                <p class="hotel-intro-name">{{ auth.agency()?.name }}</p>
+                <p class="hotel-intro-meta">{{ auth.agencyCurrency() }}</p>
               </div>
-              <div class="summary-list-item">
-                <span class="summary-dot" style="background: var(--chart-2);"></span>
-                <span>{{ 'dashboard.visasPendingCount' | translate }} <strong>{{ stats.pendingVisas }}</strong></span>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </section>
-
-    @if (groupKpis.length > 0) {
-      <section class="kpi-section">
-        <mat-card class="kpi-card">
-          <mat-card-header>
-            <mat-card-title>{{ 'dashboard.kpiByGroup' | translate }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="table-wrap">
-              <table mat-table [dataSource]="groupKpis" class="kpi-table">
-                <ng-container matColumnDef="groupName">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.group' | translate }}</th>
-                  <td mat-cell *matCellDef="let row">{{ row.groupName }}</td>
-                </ng-container>
-                <ng-container matColumnDef="filledCapacity">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.filled' | translate }}</th>
-                  <td mat-cell *matCellDef="let row">{{ row.filledCapacity }}</td>
-                </ng-container>
-                <ng-container matColumnDef="maxCapacity">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.capacity' | translate }}</th>
-                  <td mat-cell *matCellDef="let row">{{ row.maxCapacity }}</td>
-                </ng-container>
-                <ng-container matColumnDef="totalPaid">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.paidWithCurrency' | translate: { currency: auth.agencyCurrency() } }}</th>
-                  <td mat-cell *matCellDef="let row">{{ row.totalPaid | number:'1.0-0' }}</td>
-                </ng-container>
-                <ng-container matColumnDef="price">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.priceWithCurrency' | translate: { currency: auth.agencyCurrency() } }}</th>
-                  <td mat-cell *matCellDef="let row">{{ row.price | number:'1.0-0' }}</td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.status' | translate }}</th>
-                  <td mat-cell *matCellDef="let row"><span class="status-badge">{{ row.status }}</span></td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
             </div>
           </mat-card-content>
         </mat-card>
       </section>
-    }
 
-    @if (chartData) {
-      <section class="charts-section">
-        <div class="charts-grid">
-          <mat-card class="chart-card">
-            <mat-card-header>
-              <mat-card-title>{{ 'dashboard.paymentsByPeriod' | translate }}</mat-card-title>
-            </mat-card-header>
+      <section class="stats-section">
+        <div class="stats-grid">
+          <mat-card class="stat-card stat-card--hotel-prop">
             <mat-card-content>
-              @if (chartData.paymentsOverTime && chartData.paymentsOverTime.length) {
-                <ul class="chart-list chart-list--bars">
-                  @for (item of chartData.paymentsOverTime; track item.period; let i = $index) {
-                    <li class="chart-list-item">
-                      <span class="chart-bar" [style.--chart-color]="getChartColor(i)" [style.--chart-pct]="getPaymentBarPct(item.amount) + '%'"></span>
-                      <span class="chart-label">{{ item.period }}</span>
-                      <span class="chart-value">{{ item.amount | number:'1.0-0' }} {{ auth.agencyCurrency() }}</span>
-                    </li>
-                  }
-                </ul>
-              } @else {
-                <p class="chart-empty">{{ 'dashboard.noData' | translate }}</p>
-              }
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">domain</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ hotelDashboard.propertiesCount }}</span>
+                <span class="stat-label">{{ 'hotel.dashboard.stat.properties' | translate }}</span>
+              </div>
             </mat-card-content>
           </mat-card>
-          <mat-card class="chart-card">
-            <mat-card-header>
-              <mat-card-title>{{ 'dashboard.visaDistribution' | translate }}</mat-card-title>
-            </mat-card-header>
+          <mat-card class="stat-card stat-card--hotel-offers">
             <mat-card-content>
-              @if (chartData.visaDistribution && chartData.visaDistribution.length) {
-                <ul class="chart-list chart-list--dots">
-                  @for (item of chartData.visaDistribution; track item.status; let i = $index) {
-                    <li class="chart-list-item">
-                      <span class="chart-dot" [style.background]="getChartColor(i)"></span>
-                      <span class="chart-label">{{ item.status }}</span>
-                      <span class="chart-value">{{ item.count }}</span>
-                    </li>
-                  }
-                </ul>
-              } @else {
-                <p class="chart-empty">{{ 'dashboard.noData' | translate }}</p>
-              }
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">local_offer</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ hotelDashboard.offersCount }}</span>
+                <span class="stat-label">{{ 'hotel.dashboard.stat.offers' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--hotel-active">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">check_circle</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ hotelDashboard.activeOffersCount }}</span>
+                <span class="stat-label">{{ 'hotel.dashboard.stat.activeOffers' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--hotel-res-total">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">inbox</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ hotelDashboard.reservationsTotal }}</span>
+                <span class="stat-label">{{ 'hotel.dashboard.stat.reservations' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="stats-grid stats-grid--hotel-secondary">
+          <mat-card class="stat-card stat-card--compact">
+            <mat-card-content>
+              <span class="stat-value stat-value--sm">{{ hotelDashboard.reservationsPending }}</span>
+              <span class="stat-label">{{ 'hotel.dashboard.stat.pending' | translate }}</span>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--compact">
+            <mat-card-content>
+              <span class="stat-value stat-value--sm">{{ hotelDashboard.reservationsConfirmed }}</span>
+              <span class="stat-label">{{ 'hotel.dashboard.stat.confirmed' | translate }}</span>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--compact">
+            <mat-card-content>
+              <span class="stat-value stat-value--sm">{{ hotelDashboard.reservationsRejected }}</span>
+              <span class="stat-label">{{ 'hotel.dashboard.stat.rejected' | translate }}</span>
             </mat-card-content>
           </mat-card>
         </div>
       </section>
+
+      <section class="hotel-quick-links">
+        <span class="hotel-quick-links__label">{{ 'hotel.dashboard.quickLinks' | translate }}</span>
+        <div class="hotel-quick-links__row">
+          <a mat-stroked-button color="primary" routerLink="/hotel-operator/properties">
+            <mat-icon>domain</mat-icon>
+            {{ 'hotel.dashboard.link.properties' | translate }}
+          </a>
+          <a mat-stroked-button color="primary" routerLink="/hotel-operator/offers">
+            <mat-icon>local_offer</mat-icon>
+            {{ 'hotel.dashboard.link.offers' | translate }}
+          </a>
+          <a mat-stroked-button color="primary" routerLink="/hotel-operator/reservations">
+            <mat-icon>event_note</mat-icon>
+            {{ 'hotel.dashboard.link.reservations' | translate }}
+          </a>
+        </div>
+      </section>
+
+      @if (hotelDashboard.recentReservations?.length) {
+        <section class="kpi-section hotel-recent">
+          <mat-card class="kpi-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'hotel.dashboard.recentTitle' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-wrap">
+                <table mat-table [dataSource]="hotelDashboard.recentReservations" class="kpi-table">
+                  <ng-container matColumnDef="contactName">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.res.colContact' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.contactName }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="travelAgencyName">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.dashboard.col.agency' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.travelAgencyName || '—' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="units">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.res.colUnits' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.units ?? '—' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'common.status' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">
+                      @switch (row.status) {
+                        @case ('PENDING') {
+                          <span class="status-badge status-badge--pending">{{ 'hotel.res.pending' | translate }}</span>
+                        }
+                        @case ('CONFIRMED') {
+                          <span class="status-badge status-badge--ok">{{ 'hotel.res.confirmed' | translate }}</span>
+                        }
+                        @case ('REJECTED') {
+                          <span class="status-badge status-badge--rej">{{ 'hotel.res.rejected' | translate }}</span>
+                        }
+                        @default {
+                          <span class="status-badge">{{ row.status }}</span>
+                        }
+                      }
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="createdAt">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.dashboard.col.date' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'short' }}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="displayedHotelRecentColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedHotelRecentColumns;"></tr>
+                </table>
+              </div>
+              <div class="hotel-recent-footer">
+                <a mat-button color="primary" routerLink="/hotel-operator/reservations">{{ 'hotel.dashboard.seeAllReservations' | translate }}</a>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </section>
+      } @else {
+        <section class="hotel-recent hotel-recent--empty kpi-section">
+          <p class="chart-empty">{{ 'hotel.dashboard.noRecent' | translate }}</p>
+          <a mat-button color="primary" routerLink="/hotel-operator/reservations">{{ 'hotel.dashboard.seeAllReservations' | translate }}</a>
+        </section>
+      }
+    }
+  } @else if (isTransportDashboard()) {
+    <header class="dashboard-header">
+      <h1 class="page-title">{{ 'transport.dashboardTitle' | translate }}</h1>
+      <p class="page-subtitle">{{ 'transport.dashboardSubtitle' | translate }}</p>
+    </header>
+
+    @if (loading) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>{{ 'dashboard.loadingStats' | translate }}</p>
+      </div>
+    } @else if (transportDashboard) {
+      <section class="hotel-intro-strip">
+        <mat-card class="hotel-intro-card">
+          <mat-card-content>
+            <div class="hotel-intro-main">
+              <mat-icon class="hotel-intro-icon" aria-hidden="true">airport_shuttle</mat-icon>
+              <div>
+                <span class="hotel-intro-label">{{ 'transport.dashboard.agencyProfile' | translate }}</span>
+                <p class="hotel-intro-name">{{ auth.agency()?.name }}</p>
+                <p class="hotel-intro-meta">{{ auth.agencyCurrency() }}</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <section class="stats-section">
+        <div class="stats-grid">
+          <mat-card class="stat-card stat-card--hotel-prop">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">directions_bus</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ transportDashboard.vehiclesCount }}</span>
+                <span class="stat-label">{{ 'transport.dashboard.stat.vehicles' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--hotel-offers">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">local_offer</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ transportDashboard.offersCount }}</span>
+                <span class="stat-label">{{ 'transport.dashboard.stat.offers' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--hotel-active">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">check_circle</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ transportDashboard.activeOffersCount }}</span>
+                <span class="stat-label">{{ 'transport.dashboard.stat.activeOffers' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--hotel-res-total">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">inbox</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ transportDashboard.reservationsTotal }}</span>
+                <span class="stat-label">{{ 'transport.dashboard.stat.reservations' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="stats-grid stats-grid--hotel-secondary">
+          <mat-card class="stat-card stat-card--compact">
+            <mat-card-content>
+              <span class="stat-value stat-value--sm">{{ transportDashboard.reservationsPending }}</span>
+              <span class="stat-label">{{ 'hotel.dashboard.stat.pending' | translate }}</span>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--compact">
+            <mat-card-content>
+              <span class="stat-value stat-value--sm">{{ transportDashboard.reservationsConfirmed }}</span>
+              <span class="stat-label">{{ 'hotel.dashboard.stat.confirmed' | translate }}</span>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--compact">
+            <mat-card-content>
+              <span class="stat-value stat-value--sm">{{ transportDashboard.reservationsRejected }}</span>
+              <span class="stat-label">{{ 'hotel.dashboard.stat.rejected' | translate }}</span>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </section>
+
+      <section class="hotel-quick-links">
+        <span class="hotel-quick-links__label">{{ 'hotel.dashboard.quickLinks' | translate }}</span>
+        <div class="hotel-quick-links__row">
+          <a mat-stroked-button color="primary" routerLink="/transport-operator/vehicles">
+            <mat-icon>directions_bus</mat-icon>
+            {{ 'transport.dashboard.link.vehicles' | translate }}
+          </a>
+          <a mat-stroked-button color="primary" routerLink="/transport-operator/offers">
+            <mat-icon>local_offer</mat-icon>
+            {{ 'transport.dashboard.link.offers' | translate }}
+          </a>
+          <a mat-stroked-button color="primary" routerLink="/transport-operator/reservations">
+            <mat-icon>event_note</mat-icon>
+            {{ 'transport.dashboard.link.reservations' | translate }}
+          </a>
+        </div>
+      </section>
+
+      @if (transportDashboard.recentReservations?.length) {
+        <section class="kpi-section hotel-recent">
+          <mat-card class="kpi-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'transport.dashboard.recentTitle' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-wrap">
+                <table mat-table [dataSource]="transportDashboard.recentReservations" class="kpi-table">
+                  <ng-container matColumnDef="contactName">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.res.colContact' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.contactName }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="travelAgencyName">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.dashboard.col.agency' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.travelAgencyName || '—' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="units">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.res.colUnits' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.units ?? '—' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'common.status' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">
+                      @switch (row.status) {
+                        @case ('PENDING') {
+                          <span class="status-badge status-badge--pending">{{ 'hotel.res.pending' | translate }}</span>
+                        }
+                        @case ('CONFIRMED') {
+                          <span class="status-badge status-badge--ok">{{ 'hotel.res.confirmed' | translate }}</span>
+                        }
+                        @case ('REJECTED') {
+                          <span class="status-badge status-badge--rej">{{ 'hotel.res.rejected' | translate }}</span>
+                        }
+                        @default {
+                          <span class="status-badge">{{ row.status }}</span>
+                        }
+                      }
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="createdAt">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'hotel.dashboard.col.date' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'short' }}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="displayedTransportRecentColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedTransportRecentColumns;"></tr>
+                </table>
+              </div>
+              <div class="hotel-recent-footer">
+                <a mat-button color="primary" routerLink="/transport-operator/reservations">{{ 'transport.dashboard.seeAllReservations' | translate }}</a>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </section>
+      } @else {
+        <section class="hotel-recent hotel-recent--empty kpi-section">
+          <p class="chart-empty">{{ 'transport.dashboard.noRecent' | translate }}</p>
+          <a mat-button color="primary" routerLink="/transport-operator/reservations">{{ 'transport.dashboard.seeAllReservations' | translate }}</a>
+        </section>
+      }
+    }
+  } @else {
+    <header class="dashboard-header">
+      <h1 class="page-title">{{ 'dashboard.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
+    </header>
+
+    @if (loading) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>{{ 'dashboard.loadingStats' | translate }}</p>
+      </div>
+    } @else if (stats) {
+      <section class="stats-section">
+        <div class="stats-grid">
+          <mat-card class="stat-card stat-card--pilgrims">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">groups</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ stats.totalPilgrims }}</span>
+                <span class="stat-label">{{ 'dashboard.totalPilgrims' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--groups">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">folder_special</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ stats.activeGroups }}</span>
+                <span class="stat-label">{{ 'dashboard.activeGroups' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--visas">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">pending_actions</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ stats.pendingVisas }}</span>
+                <span class="stat-label">{{ 'dashboard.pendingVisas' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-card stat-card--payments">
+            <mat-card-content>
+              <div class="stat-icon-wrap">
+                <mat-icon class="stat-icon">payment</mat-icon>
+              </div>
+              <div class="stat-body">
+                <span class="stat-value">{{ stats.paymentsReceived | number:'1.0-0' }}</span>
+                <span class="stat-label">{{ 'dashboard.paymentsReceived' | translate }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </section>
+
+      <section class="summary-section">
+        <div class="summary-grid">
+          <mat-card class="summary-card summary-card--revenue">
+            <mat-card-header>
+              <mat-card-title>{{ 'dashboard.totalRevenue' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="summary-value">{{ stats.totalRevenue | number:'1.0-0' }} <span class="summary-unit">{{ auth.agencyCurrency() }}</span></p>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="summary-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'dashboard.breakdown' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="summary-list">
+                <div class="summary-list-item">
+                  <span class="summary-dot" style="background: var(--chart-1);"></span>
+                  <span>{{ 'dashboard.groupsActiveCount' | translate }} <strong>{{ stats.activeGroups }}</strong></span>
+                </div>
+                <div class="summary-list-item">
+                  <span class="summary-dot" style="background: var(--chart-2);"></span>
+                  <span>{{ 'dashboard.visasPendingCount' | translate }} <strong>{{ stats.pendingVisas }}</strong></span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </section>
+
+      @if (groupKpis.length > 0) {
+        <section class="kpi-section">
+          <mat-card class="kpi-card">
+            <mat-card-header>
+              <mat-card-title>{{ 'dashboard.kpiByGroup' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="table-wrap">
+                <table mat-table [dataSource]="groupKpis" class="kpi-table">
+                  <ng-container matColumnDef="groupName">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.group' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.groupName }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="filledCapacity">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.filled' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.filledCapacity }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="maxCapacity">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.capacity' | translate }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.maxCapacity }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="totalPaid">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.paidWithCurrency' | translate: { currency: auth.agencyCurrency() } }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.totalPaid | number:'1.0-0' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="price">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.priceWithCurrency' | translate: { currency: auth.agencyCurrency() } }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.price | number:'1.0-0' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>{{ 'dashboard.col.status' | translate }}</th>
+                    <td mat-cell *matCellDef="let row"><span class="status-badge">{{ row.status }}</span></td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </section>
+      }
+
+      @if (chartData) {
+        <section class="charts-section">
+          <div class="charts-grid">
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>{{ 'dashboard.paymentsByPeriod' | translate }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                @if (chartData.paymentsOverTime && chartData.paymentsOverTime.length) {
+                  <ul class="chart-list chart-list--bars">
+                    @for (item of chartData.paymentsOverTime; track item.period; let i = $index) {
+                      <li class="chart-list-item">
+                        <span class="chart-bar" [style.--chart-color]="getChartColor(i)" [style.--chart-pct]="getPaymentBarPct(item.amount) + '%'"></span>
+                        <span class="chart-label">{{ item.period }}</span>
+                        <span class="chart-value">{{ item.amount | number:'1.0-0' }} {{ auth.agencyCurrency() }}</span>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="chart-empty">{{ 'dashboard.noData' | translate }}</p>
+                }
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="chart-card">
+              <mat-card-header>
+                <mat-card-title>{{ 'dashboard.visaDistribution' | translate }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                @if (chartData.visaDistribution && chartData.visaDistribution.length) {
+                  <ul class="chart-list chart-list--dots">
+                    @for (item of chartData.visaDistribution; track item.status; let i = $index) {
+                      <li class="chart-list-item">
+                        <span class="chart-dot" [style.background]="getChartColor(i)"></span>
+                        <span class="chart-label">{{ item.status }}</span>
+                        <span class="chart-value">{{ item.count }}</span>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="chart-empty">{{ 'dashboard.noData' | translate }}</p>
+                }
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </section>
+      }
     }
   }
 </div>

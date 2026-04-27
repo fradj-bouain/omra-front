@@ -73,24 +73,26 @@ interface ReservationRow {
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef></th>
               <td mat-cell *matCellDef="let row" class="cell-actions">
-                <button
-                  mat-stroked-button
-                  color="primary"
-                  type="button"
-                  [disabled]="savingId === row.id || row.status === 'CONFIRMED'"
-                  (click)="setStatus(row, 'CONFIRMED')"
-                >
-                  {{ 'hotel.res.confirm' | translate }}
-                </button>
-                <button
-                  mat-stroked-button
-                  color="warn"
-                  type="button"
-                  [disabled]="savingId === row.id || row.status === 'REJECTED'"
-                  (click)="setStatus(row, 'REJECTED')"
-                >
-                  {{ 'hotel.res.reject' | translate }}
-                </button>
+                <div class="hotel-res__actions">
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    [disabled]="savingId === row.id || row.status === 'CONFIRMED'"
+                    (click)="setStatus(row, 'CONFIRMED')"
+                  >
+                    {{ 'hotel.res.confirm' | translate }}
+                  </button>
+                  <button
+                    mat-stroked-button
+                    color="warn"
+                    type="button"
+                    [disabled]="savingId === row.id || row.status === 'REJECTED'"
+                    (click)="setStatus(row, 'REJECTED')"
+                  >
+                    {{ 'hotel.res.reject' | translate }}
+                  </button>
+                </div>
               </td>
             </ng-container>
 
@@ -111,32 +113,7 @@ interface ReservationRow {
       </mat-card>
     </section>
   `,
-  styles: [
-    `
-      .cell-main {
-        display: flex;
-        flex-direction: column;
-      }
-      .cell-title {
-        font-weight: 600;
-      }
-      .cell-sub {
-        opacity: 0.75;
-        font-size: 12px;
-        margin-top: 2px;
-      }
-      .cell-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .muted {
-        opacity: 0.7;
-        margin: 8px 0;
-      }
-    `,
-  ],
+  styleUrl: './hotel-reservations.component.scss',
 })
 export class HotelReservationsComponent implements OnInit {
   private readonly http = inject(HttpClient);

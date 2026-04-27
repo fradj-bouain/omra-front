@@ -15,6 +15,7 @@ import {
   HotelMapLocation,
   HotelMapPickerComponent,
 } from '../../shared/components/hotel-map-picker/hotel-map-picker.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 
 @Component({
   selector: 'app-hotel-form',
@@ -30,12 +31,15 @@ import {
     PageHeaderComponent,
     TranslatePipe,
     HotelMapPickerComponent,
+    FormInitialLoadComponent,
   ],
   templateUrl: './hotel-form.component.html',
   styleUrl: './hotel-form.component.scss',
 })
 export class HotelFormComponent implements OnInit {
-  loading = false;
+  /** Chargement de l’hôtel en édition uniquement. */
+  initialLoading = false;
+  saving = false;
   form: FormGroup;
   editingId: number | null = null;
 
@@ -68,7 +72,7 @@ export class HotelFormComponent implements OnInit {
     const id = Number(idRaw);
     if (isNaN(id)) return;
     this.editingId = id;
-    this.loading = true;
+    this.initialLoading = true;
     this.http.get<any>(this.api.hotels.byId(id)).subscribe({
       next: (h) => {
         this.form.patchValue({
@@ -84,10 +88,10 @@ export class HotelFormComponent implements OnInit {
           latitude: h?.latitude ?? null,
           longitude: h?.longitude ?? null,
         });
-        this.loading = false;
+        this.initialLoading = false;
       },
       error: () => {
-        this.loading = false;
+        this.initialLoading = false;
         this.notif.error('Impossible de charger l’hôtel');
       },
     });
@@ -107,8 +111,8 @@ export class HotelFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body = {
       name: v.name,
@@ -132,7 +136,7 @@ export class HotelFormComponent implements OnInit {
         this.router.navigate(['/hotels']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || 'Erreur lors de la création');
       },
     });

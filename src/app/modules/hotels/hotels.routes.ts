@@ -7,6 +7,7 @@ export const HOTELS_ROUTES: Route[] = [
     children: [
       { path: '', pathMatch: 'full', loadComponent: () => import('./hotel-list.component').then(m => m.HotelListComponent), data: { embedded: true } },
       { path: 'offers', loadComponent: () => import('./hotel-offers-browse.component').then(m => m.HotelOffersBrowseComponent) },
+      { path: 'my-reservations', loadComponent: () => import('./hotel-reservations-travel.component').then(m => m.HotelReservationsTravelComponent) },
     ],
   },
   { path: 'new', loadComponent: () => import('./hotel-form.component').then(m => m.HotelFormComponent) },

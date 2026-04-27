@@ -1,0 +1,43 @@
+.transport-form-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.form-card {
+  border-radius: 12px;
+}
+
+.transport-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}

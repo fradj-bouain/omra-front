@@ -11,6 +11,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { combineDateAndTime } from '../../shared/utils/date-form';
 
@@ -33,12 +34,14 @@ interface GroupOption {
     MatAutocompleteModule,
     MatDatepickerModule,
     PageHeaderComponent,
+    FormInitialLoadComponent,
   ],
   templateUrl: './flight-form.component.html',
   styleUrl: './flight-form.component.scss',
 })
 export class FlightFormComponent implements OnInit {
-  loading = false;
+  initialLoading = false;
+  saving = false;
   form: FormGroup;
   groupDisplay = new FormControl('');
   groups: GroupOption[] = [];
@@ -73,7 +76,7 @@ export class FlightFormComponent implements OnInit {
       const id = Number(idRaw);
       if (!isNaN(id)) {
         this.editingId = id;
-        this.loading = true;
+        this.initialLoading = true;
         this.http.get<any>(this.api.flights.byId(id)).subscribe({
           next: (f) => {
             this.form.patchValue({
@@ -88,10 +91,10 @@ export class FlightFormComponent implements OnInit {
             // departureTime / arrivalTime: keep raw value; user can adjust in form
             if (f?.departureTime) this.form.patchValue({ departureTime: f.departureTime });
             if (f?.arrivalTime) this.form.patchValue({ arrivalTime: f.arrivalTime });
-            this.loading = false;
+            this.initialLoading = false;
           },
           error: () => {
-            this.loading = false;
+            this.initialLoading = false;
             this.notif.error('Impossible de charger le vol');
           },
         });
@@ -131,8 +134,8 @@ export class FlightFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body: Record<string, unknown> = {
       airline: v.airline || undefined,
@@ -156,7 +159,7 @@ export class FlightFormComponent implements OnInit {
         this.router.navigate(['/flights']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || 'Erreur lors de la création');
       },
     });

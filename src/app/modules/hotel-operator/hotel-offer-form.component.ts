@@ -7,12 +7,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
+import { fileUrlFromUploadResponse } from '../../shared/utils/upload-response';
+import { resolveMediaUrl } from '../../shared/utils/media-url';
 import { HotelOffer, HotelPricingUnit, HotelProperty } from './models/hotel.models';
 
 @Component({
@@ -26,6 +30,8 @@ import { HotelOffer, HotelPricingUnit, HotelProperty } from './models/hotel.mode
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
+    MatIconModule,
+    FormInitialLoadComponent,
     PageHeaderComponent,
     TranslatePipe,
   ],
@@ -44,9 +50,15 @@ export class HotelOfferFormComponent implements OnInit {
 
   readonly defaultCurrency = computed(() => this.auth.agencyCurrency());
 
+  readonly resolveMediaUrl = resolveMediaUrl;
+
   isNew = false;
   offerId: number | null = null;
-  loading = false;
+  /** Chargement propriétés + offre (édition) — formulaire masqué jusqu’à la fin. */
+  initialLoading = true;
+  /** Enregistrement en cours (POST/PUT). */
+  saving = false;
+  uploadingImage = false;
   properties: HotelProperty[] = [];
 
   readonly form = this.fb.nonNullable.group({
@@ -74,20 +86,20 @@ export class HotelOfferFormComponent implements OnInit {
   }
 
   private loadPropertiesThenMaybeOffer(): void {
-    this.loading = true;
+    this.initialLoading = true;
     this.http.get<HotelProperty[]>(this.api.hotelOperator.properties).subscribe({
       next: (rows) => {
         this.properties = Array.isArray(rows) ? rows : [];
         if (this.isNew) {
           this.form.patchValue({ currency: this.defaultCurrency() });
-          this.loading = false;
+          this.initialLoading = false;
           return;
         }
         if (this.offerId != null) {
           this.http.get<HotelOffer[]>(this.api.hotelOperator.offersList(null)).subscribe({
             next: (offers) => {
               const o = (offers || []).find((x) => x.id === this.offerId);
-              this.loading = false;
+              this.initialLoading = false;
               if (!o) {
                 this.notif.error(this.i18n.instant('common.errorGeneric'));
                 void this.router.navigate(['/hotel-operator/offers']);
@@ -103,29 +115,81 @@ export class HotelOfferFormComponent implements OnInit {
                 currency: o.currency || this.defaultCurrency(),
                 minUnits: o.minUnits ?? null,
                 maxUnits: o.maxUnits ?? null,
-                validFrom: o.validFrom,
-                validTo: o.validTo,
+                validFrom: this.toDateInputValue(o.validFrom),
+                validTo: this.toDateInputValue(o.validTo),
               });
             },
             error: (err) => {
-              this.loading = false;
+              this.initialLoading = false;
               this.notif.error(err.error?.message || this.i18n.instant('common.errorGeneric'));
             },
           });
         } else {
-          this.loading = false;
+          this.initialLoading = false;
         }
       },
       error: (err) => {
-        this.loading = false;
+        this.initialLoading = false;
         this.notif.error(err.error?.message || this.i18n.instant('common.errorGeneric'));
       },
     });
   }
 
+  private toDateInputValue(v: string | null | undefined): string {
+    if (v == null || v === '') return '';
+    const s = String(v).trim();
+    return s.length >= 10 ? s.slice(0, 10) : s;
+  }
+
+  /** Ouvre le sélecteur de date natif (clic sur l’icône calendrier dans mat-form-field). */
+  openNativeDatePicker(input: HTMLInputElement, event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    try {
+      if (typeof input.showPicker === 'function') {
+        void input.showPicker();
+        return;
+      }
+    } catch {
+      /* navigateurs ou contextes où showPicker échoue */
+    }
+    input.focus();
+    input.click();
+  }
+
+  onOfferImageSelected(_event: Event, input: HTMLInputElement): void {
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.uploadingImage = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'hotel-offer-image');
+    this.http.post<unknown>(this.api.files.upload, formData).subscribe({
+      next: (res) => {
+        this.uploadingImage = false;
+        const u = fileUrlFromUploadResponse(res);
+        if (u) {
+          this.form.patchValue({ imageUrl: u });
+          this.notif.success(this.i18n.instant('settings.fileUploaded'));
+        } else {
+          this.notif.error(this.i18n.instant('settings.fileUploadBadResponse'));
+        }
+      },
+      error: () => {
+        this.uploadingImage = false;
+        this.notif.error(this.i18n.instant('settings.fileUploadError'));
+      },
+    });
+  }
+
+  clearOfferImage(): void {
+    this.form.patchValue({ imageUrl: '' });
+  }
+
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving || this.uploadingImage) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body = {
       propertyId: v.propertyId!,
@@ -153,7 +217,7 @@ export class HotelOfferFormComponent implements OnInit {
         void this.router.navigate(['/hotel-operator/offers']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || this.i18n.instant('marketplace.form.saveError'));
       },
     });

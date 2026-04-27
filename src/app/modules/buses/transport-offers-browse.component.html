@@ -1,0 +1,65 @@
+<section class="offers-hero">
+  <div class="offers-hero__inner">
+    <h1 class="offers-hero__title">{{ 'transport.browse.title' | translate }}</h1>
+    <p class="offers-hero__subtitle">{{ 'transport.browse.subtitle' | translate }}</p>
+    @if (!loading) {
+      <span class="offers-hero__count">{{ rows.length }} {{ 'hotels.offers.count' | translate }}</span>
+    }
+  </div>
+</section>
+
+@if (loading) {
+  <div class="offers-loading">
+    <mat-progress-spinner mode="indeterminate" diameter="40" />
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+} @else if (rows.length === 0) {
+  <div class="offers-empty">
+    <mat-icon>directions_bus</mat-icon>
+    <p class="offers-empty__title">{{ 'transport.browse.empty' | translate }}</p>
+  </div>
+} @else {
+  <div class="offers-grid">
+    @for (row of rows; track row.id) {
+      <article class="offer-card">
+        <div class="offer-card__media">
+          @if (coverImage(row); as cover) {
+            <img [src]="cover" [alt]="row.title" class="offer-card__img" loading="lazy" />
+          } @else {
+            <div class="offer-card__placeholder" aria-hidden="true">
+              <mat-icon>airport_shuttle</mat-icon>
+            </div>
+          }
+          <div class="offer-card__price-tag">
+            <span class="offer-card__amount">{{ row.price }} {{ row.currency }}</span>
+            @if (showPriceUnitSubline(row)) {
+              <span class="offer-card__unit">{{ pricingLabel(row) }}</span>
+            }
+          </div>
+        </div>
+        <div class="offer-card__body">
+          <h2 class="offer-card__title">{{ row.title }}</h2>
+          <p class="offer-card__meta">
+            <span class="offer-card__brand">{{ row.transportAgencyName || '—' }}</span>
+            <span class="offer-card__dot">·</span>
+            <span class="offer-card__property">{{ vehicleLine(row) }}</span>
+          </p>
+          @if (row.vehicleSeatCount != null) {
+            <p class="offer-card__location">
+              <mat-icon>event_seat</mat-icon>
+              {{ row.vehicleSeatCount }} {{ 'transport.browse.seats' | translate }}
+            </p>
+          }
+
+          <div class="offer-card__dates">
+            <mat-icon>date_range</mat-icon>
+            <span>{{ row.validFrom }} → {{ row.validTo }}</span>
+          </div>
+          <button mat-flat-button color="primary" class="offer-card__cta" type="button" (click)="reserve(row)">
+            {{ 'hotels.offers.reserve' | translate }}
+          </button>
+        </div>
+      </article>
+    }
+  </div>
+}

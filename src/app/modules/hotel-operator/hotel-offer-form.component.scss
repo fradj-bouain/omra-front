@@ -38,3 +38,98 @@
   padding-top: var(--app-space-lg);
   border-top: 1px solid var(--app-border);
 }
+
+/* Image offre : upload (comme logo agence) */
+.offer-image-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem 0 0.25rem;
+  border-top: 1px solid var(--app-border);
+  margin-top: 0.25rem;
+}
+
+.offer-image-block__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--app-text, #0f172a);
+}
+
+.offer-image-block__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--app-text-soft, #64748b);
+  max-width: 36rem;
+}
+
+.offer-image-block__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.offer-image-block__preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.offer-image-block__img {
+  max-width: 100%;
+  width: auto;
+  max-height: 9rem;
+  object-fit: contain;
+  border-radius: var(--app-radius-sm, 0.5rem);
+  border: 1px solid var(--app-border);
+  background: var(--app-bg-soft, #f8fafc);
+}
+
+.offer-image-block__clear mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: 0.2rem;
+  vertical-align: middle;
+}
+
+.offer-image-block__upload {
+  display: flex;
+  align-items: center;
+}
+
+/* Champs date natifs : hauteur cohérente */
+.date-native {
+  min-height: 1.5rem;
+}
+
+/*
+ * Masquer l’icône calendrier du navigateur : elle est souvent mal cliquable dans mat-form-field.
+ * Le bouton matSuffix (calendar_today) appelle showPicker() pour ouvrir le même calendrier natif.
+ */
+.grid-2--dates .date-native::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.grid-2--dates .date-native::-moz-calendar-picker-indicator {
+  display: none;
+}
+
+:host .grid-2--dates .mat-mdc-form-field {
+  /* évite le crop du navigateur sur le sélecteur de date */
+  overflow: visible;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

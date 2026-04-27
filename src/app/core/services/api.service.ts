@@ -158,6 +158,7 @@ export class ApiService {
   };
   /** Opérateur hôtelier (type HOTEL). */
   hotelOperator = {
+    dashboard: `${this.base}/api/hotel-operator/dashboard`,
     properties: `${this.base}/api/hotel-operator/properties`,
     propertyById: (id: number) => `${this.base}/api/hotel-operator/properties/${id}`,
     offersList: (propertyId?: number | null) =>
@@ -173,6 +174,27 @@ export class ApiService {
   /** Offres hôtels publiées (visibles par agences TRAVEL). */
   hotelOffers = {
     listActive: `${this.base}/api/hotel-offers`,
+    myReservations: `${this.base}/api/hotel-offers/my-reservations`,
+  };
+  /** Opérateur transport (type TRANSPORT). */
+  transportOperator = {
+    dashboard: `${this.base}/api/transport-operator/dashboard`,
+    vehicles: `${this.base}/api/transport-operator/vehicles`,
+    vehicleById: (id: number) => `${this.base}/api/transport-operator/vehicles/${id}`,
+    offersList: (vehicleId?: number | null) =>
+      `${this.base}/api/transport-operator/offers` +
+      (vehicleId != null ? `?vehicleId=${vehicleId}` : ''),
+    offerById: (id: number) => `${this.base}/api/transport-operator/offers/${id}`,
+    setOfferStatus: (id: number, active: boolean) =>
+      `${this.base}/api/transport-operator/offers/${id}/status?active=${active ? 'true' : 'false'}`,
+    reservations: `${this.base}/api/transport-operator/reservations`,
+    reservationStatus: (id: number, status: 'PENDING' | 'CONFIRMED' | 'REJECTED') =>
+      `${this.base}/api/transport-operator/reservations/${id}/status?status=${status}`,
+  };
+  /** Offres transport publiées (agences TRAVEL). */
+  transportOffers = {
+    listActive: `${this.base}/api/transport-offers`,
+    myReservations: `${this.base}/api/transport-offers/my-reservations`,
   };
   files = { upload: `${this.base}/api/files/upload` };
   /** Abonnement de l’agence connectée (lecture seule, portail agence). */

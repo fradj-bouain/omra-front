@@ -3,6 +3,9 @@
 <section class="bus-form-page">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bus-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">directions_bus</mat-icon>
@@ -35,11 +38,12 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/buses" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
-            {{ loading ? 'Création...' : 'Créer le bus' }}
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving" class="btn-submit">
+            {{ saving ? 'Enregistrement…' : (editingId ? 'Enregistrer' : 'Créer le bus') }}
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

@@ -1,0 +1,80 @@
+<section class="offers-hero">
+  <div class="offers-hero__inner">
+    <h1 class="offers-hero__title">{{ 'hotels.offers.title' | translate }}</h1>
+    <p class="offers-hero__subtitle">{{ 'hotels.offers.subtitle' | translate }}</p>
+    @if (!loading) {
+      <span class="offers-hero__count">{{ rows.length }} {{ 'hotels.offers.count' | translate }}</span>
+    }
+  </div>
+</section>
+
+@if (loading) {
+  <div class="offers-loading">
+    <mat-progress-spinner mode="indeterminate" diameter="40" />
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+} @else if (rows.length === 0) {
+  <div class="offers-empty">
+    <mat-icon>travel_explore</mat-icon>
+    <p class="offers-empty__title">{{ 'hotels.offers.empty' | translate }}</p>
+  </div>
+} @else {
+  <div class="offers-grid">
+    @for (row of rows; track row.id) {
+      <article class="offer-card">
+        <div class="offer-card__media">
+          @if (coverImage(row); as cover) {
+            <img
+              [src]="cover"
+              [alt]="row.title"
+              class="offer-card__img"
+              loading="lazy"
+            />
+          } @else {
+            <div class="offer-card__placeholder" aria-hidden="true">
+              <mat-icon>hotel</mat-icon>
+            </div>
+          }
+          <div class="offer-card__price-tag">
+            <span class="offer-card__amount">{{ row.price }} {{ row.currency }}</span>
+            @if (showPriceUnitSubline(row)) {
+              <span class="offer-card__unit">{{ pricingLabel(row) }}</span>
+            }
+          </div>
+        </div>
+        <div class="offer-card__body">
+          <h2 class="offer-card__title">{{ row.title }}</h2>
+          <p class="offer-card__meta">
+            <span class="offer-card__brand">{{ row.hotelAgencyName || '—' }}</span>
+            <span class="offer-card__dot">·</span>
+            <span class="offer-card__property">{{ row.propertyName || '—' }}</span>
+          </p>
+          <p class="offer-card__location">
+            <mat-icon>place</mat-icon>
+            {{ locationLine(row) }}
+          </p>
+          @if (unitsLine(row); as cap) {
+            <div class="offer-card__units">
+              <mat-icon>{{ unitsLineIcon(row) }}</mat-icon>
+              <span class="offer-card__units-text">{{ cap }}</span>
+            </div>
+          }
+
+          <div class="offer-card__dates">
+            <mat-icon>date_range</mat-icon>
+            <span>{{ row.validFrom }} → {{ row.validTo }}</span>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            class="offer-card__cta"
+            type="button"
+            (click)="reserve(row)"
+          >
+            {{ 'hotels.offers.reserve' | translate }}
+          </button>
+        </div>
+      </article>
+    }
+  </div>
+}

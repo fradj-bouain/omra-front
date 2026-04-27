@@ -81,6 +81,29 @@
                       }
                     </mat-nav-list>
                   </div>
+                } @else if (group.alwaysOpen) {
+                  <div class="sidenav__static-group">
+                    <div class="sidenav__static-group-label" role="presentation">
+                      {{ group.labelKey | translate }}
+                    </div>
+                    <mat-nav-list class="sidenav__nav-chunk sidenav__nav-chunk--in-panel">
+                      @for (item of visibleNavItems(group); track item.path) {
+                        <a
+                          mat-list-item
+                          [routerLink]="item.path"
+                          routerLinkActive="active"
+                          [routerLinkActiveOptions]="{ exact: item.linkExact === true }"
+                          (click)="closeIfMobile()"
+                          [matTooltip]="item.labelKey | translate"
+                          matTooltipPosition="after"
+                          matTooltipShowDelay="300"
+                        >
+                          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                          <span matListItemTitle>{{ item.labelKey | translate }}</span>
+                        </a>
+                      }
+                    </mat-nav-list>
+                  </div>
                 } @else {
                   <mat-expansion-panel
                     class="sidenav__panel"
@@ -201,8 +224,12 @@
       <main class="main">
         <router-outlet></router-outlet>
       </main>
-      <footer class="footer">
-        <span>{{ 'layout.footer' | translate: { year: currentYear } }}</span>
+      <footer class="footer" role="contentinfo">
+        <div class="footer__inner">
+          <span class="footer__wordmark" translate="no">FLUTTIRIS</span>
+          <span class="footer__sep" aria-hidden="true"></span>
+          <span class="footer__tagline">{{ 'layout.footerTagline' | translate }}</span>
+        </div>
       </footer>
     </mat-sidenav-content>
   </mat-sidenav-container>

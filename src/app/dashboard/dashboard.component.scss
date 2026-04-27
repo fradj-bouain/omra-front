@@ -95,6 +95,16 @@
 .stat-card--visas .stat-icon-wrap { background: rgba(124, 58, 237, 0.12); }
 .stat-card--payments .stat-icon-wrap { background: rgba(245, 158, 11, 0.12); }
 
+.stat-card--hotel-prop .stat-icon-wrap { background: rgba(13, 148, 136, 0.12); }
+.stat-card--hotel-offers .stat-icon-wrap { background: rgba(8, 145, 178, 0.12); }
+.stat-card--hotel-active .stat-icon-wrap { background: rgba(34, 197, 94, 0.14); }
+.stat-card--hotel-res-total .stat-icon-wrap { background: rgba(124, 58, 237, 0.12); }
+
+.stat-card--hotel-prop .stat-icon { color: var(--chart-1); }
+.stat-card--hotel-offers .stat-icon { color: var(--chart-2); }
+.stat-card--hotel-active .stat-icon { color: rgb(22, 163, 74); }
+.stat-card--hotel-res-total .stat-icon { color: var(--chart-3); }
+
 .stat-icon {
   font-size: 28px !important;
   width: 28px !important;
@@ -125,6 +135,129 @@
   color: var(--text-muted);
   margin-top: 2px;
   display: block;
+}
+
+.stats-grid--hotel-secondary {
+  margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.stat-card--compact mat-card-content {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 20px !important;
+}
+
+.stat-value--sm {
+  font-size: 1.35rem;
+}
+
+/* ─── Hotel dashboard ─── */
+.hotel-intro-strip {
+  margin-bottom: 28px;
+}
+
+.hotel-intro-card {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border-color);
+
+  mat-card-content {
+    padding: 20px 22px !important;
+  }
+}
+
+.hotel-intro-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.hotel-intro-icon {
+  font-size: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.hotel-intro-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.hotel-intro-name {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text-color);
+}
+
+.hotel-intro-meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.hotel-quick-links {
+  margin-bottom: 28px;
+}
+
+.hotel-quick-links__label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.hotel-quick-links__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  a mat-icon {
+    margin-right: 6px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+  }
+}
+
+.hotel-recent-footer {
+  margin-top: 12px;
+  padding-top: 4px;
+}
+
+.hotel-recent--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0 16px;
+}
+
+.status-badge--pending {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.status-badge--ok {
+  background: rgba(34, 197, 94, 0.18);
+  color: #15803d;
+}
+
+.status-badge--rej {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
 }
 
 /* ─── Summary cards ─── */

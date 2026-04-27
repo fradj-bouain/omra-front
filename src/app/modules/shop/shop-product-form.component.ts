@@ -14,6 +14,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
 import { ShopProduct, ShopProductWritePayload } from './models/shop.models';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 
 @Component({
   selector: 'app-shop-product-form',
@@ -28,6 +29,7 @@ import { ShopProduct, ShopProductWritePayload } from './models/shop.models';
     MatSlideToggleModule,
     PageHeaderComponent,
     TranslatePipe,
+    FormInitialLoadComponent,
   ],
   templateUrl: './shop-product-form.component.html',
   styleUrl: './shop-product-form.component.scss',
@@ -44,7 +46,8 @@ export class ShopProductFormComponent implements OnInit {
 
   readonly defaultCurrency = computed(() => this.auth.agencyCurrency());
 
-  loading = false;
+  initialLoading = false;
+  saving = false;
   isNew = false;
   productId: number | null = null;
 
@@ -73,11 +76,11 @@ export class ShopProductFormComponent implements OnInit {
   }
 
   private load(id: number): void {
-    this.loading = true;
+    this.initialLoading = true;
     this.http.get<ShopProduct[]>(this.api.shop.products).subscribe({
       next: (rows) => {
         const p = (rows || []).find((r) => r.id === id);
-        this.loading = false;
+        this.initialLoading = false;
         if (!p) {
           this.notif.error(this.i18n.instant('common.errorGeneric'));
           void this.router.navigate(['/shop/articles']);
@@ -94,15 +97,15 @@ export class ShopProductFormComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.loading = false;
+        this.initialLoading = false;
         this.notif.error(err.error?.message || this.i18n.instant('marketplace.loadError'));
       },
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body: ShopProductWritePayload = {
       title: v.title,
@@ -126,7 +129,7 @@ export class ShopProductFormComponent implements OnInit {
         void this.router.navigate(['/shop/articles']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || this.i18n.instant('marketplace.form.saveError'));
       },
     });

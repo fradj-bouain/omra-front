@@ -13,6 +13,7 @@ import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { toIsoDateString } from '../../shared/utils/date-form';
@@ -44,12 +45,14 @@ interface PilgrimOption {
     MatDatepickerModule,
     PageHeaderComponent,
     TranslatePipe,
+    FormInitialLoadComponent,
   ],
   templateUrl: './payment-form.component.html',
   styleUrl: './payment-form.component.scss',
 })
 export class PaymentFormComponent implements OnInit {
-  loading = false;
+  initialLoading = false;
+  saving = false;
   readonly auth = inject(AuthService);
   form: FormGroup;
   pilgrimDisplay = new FormControl('', { validators: Validators.required });
@@ -91,7 +94,7 @@ export class PaymentFormComponent implements OnInit {
       const id = Number(idRaw);
       if (!isNaN(id)) {
         this.editingId = id;
-        this.loading = true;
+        this.initialLoading = true;
         this.http.get<any>(this.api.payments.byId(id)).subscribe({
           next: (p) => {
             this.form.patchValue({
@@ -108,10 +111,10 @@ export class PaymentFormComponent implements OnInit {
             if (p?.firstDueDate) this.form.patchValue({ firstDueDate: new Date(p.firstDueDate) });
             if (p?.duePeriodDays != null) this.form.patchValue({ duePeriodDays: Number(p.duePeriodDays) });
             if (p?.numberOfInstallments != null) this.form.patchValue({ numberOfInstallments: Number(p.numberOfInstallments) });
-            this.loading = false;
+            this.initialLoading = false;
           },
           error: () => {
-            this.loading = false;
+            this.initialLoading = false;
             this.notif.error('Impossible de charger le paiement');
           },
         });
@@ -183,8 +186,8 @@ export class PaymentFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body: Record<string, unknown> = {
       pilgrimId: v.pilgrimId != null && v.pilgrimId !== '' ? Number(v.pilgrimId) : undefined,
@@ -210,7 +213,7 @@ export class PaymentFormComponent implements OnInit {
         this.router.navigate(['/payments']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || 'Erreur lors de la création');
       },
     });

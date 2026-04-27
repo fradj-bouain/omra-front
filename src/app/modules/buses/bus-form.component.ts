@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 
 @Component({
   selector: 'app-bus-form',
@@ -23,12 +24,14 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
     MatButtonModule,
     MatIconModule,
     PageHeaderComponent,
+    FormInitialLoadComponent,
   ],
   templateUrl: './bus-form.component.html',
   styleUrl: './bus-form.component.scss',
 })
 export class BusFormComponent implements OnInit {
-  loading = false;
+  initialLoading = false;
+  saving = false;
   form: FormGroup;
   editingId: number | null = null;
 
@@ -54,7 +57,7 @@ export class BusFormComponent implements OnInit {
     const id = Number(idRaw);
     if (isNaN(id)) return;
     this.editingId = id;
-    this.loading = true;
+    this.initialLoading = true;
     this.http.get<any>(this.api.buses.byId(id)).subscribe({
       next: (b) => {
         this.form.patchValue({
@@ -63,18 +66,18 @@ export class BusFormComponent implements OnInit {
           driverName: b?.driverName ?? '',
           driverContact: b?.driverContact ?? '',
         });
-        this.loading = false;
+        this.initialLoading = false;
       },
       error: () => {
-        this.loading = false;
+        this.initialLoading = false;
         this.notif.error('Impossible de charger le bus');
       },
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body = {
       plate: (v.plate || '').trim(),
@@ -91,7 +94,7 @@ export class BusFormComponent implements OnInit {
         this.router.navigate(['/buses']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || 'Erreur lors de la création');
       },
     });

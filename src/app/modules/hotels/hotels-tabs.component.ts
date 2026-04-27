@@ -19,6 +19,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     <mat-tab-group [selectedIndex]="selectedIndex()" (selectedIndexChange)="onTab($event)">
       <mat-tab [label]="'hotels.tabs.hotels' | translate"></mat-tab>
       <mat-tab [label]="'hotels.tabs.offers' | translate"></mat-tab>
+      <mat-tab [label]="'hotels.tabs.reservations' | translate"></mat-tab>
     </mat-tab-group>
 
     <section class="hotels-tabs__content">
@@ -38,11 +39,15 @@ export class HotelsTabsComponent {
 
   selectedIndex(): number {
     const url = this.router.url || '';
-    return url.includes('/hotels/offers') ? 1 : 0;
+    if (url.includes('/hotels/my-reservations')) return 2;
+    if (url.includes('/hotels/offers')) return 1;
+    return 0;
   }
 
   onTab(i: number): void {
-    void this.router.navigate(i === 1 ? ['/hotels/offers'] : ['/hotels']);
+    if (i === 0) void this.router.navigate(['/hotels']);
+    else if (i === 1) void this.router.navigate(['/hotels/offers']);
+    else void this.router.navigate(['/hotels/my-reservations']);
   }
 }
 

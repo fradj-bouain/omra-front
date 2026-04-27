@@ -14,6 +14,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
 import { MarketplaceCatalogType, MarketplaceCreateUpdatePayload, MarketplaceDto } from './models/marketplace.model';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 
 @Component({
   selector: 'app-marketplace-form',
@@ -29,6 +30,7 @@ import { MarketplaceCatalogType, MarketplaceCreateUpdatePayload, MarketplaceDto 
     MatSelectModule,
     PageHeaderComponent,
     TranslatePipe,
+    FormInitialLoadComponent,
   ],
   templateUrl: './marketplace-form.component.html',
   styleUrl: './marketplace-form.component.scss',
@@ -42,7 +44,8 @@ export class MarketplaceFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly i18n = inject(I18nService);
 
-  loading = false;
+  initialLoading = false;
+  saving = false;
   editingId: number | null = null;
 
   readonly form = this.fb.nonNullable.group({
@@ -61,7 +64,7 @@ export class MarketplaceFormComponent implements OnInit {
     const id = Number(idRaw);
     if (isNaN(id)) return;
     this.editingId = id;
-    this.loading = true;
+    this.initialLoading = true;
     this.http.get<MarketplaceDto>(this.api.marketplaces.byId(id)).subscribe({
       next: (m) => {
         this.form.patchValue({
@@ -73,18 +76,18 @@ export class MarketplaceFormComponent implements OnInit {
           apiAuthHeader: (m?.apiAuthHeader ?? 'Authorization') as any,
           apiAuthValue: (m?.apiAuthValue ?? '') as any,
         });
-        this.loading = false;
+        this.initialLoading = false;
       },
       error: (err) => {
-        this.loading = false;
+        this.initialLoading = false;
         this.notif.error(err.error?.message || this.i18n.instant('marketplace.form.loadOneError'));
       },
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body: MarketplaceCreateUpdatePayload = {
       name: v.name,
@@ -108,7 +111,7 @@ export class MarketplaceFormComponent implements OnInit {
         this.router.navigate(['/marketplaces']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || this.i18n.instant('marketplace.form.saveError'));
       },
     });

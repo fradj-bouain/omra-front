@@ -4,6 +4,7 @@ import { agencyKindGuard } from './core/guards/agency-kind.guard';
 import { MARKETPLACES_REDIRECT_ROUTES } from './modules/shop/marketplaces-redirect.routes';
 import { SHOP_ROUTES } from './modules/shop/shop.routes';
 import { HOTEL_OPERATOR_ROUTES } from './modules/hotel-operator/hotel-operator.routes';
+import { TRANSPORT_OPERATOR_ROUTES } from './modules/transport-operator/transport-operator.routes';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -44,6 +45,11 @@ export const routes: Routes = [
         path: 'hotel-operator',
         canActivate: [agencyKindGuard(['HOTEL'])],
         children: HOTEL_OPERATOR_ROUTES,
+      },
+      {
+        path: 'transport-operator',
+        canActivate: [agencyKindGuard(['TRANSPORT'])],
+        children: TRANSPORT_OPERATOR_ROUTES,
       },
       {
         path: 'agency/subs',

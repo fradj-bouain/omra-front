@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationService } from '../../core/services/notification.service';
@@ -26,7 +27,15 @@ interface Hotel {
 @Component({
   selector: 'app-hotel-list',
   standalone: true,
-  imports: [RouterLink, MatTooltipModule, MatCardModule, MatTableModule, MatIconModule, PageHeaderComponent],
+  imports: [
+    RouterLink,
+    MatTooltipModule,
+    MatCardModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    PageHeaderComponent,
+  ],
   templateUrl: './hotel-list.component.html',
   styleUrl: './hotel-list.component.scss',
 })

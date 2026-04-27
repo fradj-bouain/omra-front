@@ -3,6 +3,9 @@
 <section class="user-form-page">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">person_add</mat-icon>
@@ -66,9 +69,9 @@
 
         <div class="form-actions">
           <button mat-button type="button" routerLink="/users" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving" class="btn-submit">
             {{
-              loading
+              saving
                 ? (editingId ? 'Mise à jour...' : 'Création...')
                 : editingId
                   ? 'Enregistrer'
@@ -77,6 +80,7 @@
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

@@ -12,6 +12,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 import { fileUrlFromUploadResponse } from '../../shared/utils/upload-response';
 
 interface GroupOption {
@@ -39,12 +40,14 @@ interface PilgrimOption {
     MatIconModule,
     MatAutocompleteModule,
     PageHeaderComponent,
+    FormInitialLoadComponent,
   ],
   templateUrl: './document-form.component.html',
   styleUrl: './document-form.component.scss',
 })
 export class DocumentFormComponent implements OnInit {
-  loading = false;
+  initialLoading = false;
+  saving = false;
   uploading = false;
   form: FormGroup;
   pilgrimDisplay = new FormControl('');
@@ -76,7 +79,7 @@ export class DocumentFormComponent implements OnInit {
       const id = Number(idRaw);
       if (!isNaN(id)) {
         this.editingId = id;
-        this.loading = true;
+        this.initialLoading = true;
         this.http.get<any>(this.api.documents.byId(id)).subscribe({
           next: (d) => {
             this.form.patchValue({
@@ -86,10 +89,10 @@ export class DocumentFormComponent implements OnInit {
               fileUrl: d?.fileUrl ?? '',
               status: d?.status ?? 'UPLOADED',
             });
-            this.loading = false;
+            this.initialLoading = false;
           },
           error: () => {
-            this.loading = false;
+            this.initialLoading = false;
             this.notif.error('Impossible de charger le document');
           },
         });
@@ -160,8 +163,8 @@ export class DocumentFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body = {
       pilgrimId: v.pilgrimId != null && v.pilgrimId !== '' ? Number(v.pilgrimId) : undefined,
@@ -179,7 +182,7 @@ export class DocumentFormComponent implements OnInit {
         this.router.navigate(['/documents']);
       },
       error: (err) => {
-        this.loading = false;
+        this.saving = false;
         this.notif.error(err.error?.message || 'Erreur lors de l\'enregistrement');
       },
     });

@@ -1,0 +1,69 @@
+<app-page-header
+  [title]="(isNew ? 'transport.vehicleNewTitle' : 'transport.vehicleEditTitle') | translate"
+  [subtitle]="'transport.vehiclesSubtitle' | translate"
+></app-page-header>
+
+<section class="transport-form-page">
+  <mat-card class="form-card">
+    <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="transport-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'transport.field.vehicleType' | translate }}</mat-label>
+            <mat-select formControlName="vehicleType">
+              @for (t of vehicleTypes; track t) {
+                <mat-option [value]="t">{{ ('transport.vehicleType.' + t) | translate }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'transport.field.seatCount' | translate }}</mat-label>
+            <input matInput type="number" formControlName="seatCount" />
+          </mat-form-field>
+
+          <div class="grid-2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'transport.field.plate' | translate }}</mat-label>
+              <input matInput formControlName="plate" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'transport.field.brand' | translate }}</mat-label>
+              <input matInput formControlName="brand" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'transport.field.address' | translate }}</mat-label>
+            <textarea matInput rows="2" formControlName="address"></textarea>
+          </mat-form-field>
+
+          <h3 class="section-title">{{ 'transport.section.driver' | translate }}</h3>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'transport.field.driverName' | translate }}</mat-label>
+            <input matInput formControlName="driverName" />
+          </mat-form-field>
+          <div class="grid-2">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'transport.field.driverPhone' | translate }}</mat-label>
+              <input matInput formControlName="driverPhone" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'transport.field.driverEmail' | translate }}</mat-label>
+              <input matInput type="email" formControlName="driverEmail" />
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <a mat-button routerLink="/transport-operator/vehicles" type="button">{{ 'common.cancel' | translate }}</a>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving">
+              {{ 'common.save' | translate }}
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

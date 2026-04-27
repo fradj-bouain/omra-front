@@ -6,6 +6,9 @@
 <section class="mp-form-page">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mp-form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'shop.field.title' | translate }}</mat-label>
@@ -44,8 +47,8 @@
 
         <div class="form-actions">
           <a mat-button routerLink="/shop/articles" type="button">{{ 'common.cancel' | translate }}</a>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
-            @if (loading) {
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving">
+            @if (saving) {
               {{ 'marketplace.form.saving' | translate }}
             } @else {
               {{ 'common.save' | translate }}
@@ -53,6 +56,7 @@
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 </section>

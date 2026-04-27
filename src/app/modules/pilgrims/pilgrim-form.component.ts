@@ -24,6 +24,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { parseIsoDateString, toIsoDateString } from '../../shared/utils/date-form';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -96,6 +97,7 @@ export type FamilyRole = 'PERE' | 'MERE' | 'ENFANT' | 'AUTRE';
     TranslatePipe,
     PilgrimDocumentsPanelComponent,
     PilgrimMemberEditRowComponent,
+    FormInitialLoadComponent,
   ],
   templateUrl: './pilgrim-form.component.html',
   styleUrl: './pilgrim-form.component.scss',
@@ -135,7 +137,9 @@ export type FamilyRole = 'PERE' | 'MERE' | 'ENFANT' | 'AUTRE';
 export class PilgrimFormComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
-  loading = false;
+  /** GET voyageur / famille en édition — formulaire masqué jusqu’à la réponse. */
+  initialLoading = false;
+  saving = false;
   isEdit = false;
   /** Édition d’un dossier famille : une fiche par membre, enregistrement groupé. */
   isFamilyEdit = false;
@@ -387,7 +391,7 @@ export class PilgrimFormComponent implements OnInit {
   }
 
   createSubmitDisabled(): boolean {
-    if (this.loading) return true;
+    if (this.initialLoading || this.saving) return true;
     if (this.isEdit && this.isFamilyEdit) {
       return this.editFamilyMembers.invalid || this.editFamilyMembers.length === 0;
     }
@@ -399,7 +403,7 @@ export class PilgrimFormComponent implements OnInit {
   }
 
   submitLabel(): string {
-    if (this.loading) return this.i18n.instant('pilgrims.mo3tamir.saving');
+    if (this.saving) return this.i18n.instant('pilgrims.mo3tamir.saving');
     if (this.isEdit && this.isFamilyEdit) return this.i18n.instant('pilgrims.mo3tamir.saveFamily');
     if (this.isEdit) return this.i18n.instant('pilgrims.mo3tamir.savePilgrim');
     if (this.isFamilleCreate) {
@@ -437,7 +441,7 @@ export class PilgrimFormComponent implements OnInit {
 
   loadPilgrim(): void {
     if (this.pilgrimId == null) return;
-    this.loading = true;
+    this.initialLoading = true;
     this.isFamilyEdit = false;
     this.editFamilyMembers.clear();
     this.http.get<Record<string, unknown>>(this.api.pilgrims.byId(this.pilgrimId)).subscribe({
@@ -474,11 +478,11 @@ export class PilgrimFormComponent implements OnInit {
           nextRewardThreshold: typeof res['nextRewardThreshold'] === 'number' ? res['nextRewardThreshold'] : undefined,
           nextRewardTitle: res['nextRewardTitle'] != null ? String(res['nextRewardTitle']) : undefined,
         };
-        this.loading = false;
+        this.initialLoading = false;
       },
       error: () => {
         this.notif.error(this.i18n.instant('pilgrims.notif.notFound'));
-        this.loading = false;
+        this.initialLoading = false;
         this.router.navigate(['/pilgrims']);
       },
     });
@@ -545,7 +549,7 @@ export class PilgrimFormComponent implements OnInit {
       this.editFamilyMembers.controls.forEach((c) => c.markAllAsTouched());
       return;
     }
-    this.loading = true;
+    this.saving = true;
     const v = this.form.getRawValue();
 
     if (this.isEdit && this.pilgrimId != null) {
@@ -569,12 +573,12 @@ export class PilgrimFormComponent implements OnInit {
         });
         forkJoin(puts).subscribe({
           next: () => {
-            this.loading = false;
+            this.saving = false;
             this.notif.success(this.i18n.instant('pilgrims.notif.familyUpdated'));
             this.router.navigate(['/pilgrims', this.pilgrimId]);
           },
           error: (err) => {
-            this.loading = false;
+            this.saving = false;
             this.notif.error(err.error?.message || this.i18n.instant('pilgrims.notif.partialUpdate'));
           },
         });
@@ -600,7 +604,7 @@ export class PilgrimFormComponent implements OnInit {
           this.router.navigate(['/pilgrims', this.pilgrimId]);
         },
         error: (err) => {
-          this.loading = false;
+          this.saving = false;
           this.notif.error(err.error?.message || 'Erreur lors de la modification');
         },
       });
@@ -654,13 +658,13 @@ export class PilgrimFormComponent implements OnInit {
 
       this.http.post<PilgrimFamilyBatchResponse>(this.api.pilgrims.familyBatch, batchBody).subscribe({
         next: (res) => {
-          this.loading = false;
+          this.saving = false;
           const n = res.pilgrims?.length ?? 0;
           this.notif.success(this.i18n.instant('pilgrims.mo3tamir.familyCreated', { n }));
           this.router.navigate(['/pilgrims']);
         },
         error: (err) => {
-          this.loading = false;
+          this.saving = false;
           this.notif.error(err.error?.message || this.i18n.instant('pilgrims.mo3tamir.familyCreateError'));
         },
       });
@@ -712,7 +716,7 @@ export class PilgrimFormComponent implements OnInit {
       )
       .subscribe({
         next: ({ created, docsOk }) => {
-          this.loading = false;
+          this.saving = false;
           this.notif.success(this.i18n.instant('pilgrims.notif.created'));
           if (queueSnapshot.length > 0) {
             if (docsOk) {
@@ -726,7 +730,7 @@ export class PilgrimFormComponent implements OnInit {
           this.router.navigate(['/pilgrims', 'edit', created.id], { replaceUrl: true });
         },
         error: (err) => {
-          this.loading = false;
+          this.saving = false;
           this.notif.error(err.error?.message || 'Erreur lors de la création');
         },
       });

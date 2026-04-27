@@ -3,6 +3,9 @@
 <section class="pilgrim-form-page" [class.pilgrim-form-page--family-edit]="isEdit && isFamilyEdit">
   <mat-card class="form-card">
     <mat-card-content>
+      @if (isEdit && initialLoading) {
+        <app-form-initial-load />
+      } @else {
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="pilgrim-form" novalidate>
         <div class="form-hero">
           <mat-icon class="form-hero-icon" aria-hidden="true">person_add</mat-icon>
@@ -397,6 +400,7 @@
           </button>
         </div>
       </form>
+      }
     </mat-card-content>
   </mat-card>
 
@@ -490,7 +494,7 @@
     </mat-card>
   }
 
-  @if (pilgrimId != null) {
+  @if (pilgrimId != null && !(isEdit && initialLoading)) {
     <mat-card class="form-card form-card--documents">
       <mat-card-content>
         <app-pilgrim-documents-panel [pilgrimId]="pilgrimId" [pilgrimLabel]="pilgrimDisplayName" />

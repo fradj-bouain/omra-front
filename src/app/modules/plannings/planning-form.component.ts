@@ -17,6 +17,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { I18nService } from '../../core/services/i18n.service';
 import { TaskTemplateNode } from '../task-templates/models/task-template-node.model';
+import { FormInitialLoadComponent } from '../../shared/components/form-initial-load/form-initial-load.component';
 
 interface PlanningItemDto {
   id?: number;
@@ -45,13 +46,15 @@ interface PlanningItemDto {
     DragDropModule,
     PageHeaderComponent,
     TranslatePipe,
+    FormInitialLoadComponent,
   ],
   templateUrl: './planning-form.component.html',
   styleUrl: './planning-form.component.scss',
 })
 export class PlanningFormComponent implements OnInit {
   form: FormGroup;
-  loading = false;
+  initialLoading = false;
+  saving = false;
   isEdit = false;
   id: number | null = null;
   /** Racines seules — le sélecteur n’affiche pas les sous-tâches. */
@@ -88,6 +91,7 @@ export class PlanningFormComponent implements OnInit {
     if (idParam && idParam !== 'new') {
       this.id = +idParam;
       this.isEdit = true;
+      this.initialLoading = true;
       this.http.get(this.api.plannings.byId(this.id)).subscribe({
         next: (p: any) => {
           this.form.patchValue({ name: p.name, description: p.description ?? '' });
@@ -98,8 +102,12 @@ export class PlanningFormComponent implements OnInit {
             sortOrder: it.sortOrder ?? i,
           }));
           this.applyDepthToSelectedItems();
+          this.initialLoading = false;
         },
-        error: () => this.notif.error(this.i18n.instant('plannings.notFound')),
+        error: () => {
+          this.initialLoading = false;
+          this.notif.error(this.i18n.instant('plannings.notFound'));
+        },
       });
     }
   }
@@ -176,8 +184,8 @@ export class PlanningFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
+    if (this.form.invalid || this.initialLoading || this.saving) return;
+    this.saving = true;
     const v = this.form.getRawValue();
     const body = {
       name: v.name.trim(),
@@ -191,7 +199,7 @@ export class PlanningFormComponent implements OnInit {
           this.router.navigate(['/plannings']);
         },
         error: (err) => {
-          this.loading = false;
+          this.saving = false;
           this.notif.error(err.error?.message || this.i18n.instant('plannings.err'));
         },
       });
@@ -202,7 +210,7 @@ export class PlanningFormComponent implements OnInit {
           this.router.navigate(['/plannings']);
         },
         error: (err) => {
-          this.loading = false;
+          this.saving = false;
           this.notif.error(err.error?.message || this.i18n.instant('plannings.err'));
         },
       });

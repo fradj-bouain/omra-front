@@ -1,17 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { resolveMediaUrl } from '../../shared/utils/media-url';
 import { HotelOfferReserveDialogComponent } from './hotel-offer-reserve-dialog.component';
 
-interface HotelOfferRow {
+export interface HotelOfferRow {
   id: number;
   title: string;
   description?: string | null;
@@ -20,122 +20,29 @@ interface HotelOfferRow {
   currency: string;
   validFrom: string;
   validTo: string;
+  imageUrl?: string | null;
+  propertyImageUrl?: string | null;
   hotelAgencyName?: string | null;
   propertyName?: string | null;
   propertyCity?: string | null;
   propertyCountry?: string | null;
   propertyAddress?: string | null;
+  /** Min / max personnes, chambres ou groupes selon pricingUnit (API). */
+  minUnits?: number | null;
+  maxUnits?: number | null;
 }
 
 @Component({
   selector: 'app-hotel-offers-browse',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatButtonModule, MatIconModule, TranslatePipe],
-  template: `
-    <mat-card class="list-card">
-      <div class="list-toolbar">
-        <div class="list-title">
-          <div class="title">{{ 'hotels.offers.title' | translate }}</div>
-          <div class="subtitle">{{ 'hotels.offers.subtitle' | translate }}</div>
-        </div>
-        <span class="list-count">{{ rows.length }} {{ 'hotels.offers.count' | translate }}</span>
-      </div>
-
-      <div class="table-wrap">
-        <table mat-table [dataSource]="rows" class="hotel-table full-width">
-          <ng-container matColumnDef="offer">
-            <th mat-header-cell *matHeaderCellDef>{{ 'hotels.offers.colOffer' | translate }}</th>
-            <td mat-cell *matCellDef="let row">
-              <div class="cell-main">
-                <div class="cell-title">{{ row.title }}</div>
-                <div class="cell-sub">
-                  {{ row.hotelAgencyName || '—' }} · {{ row.propertyName || '—' }}
-                </div>
-              </div>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="location">
-            <th mat-header-cell *matHeaderCellDef>{{ 'hotels.offers.colLocation' | translate }}</th>
-            <td mat-cell *matCellDef="let row">
-              {{ row.propertyCity || '—' }} ({{ row.propertyCountry || '—' }})
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="price">
-            <th mat-header-cell *matHeaderCellDef>{{ 'hotels.offers.colPrice' | translate }}</th>
-            <td mat-cell *matCellDef="let row">{{ row.price }} {{ row.currency }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="validity">
-            <th mat-header-cell *matHeaderCellDef>{{ 'hotels.offers.colValidity' | translate }}</th>
-            <td mat-cell *matCellDef="let row">{{ row.validFrom }} → {{ row.validTo }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let row" class="cell-actions">
-              <button mat-flat-button color="primary" type="button" (click)="reserve(row)">
-                {{ 'hotels.offers.reserve' | translate }}
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
-          <tr class="mat-row no-data-row" *matNoDataRow>
-            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-              @if (loading) {
-                <p class="muted">{{ 'common.loading' | translate }}</p>
-              } @else {
-                <p class="muted">{{ 'hotels.offers.empty' | translate }}</p>
-              }
-            </td>
-          </tr>
-        </table>
-      </div>
-    </mat-card>
-  `,
-  styles: [
-    `
-      .list-toolbar {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-      .list-title .title {
-        font-weight: 700;
-      }
-      .list-title .subtitle {
-        opacity: 0.75;
-        font-size: 12px;
-        margin-top: 2px;
-      }
-      .cell-main {
-        display: flex;
-        flex-direction: column;
-      }
-      .cell-title {
-        font-weight: 600;
-      }
-      .cell-sub {
-        opacity: 0.75;
-        font-size: 12px;
-        margin-top: 2px;
-      }
-      .cell-actions {
-        display: flex;
-        justify-content: flex-end;
-      }
-      .muted {
-        opacity: 0.7;
-        margin: 8px 0;
-      }
-    `,
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslatePipe,
   ],
+  templateUrl: './hotel-offers-browse.component.html',
+  styleUrl: './hotel-offers-browse.component.scss',
 })
 export class HotelOffersBrowseComponent implements OnInit {
   private readonly http = inject(HttpClient);
@@ -146,7 +53,6 @@ export class HotelOffersBrowseComponent implements OnInit {
 
   loading = false;
   rows: HotelOfferRow[] = [];
-  displayedColumns = ['offer', 'location', 'price', 'validity', 'actions'];
 
   ngOnInit(): void {
     this.load();
@@ -166,6 +72,89 @@ export class HotelOffersBrowseComponent implements OnInit {
     });
   }
 
+  coverImage(row: HotelOfferRow): string | null {
+    const raw = row.imageUrl || row.propertyImageUrl;
+    if (raw == null || String(raw).trim() === '') return null;
+    const u = resolveMediaUrl(raw);
+    return u || null;
+  }
+
+  locationLine(row: HotelOfferRow): string {
+    const city = row.propertyCity?.trim();
+    const country = row.propertyCountry?.trim();
+    if (city && country) return `${city} · ${country}`;
+    if (city) return city;
+    if (country) return country;
+    return '—';
+  }
+
+  pricingLabel(row: HotelOfferRow): string {
+    const u = (row.pricingUnit || '').toString();
+    if (!u) return '';
+    const key = `hotels.pricingUnit.${u}`;
+    const t = this.i18n.instant(key);
+    if (t !== key) return t;
+    return u;
+  }
+
+  showPriceUnitSubline(row: HotelOfferRow): boolean {
+    return (row.pricingUnit || '') !== 'PER_GROUP';
+  }
+
+  unitsLineIcon(row: HotelOfferRow): string {
+    const u = (row.pricingUnit || 'PER_PERSON').toString();
+    if (u === 'PER_ROOM') return 'meeting_room';
+    return 'person';
+  }
+
+  /**
+   * Capacité : personnes, chambres, ou (tarif par groupe) effectif en personnes.
+   * En PER_GROUP, min/max = personnes par groupe (texte : « De n à m personnes », pas « n groupes »).
+   */
+  unitsLine(row: HotelOfferRow): string | null {
+    const min = row.minUnits;
+    const max = row.maxUnits;
+    if (min == null && max == null) return null;
+    const pu = (row.pricingUnit || 'PER_PERSON').toString();
+    if (pu === 'PER_GROUP') {
+      if (min != null && max != null) {
+        if (min === max) {
+          return this.groupPersonsLabel(min);
+        }
+        return this.i18n.instant('hotels.offers.groupSizeRange', { min, max });
+      }
+      if (min != null) {
+        return min === 1
+          ? this.i18n.instant('hotels.offers.groupSizeFromOne')
+          : this.i18n.instant('hotels.offers.groupSizeFromN', { n: min });
+      }
+      const m = max as number;
+      return m === 1
+        ? this.i18n.instant('hotels.offers.groupSizeToOne')
+        : this.i18n.instant('hotels.offers.groupSizeToN', { n: m });
+    }
+    const unitKey = `hotels.offers.capacityNoun.${pu}`;
+    let unit = this.i18n.instant(unitKey);
+    if (unit === unitKey) {
+      unit = this.i18n.instant('hotels.offers.capacityNoun._default');
+    }
+    if (min != null && max != null) {
+      if (min === max) {
+        return this.i18n.instant('hotels.offers.unitsExact', { n: min, unit });
+      }
+      return this.i18n.instant('hotels.offers.unitsRange', { min, max, unit });
+    }
+    if (min != null) {
+      return this.i18n.instant('hotels.offers.unitsFrom', { n: min, unit });
+    }
+    return this.i18n.instant('hotels.offers.unitsTo', { n: max as number, unit });
+  }
+
+  private groupPersonsLabel(n: number): string {
+    if (n === 1) return this.i18n.instant('hotels.offers.groupSizeOne');
+    return this.i18n.instant('hotels.offers.groupSizeN', { n });
+  }
+
   reserve(row: HotelOfferRow): void {
     this.dialog.open(HotelOfferReserveDialogComponent, {
       width: '640px',
@@ -173,4 +162,3 @@ export class HotelOffersBrowseComponent implements OnInit {
     });
   }
 }
-
