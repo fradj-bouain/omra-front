@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -21,6 +22,7 @@ import { HotelOffer } from './models/hotel.models';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatSlideToggleModule,
     PageHeaderComponent,
     TranslatePipe,
   ],
@@ -35,7 +37,7 @@ export class HotelOffersComponent implements OnInit {
 
   loading = false;
   dataSource: HotelOffer[] = [];
-  displayedColumns = ['title', 'pricing', 'validity', 'actions'];
+  displayedColumns = ['title', 'status', 'pricing', 'validity', 'actions'];
 
   ngOnInit(): void {
     this.load();
@@ -58,6 +60,25 @@ export class HotelOffersComponent implements OnInit {
   pricingLabel(o: HotelOffer): string {
     const key = `hotel.pricing.${o.pricingUnit}`;
     return this.i18n.instant(key);
+  }
+
+  isActive(o: HotelOffer): boolean {
+    return o.status === 'ACTIVE';
+  }
+
+  toggleActive(row: HotelOffer, active: boolean): void {
+    const prev = row.status;
+    row.status = active ? 'ACTIVE' : 'DISABLED';
+    this.http.post<HotelOffer>(this.api.hotelOperator.setOfferStatus(row.id, active), null).subscribe({
+      next: (updated) => {
+        row.status = updated?.status ?? row.status;
+        this.notif.success(this.i18n.instant('common.saved'));
+      },
+      error: (err) => {
+        row.status = prev;
+        this.notif.error(err.error?.message || this.i18n.instant('common.errorGeneric'));
+      },
+    });
   }
 
   deleteRow(row: HotelOffer): void {

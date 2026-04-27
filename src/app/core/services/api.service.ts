@@ -164,6 +164,12 @@ export class ApiService {
       `${this.base}/api/hotel-operator/offers` +
       (propertyId != null ? `?propertyId=${propertyId}` : ''),
     offerById: (id: number) => `${this.base}/api/hotel-operator/offers/${id}`,
+    setOfferStatus: (id: number, active: boolean) =>
+      `${this.base}/api/hotel-operator/offers/${id}/status?active=${active ? 'true' : 'false'}`,
+  };
+  /** Offres hôtels publiées (visibles par agences TRAVEL). */
+  hotelOffers = {
+    listActive: `${this.base}/api/hotel-offers`,
   };
   files = { upload: `${this.base}/api/files/upload` };
   /** Abonnement de l’agence connectée (lecture seule, portail agence). */

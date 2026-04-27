@@ -10,6 +10,7 @@ export interface HotelProperty {
 }
 
 export type HotelPricingUnit = 'PER_PERSON' | 'PER_ROOM' | 'PER_GROUP';
+export type HotelOfferStatus = 'ACTIVE' | 'DISABLED';
 
 export interface HotelOffer {
   id: number;
@@ -17,6 +18,7 @@ export interface HotelOffer {
   title: string;
   description?: string | null;
   imageUrl?: string | null;
+  status?: HotelOfferStatus;
   pricingUnit: HotelPricingUnit;
   price: number;
   currency: string;

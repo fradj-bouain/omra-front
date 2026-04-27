@@ -13,6 +13,17 @@
           <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.offerTitle' | translate }}</th>
           <td mat-cell *matCellDef="let row">{{ row.title }}</td>
         </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'common.status' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-slide-toggle
+              [checked]="isActive(row)"
+              (change)="toggleActive(row, $event.checked)"
+            >
+              {{ isActive(row) ? ('common.active' | translate) : ('common.disabled' | translate) }}
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
         <ng-container matColumnDef="pricing">
           <th mat-header-cell *matHeaderCellDef>{{ 'hotel.col.pricing' | translate }}</th>
           <td mat-cell *matCellDef="let row">{{ pricingLabel(row) }} — {{ row.price }} {{ row.currency }}</td>
