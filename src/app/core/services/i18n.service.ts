@@ -1089,6 +1089,7 @@ const FALLBACK_FR: Record<string, string> = {
   'payments.form.create': 'Créer le paiement',
   'payments.detail.title': 'Détail du paiement',
   'payments.detail.subtitle': 'Paiement n°{{id}}',
+  'payments.detail.totalLabel': 'Montant total',
   'payments.detail.loading': 'Chargement…',
   'payments.detail.loadError': 'Impossible de charger ce paiement.',
   'payments.detail.backList': 'Liste des paiements',
@@ -1102,8 +1103,11 @@ const FALLBACK_FR: Record<string, string> = {
   'payments.detail.duePaid': 'Payée',
   'payments.detail.duePending': 'En attente',
   'payments.detail.allPaidNote': 'Toutes les échéances sont réglées — le paiement est marqué comme payé.',
+  'payments.list.colActions': 'Actions',
   'payments.list.tooltipDetail': 'Voir le détail',
   'payments.list.tooltipEdit': 'Modifier',
+  'payments.list.btnDetail': 'Détail',
+  'payments.list.btnEdit': 'Modifier',
   'payments.form.hero':
     'Enregistrez un paiement pour un voyageur ou un groupe. Indiquez le montant, la devise ({{currency}} par défaut), la méthode et le statut. Le montant est obligatoire.',
 };
@@ -2193,6 +2197,7 @@ const FALLBACK_EN: Record<string, string> = {
   'payments.form.create': 'Create payment',
   'payments.detail.title': 'Payment details',
   'payments.detail.subtitle': 'Payment #{{id}}',
+  'payments.detail.totalLabel': 'Total amount',
   'payments.detail.loading': 'Loading…',
   'payments.detail.loadError': 'Unable to load this payment.',
   'payments.detail.backList': 'Back to payments',
@@ -2206,8 +2211,11 @@ const FALLBACK_EN: Record<string, string> = {
   'payments.detail.duePaid': 'Paid',
   'payments.detail.duePending': 'Pending',
   'payments.detail.allPaidNote': 'All installments are settled — the payment is marked as paid.',
+  'payments.list.colActions': 'Actions',
   'payments.list.tooltipDetail': 'View details',
   'payments.list.tooltipEdit': 'Edit',
+  'payments.list.btnDetail': 'Details',
+  'payments.list.btnEdit': 'Edit',
   'payments.form.hero':
     'Register a payment for a traveler or a group. Enter the amount, currency ({{currency}} by default), method and status. Amount is required.',
 };

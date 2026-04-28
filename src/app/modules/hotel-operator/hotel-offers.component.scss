@@ -148,13 +148,9 @@
   white-space: nowrap;
 }
 
+/* display:contents → alignement horizontal via flex du <td> (styles.scss) */
 .hotel-offers__actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem 0.65rem;
-  min-height: 2.45rem;
+  display: contents;
 }
 
 :host .hotel-offers__actions .mat-mdc-outlined-button,

@@ -129,12 +129,9 @@
   vertical-align: middle;
 }
 
+/* display:contents → boutons alignés par le flex du <td> (styles.scss) */
 .hotel-row-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  display: contents;
 }
 
 .hotel-row-actions__btn {

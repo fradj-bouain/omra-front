@@ -61,7 +61,7 @@ interface DuePreviewRow {
     FormInitialLoadComponent,
   ],
   templateUrl: './payment-form.component.html',
-  styleUrl: './payment-form.component.scss',
+  styleUrls: ['./due-cheque-cards.scss', './payment-form.component.scss'],
 })
 export class PaymentFormComponent implements OnInit {
   initialLoading = false;

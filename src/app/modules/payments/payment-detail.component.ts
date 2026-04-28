@@ -52,7 +52,7 @@ interface PaymentDetailDto {
     TranslatePipe,
   ],
   templateUrl: './payment-detail.component.html',
-  styleUrls: ['./payment-detail.component.scss'],
+  styleUrls: ['./due-cheque-cards.scss', './payment-detail.component.scss'],
 })
 export class PaymentDetailComponent implements OnInit {
   private readonly http = inject(HttpClient);
