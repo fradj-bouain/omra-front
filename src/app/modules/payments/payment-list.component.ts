@@ -10,11 +10,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 interface Payment {
   id: number;
   pilgrimId?: number;
+  pilgrimName?: string | null;
   groupId?: number;
+  groupName?: string | null;
   amount: number;
   currency: string;
   paymentMethod?: string;
@@ -41,13 +44,14 @@ interface PageResponse<T> {
     MatPaginatorModule,
     MatIconModule,
     PageHeaderComponent,
+    TranslatePipe,
   ],
   templateUrl: './payment-list.component.html',
   styleUrl: './payment-list.component.scss',
 })
 export class PaymentListComponent implements OnInit {
   dataSource: Payment[] = [];
-  displayedColumns = ['pilgrimId', 'groupId', 'amount', 'paymentMethod', 'status', 'paymentDate', 'actions'];
+  displayedColumns = ['pilgrimName', 'groupName', 'amount', 'paymentMethod', 'status', 'paymentDate', 'actions'];
   totalElements = 0;
   page = 1;
   size = 20;

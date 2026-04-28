@@ -113,6 +113,8 @@ export class ApiService {
   payments = {
     list: `${this.base}/api/payments`,
     byId: (id: number) => `${this.base}/api/payments/${id}`,
+    markDuePaid: (paymentId: number, dueId: number) =>
+      `${this.base}/api/payments/${paymentId}/due-dates/${dueId}/pay`,
   };
   notifications = {
     list: `${this.base}/api/notifications`,

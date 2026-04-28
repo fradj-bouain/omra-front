@@ -1,0 +1,121 @@
+@if (loading) {
+  <div class="payment-detail payment-detail--loading">
+    <mat-spinner diameter="40" />
+    <p>{{ 'payments.detail.loading' | translate }}</p>
+  </div>
+} @else if (loadError || !payment) {
+  <div class="payment-detail payment-detail--error">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ 'payments.detail.loadError' | translate }}</p>
+    <a mat-button routerLink="/payments">{{ 'payments.detail.backList' | translate }}</a>
+  </div>
+} @else {
+  <app-page-header
+    [title]="'payments.detail.title' | translate"
+    [subtitle]="'payments.detail.subtitle' | translate: { id: payment.id }"
+  ></app-page-header>
+
+  <div class="detail-toolbar">
+    <a mat-stroked-button routerLink="/payments">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'payments.detail.backList' | translate }}
+    </a>
+    <a mat-flat-button color="primary" [routerLink]="['/payments', 'edit', payment.id]">
+      <mat-icon>edit</mat-icon>
+      {{ 'payments.detail.edit' | translate }}
+    </a>
+  </div>
+
+  <section class="payment-detail">
+    <mat-card class="detail-card">
+      <mat-card-content>
+        <div class="detail-grid">
+          <div class="detail-field">
+            <span class="detail-field__label">{{ 'payments.form.traveler' | translate }}</span>
+            <span class="detail-field__value">{{ payment.pilgrimName?.trim() || '—' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">{{ 'payments.form.group' | translate }}</span>
+            <span class="detail-field__value">{{ payment.groupName?.trim() || '—' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">{{ 'payments.form.amount' | translate }}</span>
+            <span class="detail-field__value detail-field__value--amount">
+              {{ payment.amount | number: '1.2-2' }} {{ payment.currency }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">{{ 'payments.form.method' | translate }}</span>
+            <span class="detail-field__value">{{ methodLabel(payment.paymentMethod) }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">{{ 'payments.form.status' | translate }}</span>
+            <span class="status-pill" [class.status-pill--paid]="payment.status === 'PAID'" [class.status-pill--partial]="payment.status === 'PARTIAL'">
+              {{ statusLabel(payment.status) }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field__label">{{ 'payments.form.paymentDate' | translate }}</span>
+            <span class="detail-field__value">{{ payment.paymentDate ? (payment.paymentDate | date: 'dd/MM/yyyy') : '—' }}</span>
+          </div>
+          <div class="detail-field detail-field--full">
+            <span class="detail-field__label">{{ 'payments.form.reference' | translate }}</span>
+            <span class="detail-field__value">{{ payment.reference?.trim() || '—' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @if (hasInstallments()) {
+      <mat-card class="detail-card detail-card--dues">
+        <mat-card-content>
+          <h2 class="dues-title">{{ 'payments.detail.installmentsTitle' | translate }}</h2>
+          <div class="dues-summary">
+            <div class="dues-summary__item">
+              <span class="dues-summary__label">{{ 'payments.detail.paidTotal' | translate }}</span>
+              <strong class="dues-summary__num dues-summary__num--paid">{{ sumPaid() | number: '1.2-2' }} {{ payment.currency }}</strong>
+            </div>
+            <div class="dues-summary__item">
+              <span class="dues-summary__label">{{ 'payments.detail.remainingTotal' | translate }}</span>
+              <strong class="dues-summary__num dues-summary__num--pending">{{ sumRemaining() | number: '1.2-2' }} {{ payment.currency }}</strong>
+            </div>
+          </div>
+
+          <div class="dues-list">
+            @for (due of payment.dueDates ?? []; track due.id) {
+              <div class="due-row" [class.due-row--paid]="due.status === 'PAID'">
+                <div class="due-row__main">
+                  <span class="due-row__seq">#{{ due.sequenceOrder ?? $index + 1 }}</span>
+                  <span class="due-row__date">{{ dueDateLabel(due.dueDate) }}</span>
+                  <span class="due-row__amount">{{ due.amount | number: '1.2-2' }} {{ payment.currency }}</span>
+                  <span class="due-chip" [class.due-chip--paid]="due.status === 'PAID'">{{ dueStatusLabel(due.status) }}</span>
+                </div>
+                @if (showMarkPaid(due)) {
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    type="button"
+                    class="due-row__pay"
+                    [disabled]="markingDueId === due.id"
+                    (click)="markDuePaid(due)"
+                  >
+                    @if (markingDueId === due.id) {
+                      <mat-spinner diameter="22" />
+                    } @else {
+                      <mat-icon>check_circle</mat-icon>
+                    }
+                    {{ 'payments.detail.markPaid' | translate }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          @if (payment.status === 'PAID' && payment.dueDates?.length) {
+            <p class="dues-note">{{ 'payments.detail.allPaidNote' | translate }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </section>
+}

@@ -106,16 +106,209 @@
 }
 
 .form-section--partial {
-  background: rgba(13, 148, 136, 0.04);
-  border: 1px solid rgba(13, 148, 136, 0.15);
+  background: linear-gradient(165deg, rgba(13, 148, 136, 0.06) 0%, rgba(14, 116, 144, 0.04) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.18);
   border-radius: var(--app-radius);
   padding: var(--app-space-lg);
+}
+
+.partial-head .form-section-title {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0.35rem;
+}
+
+.partial-params__grid {
+  margin-top: var(--app-space-md);
+}
+
+.partial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-sm);
+  margin-top: var(--app-space-md);
+}
+
+.partial-actions__primary,
+.partial-actions__secondary,
+.partial-actions__clear {
+  border-radius: var(--app-radius-sm) !important;
+  font-weight: 600 !important;
+  mat-icon {
+    margin-right: 6px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+  }
+}
+
+.partial-actions__clear {
+  color: var(--app-text-soft) !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+
+.partial-empty {
+  margin: var(--app-space-md) 0 0;
+  font-size: 0.875rem;
+  color: var(--app-text-soft);
+  font-style: italic;
 }
 
 .form-hint {
   margin: 0 0 var(--app-space-md);
   font-size: 0.875rem;
   color: var(--app-text-soft);
+}
+
+/* Aperçu échéances — cartes type chèque */
+.due-cheques {
+  margin-top: var(--app-space-xl);
+}
+
+.due-cheques__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--app-space-sm);
+  margin-bottom: var(--app-space-sm);
+}
+
+.due-cheques__label {
+  font-family: var(--app-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--app-text);
+}
+
+.due-cheques__sum {
+  font-size: 0.8125rem;
+  color: var(--app-text-soft);
+  strong {
+    color: var(--app-accent);
+    font-weight: 700;
+  }
+}
+
+.due-cheques__sum--bad strong {
+  color: #c2410c;
+}
+
+.due-cheques__warn {
+  margin: 0 0 var(--app-space-md);
+  font-size: 0.8125rem;
+  color: #c2410c;
+  font-weight: 500;
+}
+
+.due-cheques__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--app-space-lg);
+}
+
+.cheque-card {
+  position: relative;
+  background: linear-gradient(145deg, #fffef9 0%, #f8fafc 48%, #f1f5f9 100%);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 14px;
+  padding: 0;
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.85) inset,
+    0 12px 28px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(13, 148, 136, 0.08);
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 0 rgba(255, 255, 255, 0.9) inset,
+      0 16px 36px rgba(15, 23, 42, 0.12),
+      0 0 0 1px rgba(13, 148, 136, 0.14);
+  }
+}
+
+.cheque-card__perforation {
+  height: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 6px,
+    rgba(15, 23, 42, 0.08) 6px,
+    rgba(15, 23, 42, 0.08) 8px
+  );
+  border-bottom: 1px dashed rgba(13, 148, 136, 0.2);
+}
+
+.cheque-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem 0.35rem;
+  background: linear-gradient(180deg, rgba(13, 148, 136, 0.08) 0%, transparent 100%);
+}
+
+.cheque-card__n {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--app-accent);
+}
+
+.cheque-card__icon {
+  font-size: 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  color: rgba(13, 148, 136, 0.65);
+}
+
+.cheque-card__body {
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cheque-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cheque-card__field-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--app-text-soft);
+}
+
+.cheque-card__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--app-text);
+  font-family: var(--app-font, system-ui, sans-serif);
+
+  &:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--app-accent) 55%, transparent);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  }
+}
+
+.cheque-card__input--date {
+  font-variant-numeric: tabular-nums;
 }
 
 .form-actions {

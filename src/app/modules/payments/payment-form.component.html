@@ -1,4 +1,4 @@
-<app-page-header [title]="editingId ? 'Modifier paiement' : 'Nouveau paiement'"></app-page-header>
+<app-page-header [title]="editingId ? ('payments.form.editTitle' | translate) : ('payments.form.newTitle' | translate)"></app-page-header>
 
 <section class="payment-form-page">
   <mat-card class="form-card">
@@ -13,10 +13,10 @@
         </div>
 
         <div class="form-section">
-          <h2 class="form-section-title">Voyageur & groupe</h2>
+          <h2 class="form-section-title">{{ 'payments.form.sectionTraveler' | translate }}</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Voyageur</mat-label>
+              <mat-label>{{ 'payments.form.traveler' | translate }}</mat-label>
               <input
                 matInput
                 [formControl]="pilgrimDisplay"
@@ -24,12 +24,12 @@
                 #pilgrimTrigger="matAutocompleteTrigger"
                 (focus)="pilgrimTrigger.openPanel()"
                 (input)="pilgrimTrigger.openPanel()"
-                placeholder="Tapez pour rechercher"
+                [placeholder]="'payments.form.searchPlaceholder' | translate"
               />
-              <mat-error>Le voyageur est obligatoire</mat-error>
+              <mat-error>{{ 'payments.form.travelerRequired' | translate }}</mat-error>
               <mat-autocomplete #pilgrimAuto="matAutocomplete" (optionSelected)="selectPilgrim($event.option.value)">
                 @if (filteredPilgrims.length === 0) {
-                  <mat-option disabled>Tapez pour rechercher un voyageur</mat-option>
+                  <mat-option disabled>{{ 'payments.form.searchTravelerHint' | translate }}</mat-option>
                 }
                 @for (p of filteredPilgrims; track p.id) {
                   <mat-option [value]="p">{{ p.firstName }} {{ p.lastName }}</mat-option>
@@ -37,7 +37,7 @@
               </mat-autocomplete>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Groupe</mat-label>
+              <mat-label>{{ 'payments.form.group' | translate }}</mat-label>
               <input
                 matInput
                 [formControl]="groupDisplay"
@@ -45,12 +45,12 @@
                 #groupTrigger="matAutocompleteTrigger"
                 (focus)="groupTrigger.openPanel()"
                 (input)="groupTrigger.openPanel()"
-                placeholder="Tapez pour rechercher"
+                [placeholder]="'payments.form.searchPlaceholder' | translate"
               />
-              <mat-error>Le groupe est obligatoire</mat-error>
+              <mat-error>{{ 'payments.form.groupRequired' | translate }}</mat-error>
               <mat-autocomplete #groupAuto="matAutocomplete" (optionSelected)="selectGroup($event.option.value)">
                 @if (filteredGroups.length === 0) {
-                  <mat-option disabled>Tapez pour rechercher un groupe</mat-option>
+                  <mat-option disabled>{{ 'payments.form.searchGroupHint' | translate }}</mat-option>
                 }
                 @for (g of filteredGroups; track g.id) {
                   <mat-option [value]="g">{{ g.name }}</mat-option>
@@ -61,86 +61,168 @@
         </div>
 
         <div class="form-section">
-          <h2 class="form-section-title">Montant & méthode</h2>
+          <h2 class="form-section-title">{{ 'payments.form.sectionAmount' | translate }}</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Montant</mat-label>
+              <mat-label>{{ 'payments.form.amount' | translate }}</mat-label>
               <input matInput type="number" formControlName="amount" min="0" step="0.01" />
-              <mat-error>Le montant est requis</mat-error>
+              <mat-error>{{ 'payments.form.amountRequired' | translate }}</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Devise</mat-label>
+              <mat-label>{{ 'payments.form.currency' | translate }}</mat-label>
               <input matInput formControlName="currency" [placeholder]="auth.agencyCurrency()" />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Méthode</mat-label>
+              <mat-label>{{ 'payments.form.method' | translate }}</mat-label>
               <mat-select formControlName="paymentMethod">
-                <mat-option value="CASH">Espèces</mat-option>
-                <mat-option value="BANK_TRANSFER">Virement</mat-option>
-                <mat-option value="CARD">Carte</mat-option>
+                <mat-option value="CASH">{{ 'payments.form.methodCash' | translate }}</mat-option>
+                <mat-option value="BANK_TRANSFER">{{ 'payments.form.methodTransfer' | translate }}</mat-option>
+                <mat-option value="CARD">{{ 'payments.form.methodCard' | translate }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
         </div>
 
         <div class="form-section">
-          <h2 class="form-section-title">Statut & référence</h2>
+          <h2 class="form-section-title">{{ 'payments.form.sectionStatus' | translate }}</h2>
           <div class="form-grid form-grid--2">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Statut</mat-label>
+              <mat-label>{{ 'payments.form.status' | translate }}</mat-label>
               <mat-select formControlName="status">
-                <mat-option value="PENDING">En attente (non complet)</mat-option>
-                <mat-option value="PAID">Payé (complet)</mat-option>
-                <mat-option value="PARTIAL">Partiel (échéances)</mat-option>
-                <mat-option value="REFUNDED">Remboursé</mat-option>
+                <mat-option value="PENDING">{{ 'payments.form.statusPending' | translate }}</mat-option>
+                <mat-option value="PAID">{{ 'payments.form.statusPaid' | translate }}</mat-option>
+                <mat-option value="PARTIAL">{{ 'payments.form.statusPartial' | translate }}</mat-option>
+                <mat-option value="REFUNDED">{{ 'payments.form.statusRefunded' | translate }}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Date de paiement</mat-label>
+              <mat-label>{{ 'payments.form.paymentDate' | translate }}</mat-label>
               <input matInput [matDatepicker]="payPicker" formControlName="paymentDate" placeholder="jj/mm/aaaa" />
               <mat-datepicker-toggle matIconSuffix [for]="payPicker" />
               <mat-datepicker #payPicker />
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-width form-grid-full">
-              <mat-label>Référence</mat-label>
-              <input matInput formControlName="reference" placeholder="Ex. virement, chèque…" />
+              <mat-label>{{ 'payments.form.reference' | translate }}</mat-label>
+              <input matInput formControlName="reference" [placeholder]="'payments.form.referencePh' | translate" />
             </mat-form-field>
           </div>
         </div>
 
         @if (isPartial) {
           <div class="form-section form-section--partial">
-            <h2 class="form-section-title">Échéances (paiement partiel)</h2>
-            <p class="form-hint">Choisissez la première date d'échéance, la période entre les échéances et le nombre d'échéances. Les autres dates seront générées automatiquement.</p>
-            <div class="form-grid form-grid--2">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Date de 1<sup>ère</sup> échéance</mat-label>
-                <input matInput [matDatepicker]="duePicker" formControlName="firstDueDate" placeholder="jj/mm/aaaa" />
-                <mat-datepicker-toggle matIconSuffix [for]="duePicker" />
-                <mat-datepicker #duePicker />
-                <mat-error>Requis pour un paiement partiel</mat-error>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Période entre échéances</mat-label>
-                <mat-select formControlName="duePeriodDays">
-                  <mat-option [value]="30">Mensuel (30 jours)</mat-option>
-                  <mat-option [value]="60">Bimestriel (60 jours)</mat-option>
-                  <mat-option [value]="90">Trimestriel (90 jours)</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Nombre d'échéances</mat-label>
-                <input matInput type="number" formControlName="numberOfInstallments" min="2" />
-                <mat-error>Au moins 2</mat-error>
-              </mat-form-field>
+            <div class="partial-head">
+              <h2 class="form-section-title">{{ 'payments.form.partial.title' | translate }}</h2>
+              <p class="form-hint">{{ 'payments.form.partial.intro' | translate }}</p>
             </div>
+
+            <div class="partial-params">
+              <div class="form-grid form-grid--2 partial-params__grid">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'payments.form.partial.firstDue' | translate }}</mat-label>
+                  <input matInput [matDatepicker]="duePicker" formControlName="firstDueDate" placeholder="jj/mm/aaaa" />
+                  <mat-datepicker-toggle matIconSuffix [for]="duePicker" />
+                  <mat-datepicker #duePicker />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'payments.form.partial.daysBetween' | translate }}</mat-label>
+                  <input matInput type="number" formControlName="duePeriodDays" min="1" step="1" />
+                  <mat-hint>{{ 'payments.form.partial.daysHint' | translate }}</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'payments.form.partial.count' | translate }}</mat-label>
+                  <input matInput type="number" formControlName="numberOfInstallments" min="2" step="1" />
+                </mat-form-field>
+              </div>
+
+              <div class="partial-actions">
+                <button type="button" mat-flat-button color="primary" class="partial-actions__primary" (click)="generateSchedulePreview()">
+                  <mat-icon>calendar_month</mat-icon>
+                  {{ 'payments.form.partial.generate' | translate }}
+                </button>
+                @if (duePreviewRows.length > 0) {
+                  <button type="button" mat-stroked-button class="partial-actions__secondary" (click)="redistributeAmountsEvenly()">
+                    <mat-icon>account_balance</mat-icon>
+                    {{ 'payments.form.partial.redistribute' | translate }}
+                  </button>
+                  <button type="button" mat-stroked-button class="partial-actions__clear" (click)="clearDuePreview()">
+                    <mat-icon>restart_alt</mat-icon>
+                    {{ 'payments.form.partial.clearPreview' | translate }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            @if (duePreviewRows.length > 0) {
+              <div class="due-cheques">
+                <div class="due-cheques__toolbar">
+                  <span class="due-cheques__label">{{ 'payments.form.partial.previewLabel' | translate }}</span>
+                  <span class="due-cheques__sum" [class.due-cheques__sum--bad]="!dueSumMatchesTotal()">
+                    {{ 'payments.form.partial.sum' | translate }}:
+                    <strong>{{ duePreviewSum() | number: '1.2-2' }}</strong>
+                    {{ form.get('currency')?.value || auth.agencyCurrency() }}
+                    · {{ 'payments.form.partial.target' | translate }}:
+                    <strong>{{ form.get('amount')?.value | number: '1.2-2' }}</strong>
+                  </span>
+                </div>
+                @if (!dueSumMatchesTotal()) {
+                  <p class="due-cheques__warn">{{ 'payments.form.partial.sumWarn' | translate }}</p>
+                }
+                <div class="due-cheques__grid">
+                  @for (row of duePreviewRows; track $index; let idx = $index) {
+                    <div class="cheque-card">
+                      <div class="cheque-card__perforation" aria-hidden="true"></div>
+                      <div class="cheque-card__header">
+                        <span class="cheque-card__n">{{ 'payments.form.partial.installment' | translate }} {{ idx + 1 }}</span>
+                        <mat-icon class="cheque-card__icon">receipt_long</mat-icon>
+                      </div>
+                      <div class="cheque-card__body">
+                        <label class="cheque-card__field">
+                          <span class="cheque-card__field-label">{{ 'payments.form.partial.dueDateField' | translate }}</span>
+                          <input
+                            type="date"
+                            class="cheque-card__input cheque-card__input--date"
+                            [value]="dueDateToInputValue(row.dueDate)"
+                            (change)="onDueDateChange(idx, $event)"
+                          />
+                        </label>
+                        <label class="cheque-card__field">
+                          <span class="cheque-card__field-label">{{ 'payments.form.partial.amountField' | translate }}</span>
+                          <input
+                            type="number"
+                            class="cheque-card__input"
+                            min="0"
+                            step="0.01"
+                            [value]="row.amount ?? ''"
+                            (input)="onAmountChange(idx, $event)"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+              <p class="partial-empty">{{ 'payments.form.partial.emptyHint' | translate }}</p>
+            }
           </div>
         }
 
         <div class="form-actions">
-          <button mat-button type="button" routerLink="/payments" class="btn-cancel">Annuler</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving || pilgrimDisplay.invalid || groupDisplay.invalid" class="btn-submit">
-            {{ saving ? 'Enregistrement…' : (editingId ? 'Enregistrer' : 'Créer le paiement') }}
+          <button mat-button type="button" routerLink="/payments" class="btn-cancel">{{ 'common.cancel' | translate }}</button>
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="
+              form.invalid ||
+              saving ||
+              pilgrimDisplay.invalid ||
+              groupDisplay.invalid ||
+              (isPartial && (duePreviewRows.length < 2 || !dueSumMatchesTotal()))
+            "
+            class="btn-submit"
+          >
+            {{ saving ? ('payments.form.saving' | translate) : (editingId ? ('payments.form.save' | translate) : ('payments.form.create' | translate)) }}
           </button>
         </div>
       </form>
