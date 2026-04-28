@@ -2,6 +2,12 @@
 
 :host {
   display: block;
+  width: 100%;
+  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100svh;
+  box-sizing: border-box;
   /* Blue login theme */
   --brand-blue: #2563eb;
   --brand-blue-deep: #1d4ed8;
@@ -14,13 +20,23 @@
 .login-page {
   position: relative;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
+  min-height: 100svh;
   overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
   background-color: #0b1220;
   background-image: url('/log5.png');
   background-size: cover;
-  background-position: center;
+  background-position: bottom center ;
   background-repeat: no-repeat;
+  /* Couvre tout l’écran sans bandes (mobile / barres d’adresse) */
+  -webkit-background-size: cover;
 }
 
 .login-page__veil {
@@ -28,37 +44,98 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: transparent;
+  /* Léger voile pour lisibilité du formulaire */
+  background: linear-gradient(
+    135deg,
+    rgba(2, 6, 23, 0.35) 0%,
+    rgba(15, 23, 42, 0.42) 50%,
+    rgba(2, 6, 23, 0.38) 100%
+  );
 }
 
 .login-page__layout {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: flex-start;
+  flex: 1 0 auto;
+  box-sizing: border-box;
   width: 100%;
-  max-width: none;
-  margin-inline: 0;
-  padding: clamp(0.75rem, 3vw, 2.25rem);
-  gap: clamp(1.5rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: max(env(safe-area-inset-top), clamp(1rem, 4vmin, 2rem))
+    max(env(safe-area-inset-right), clamp(1rem, 4vmin, 2rem))
+    max(env(safe-area-inset-bottom), clamp(1rem, 4vmin, 2rem))
+    max(env(safe-area-inset-left), clamp(1rem, 4vmin, 2rem));
+  gap: clamp(1rem, 3.5vmin, 1.75rem);
 }
 
 .login-page--rtl .login-page__layout {
-  flex-direction: row-reverse;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Hero removed: full-bleed background image only */
+/* Marque au-dessus du formulaire (lisible sur photo + voile) */
+.login-page__brand {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 26rem;
+  text-align: center;
+  color: #f8fafc;
+}
+
+.login-brand__title {
+  margin: 0;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-wrap: balance;
+  text-shadow:
+    0 2px 28px rgba(2, 6, 23, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.login-brand__mark {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.85rem, 5.2vw, 2.35rem);
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.login-brand__sep {
+  display: inline-block;
+  width: 0.4em;
+}
+
+.login-brand__rest {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(1.55rem, 4.4vw, 2.05rem);
+  letter-spacing: 0.03em;
+  color: rgba(248, 250, 252, 0.96);
+}
+
+.login-brand__tagline {
+  margin: 0.55rem 0 0;
+  padding: 0 0.25rem;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: clamp(0.8125rem, 2.6vw, 0.9375rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: rgba(248, 250, 252, 0.88);
+  text-shadow: 0 1px 18px rgba(2, 6, 23, 0.45);
+}
 
 .login-page__panel {
   flex: 0 1 26rem;
+  width: 100%;
+  max-width: 26rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   position: relative;
 }
 
@@ -77,21 +154,6 @@
   );
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-}
-
-@media (max-width: 879px) {
-  .login-page__layout {
-    justify-content: center;
-  }
-
-  .login-page--rtl .login-page__layout {
-    justify-content: center;
-  }
-
-  .login-page__panel {
-    flex-basis: 100%;
-    max-width: 420px;
-  }
 }
 
 /* Carte formulaire */

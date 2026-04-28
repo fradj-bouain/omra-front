@@ -4,11 +4,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
-import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { NotificationService } from '../../core/services/notification.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { I18nService } from '../../core/services/i18n.service';
 
 interface Bus {
   id: number;
@@ -35,7 +37,8 @@ interface PageResponse<T> {
     MatTableModule,
     MatPaginatorModule,
     MatIconModule,
-    PageHeaderComponent,
+    MatButtonModule,
+    TranslatePipe,
   ],
   templateUrl: './bus-list.component.html',
   styleUrl: './bus-list.component.scss',
@@ -48,7 +51,12 @@ export class BusListComponent implements OnInit {
   size = 20;
   loading = false;
 
-  constructor(private http: HttpClient, private api: ApiService, private notif: NotificationService) {}
+  constructor(
+    private http: HttpClient,
+    private api: ApiService,
+    private notif: NotificationService,
+    private i18n: I18nService
+  ) {}
 
   ngOnInit(): void {
     this.load();
@@ -75,14 +83,14 @@ export class BusListComponent implements OnInit {
 
   deleteRow(row: Bus): void {
     if (!row?.id) return;
-    const ok = confirm(`Supprimer le bus "${row.plate}" ?`);
+    const ok = confirm(this.i18n.instant('buses.list.deleteConfirm', { plate: row.plate }));
     if (!ok) return;
     this.http.delete(this.api.buses.byId(row.id)).subscribe({
       next: () => {
-        this.notif.success('Bus supprimé');
+        this.notif.success(this.i18n.instant('buses.list.deleteSuccess'));
         this.load();
       },
-      error: (err) => this.notif.error(err.error?.message || 'Suppression impossible'),
+      error: (err) => this.notif.error(err.error?.message || this.i18n.instant('buses.list.deleteError')),
     });
   }
 }

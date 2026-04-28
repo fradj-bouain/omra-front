@@ -12,6 +12,8 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     <app-page-header
       [title]="'nav.buses' | translate"
       [subtitle]="'buses.tabs.subtitle' | translate"
+      [actionLabel]="'buses.tabs.addBus' | translate"
+      actionLink="/buses/new"
     ></app-page-header>
 
     <mat-tab-group [selectedIndex]="selectedIndex()" (selectedIndexChange)="onTab($event)">

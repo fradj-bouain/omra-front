@@ -2,6 +2,14 @@
   <div class="login-page__veil" aria-hidden="true"></div>
 
   <div class="login-page__layout">
+    <header class="login-page__brand" [attr.aria-label]="'login.brandTitle' | translate">
+      <h1 class="login-brand__title" dir="ltr">
+        <span class="login-brand__mark">{{ 'login.brandMark' | translate }}</span>
+        <span class="login-brand__sep" aria-hidden="true"></span>
+        <span class="login-brand__rest">{{ 'login.brandRest' | translate }}</span>
+      </h1>
+      <p class="login-brand__tagline">{{ 'login.brandTagline' | translate }}</p>
+    </header>
     <div class="login-page__panel">
       <mat-card class="login-card">
         <div class="login-card__arch" aria-hidden="true"></div>

@@ -1,45 +1,56 @@
-<app-page-header
-  title="Bus"
-  subtitle="Immatriculations et capacités des véhicules"
-  actionLabel="Nouveau bus"
-  actionLink="/buses/new"
-></app-page-header>
-
 <section class="bus-list-page">
   <mat-card class="list-card">
     <div class="list-toolbar">
-      <span class="list-count">{{ totalElements }} bus</span>
+      <span class="list-toolbar__hint">{{ 'buses.list.subtitle' | translate }}</span>
+      <span class="list-count">{{ 'buses.list.toolbarCount' | translate: { count: totalElements } }}</span>
     </div>
 
     <div class="table-wrap">
       <table mat-table [dataSource]="dataSource" class="bus-table full-width">
         <ng-container matColumnDef="plate">
-          <th mat-header-cell *matHeaderCellDef>Immatriculation</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'buses.list.colPlate' | translate }}</th>
           <td mat-cell *matCellDef="let row">
             <span class="cell-plate">{{ row.plate }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="capacity">
-          <th mat-header-cell *matHeaderCellDef>Capacité</th>
-          <td mat-cell *matCellDef="let row">{{ row.capacity }} place{{ row.capacity !== 1 ? 's' : '' }}</td>
+          <th mat-header-cell *matHeaderCellDef>{{ 'buses.list.colCapacity' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="cell-capacity">{{ 'buses.list.seats' | translate: { n: row.capacity } }}</span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="driverName">
-          <th mat-header-cell *matHeaderCellDef>Nom chauffeur</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'buses.list.colDriverName' | translate }}</th>
           <td mat-cell *matCellDef="let row">{{ row.driverName || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="driverContact">
-          <th mat-header-cell *matHeaderCellDef>Contact chauffeur</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'buses.list.colDriverContact' | translate }}</th>
           <td mat-cell *matCellDef="let row">{{ row.driverContact || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let row" class="cell-actions">
-            <a mat-icon-button [routerLink]="['/buses', 'edit', row.id]" matTooltip="Modifier">
-              <mat-icon>edit</mat-icon>
-            </a>
-            <button mat-icon-button color="warn" (click)="deleteRow(row)" matTooltip="Supprimer">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <div class="bus-actions">
+              <a
+                mat-stroked-button
+                [routerLink]="['/buses', 'edit', row.id]"
+                class="bus-actions__btn bus-actions__btn--edit"
+                [matTooltip]="'common.edit' | translate"
+              >
+                <mat-icon>edit</mat-icon>
+                <span class="bus-actions__btn-label">{{ 'common.edit' | translate }}</span>
+              </a>
+              <button
+                type="button"
+                mat-stroked-button
+                class="bus-actions__btn bus-actions__btn--delete"
+                (click)="deleteRow(row)"
+                [matTooltip]="'common.delete' | translate"
+              >
+                <mat-icon>delete</mat-icon>
+                <span class="bus-actions__btn-label">{{ 'common.delete' | translate }}</span>
+              </button>
+            </div>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -49,13 +60,13 @@
             @if (loading) {
               <div class="empty-state">
                 <div class="empty-state__spinner"></div>
-                <p>Chargement des bus…</p>
+                <p>{{ 'buses.list.loading' | translate }}</p>
               </div>
             } @else {
               <div class="empty-state">
                 <mat-icon class="empty-state__icon">directions_bus</mat-icon>
-                <p class="empty-state__title">Aucun bus</p>
-                <p class="empty-state__desc">Ajoutez un bus pour commencer.</p>
+                <p class="empty-state__title">{{ 'buses.list.emptyTitle' | translate }}</p>
+                <p class="empty-state__desc">{{ 'buses.list.emptyDesc' | translate }}</p>
               </div>
             }
           </td>

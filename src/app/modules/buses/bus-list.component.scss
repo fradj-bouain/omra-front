@@ -1,10 +1,12 @@
-/* Bus — design system (--app-*) */
+/* Liste bus — alignée page Hôtels + actions type offres hôtelier */
+
 .bus-list-page {
-  max-width: 1200px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .list-card {
-  border-radius: var(--app-radius) !important;
+  border-radius: var(--app-radius-lg, 12px) !important;
   box-shadow: var(--app-shadow) !important;
   border: 1px solid var(--app-border);
   overflow: hidden;
@@ -12,19 +14,32 @@
 
 .list-toolbar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--app-space-md, 1rem);
   flex-wrap: wrap;
-  gap: var(--app-space-md);
-  padding: var(--app-space-lg) var(--app-space-xl);
+  padding: var(--app-space-lg, 1rem) var(--app-space-xl, 1.25rem);
   border-bottom: 1px solid var(--app-border);
   background: var(--app-bg-soft);
 }
 
+.list-toolbar__hint {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--app-text-soft, #64748b);
+  max-width: min(36rem, 100%);
+  margin: 0;
+}
+
 .list-count {
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--app-text-soft);
-  margin-left: auto;
+  color: var(--app-text-soft, #64748b);
+  white-space: nowrap;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(13, 148, 136, 0.08);
+  color: var(--app-accent, #0d9488);
 }
 
 .table-wrap {
@@ -33,37 +48,123 @@
 }
 
 .bus-table {
+  width: 100%;
+  min-width: 40rem;
   font-family: var(--app-font);
 
   th.mat-mdc-header-cell {
-    font-family: var(--app-display);
+    font-family: var(--app-display, inherit);
+    font-size: 0.7rem;
     font-weight: 600;
-    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--app-text-soft);
-    background: var(--app-bg-soft);
-    padding: 0.9rem 1rem;
+    color: var(--app-text-soft, #64748b);
+    background: var(--app-bg-soft, #f8fafc);
+    padding: 0.85rem 1rem;
     border-bottom: 2px solid var(--app-border);
   }
 
   td.mat-mdc-cell {
-    padding: 0.85rem 1rem;
-    font-size: 0.9375rem;
-    color: var(--app-text);
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: var(--app-text, #0f172a);
     border-bottom: 1px solid var(--app-border);
+    vertical-align: middle;
   }
 
   tr.mat-mdc-row:hover td {
-    background: rgba(13, 148, 136, 0.03);
+    background: rgba(13, 148, 136, 0.04);
   }
 }
 
 .cell-plate {
+  display: inline-block;
+  font-weight: 700;
+  font-family: var(--app-display, inherit);
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.35rem;
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--app-text, #0f172a);
+}
+
+.cell-capacity {
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-actions {
+  text-align: end;
+  vertical-align: middle !important;
+  padding: 0.45rem 0.75rem 0.45rem 1rem !important;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.bus-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem 0.55rem;
+}
+
+:host .bus-actions .mat-mdc-outlined-button,
+:host .bus-actions .mdc-button {
+  min-width: 4.75rem;
+  min-height: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: var(--app-text);
-  font-family: var(--app-display);
-  letter-spacing: 0.02em;
+  padding: 0 0.55rem;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+:host .bus-actions .mdc-button mat-icon {
+  font-size: 1.05rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+}
+
+:host .bus-actions__btn--edit {
+  color: var(--app-accent, #0d9488) !important;
+  border-color: rgba(13, 148, 136, 0.4) !important;
+  background: rgba(13, 148, 136, 0.07) !important;
+}
+
+:host .bus-actions__btn--edit:hover {
+  background: rgba(13, 148, 136, 0.14) !important;
+  border-color: var(--app-accent, #0d9488) !important;
+}
+
+:host .bus-actions__btn--delete {
+  color: #b91c1c !important;
+  border-color: rgba(185, 28, 28, 0.35) !important;
+  background: rgba(185, 28, 28, 0.05) !important;
+}
+
+:host .bus-actions__btn--delete:hover {
+  background: rgba(185, 28, 28, 0.11) !important;
+  border-color: #b91c1c !important;
+}
+
+.bus-actions__btn-label {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .bus-actions__btn-label {
+    display: none;
+  }
+
+  :host .bus-actions .mat-mdc-outlined-button,
+  :host .bus-actions .mdc-button {
+    min-width: 2.5rem;
+    padding: 0 0.45rem;
+  }
 }
 
 .no-data-row td {
@@ -84,14 +185,16 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--app-border);
-  border-top-color: var(--app-accent);
+  border-top-color: var(--app-accent, #0d9488);
   border-radius: 50%;
   animation: busSpinner 0.8s linear infinite;
   margin-bottom: 1rem;
 }
 
 @keyframes busSpinner {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state p {
@@ -119,6 +222,7 @@
 .empty-state__desc {
   font-size: 0.875rem !important;
   color: var(--app-text-soft) !important;
+  max-width: 22rem;
 }
 
 .list-paginator {
